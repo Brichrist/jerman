@@ -1,0 +1,35 @@
+{
+    "navbar": {
+        "status": "true",
+        "type": "ModernVersion1",
+        "name": "johny setiawan",
+        "list": [
+            {
+                "title": "Home",
+                "url": "/home"
+            },
+            {
+                "title": "Skills",
+                "url": "/skills"
+            },
+            {
+                "title": "About Me",
+                "url": "/about-me"
+            }
+        ]
+    },
+    "home": {
+        "status": "true",
+        "type": "ParallaxVersion1",
+        "headshot": "http://127.0.0.1:8000/img/headshot.jpeg",
+        "name": "johny setiawan",
+        "desc": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deserunt distinctio modi recusandae minima beatae optio minus nemo."
+    },
+    "about_us": {
+        "status": "true",
+        "type": "SimpleVersion1",
+        "headshot": "http://127.0.0.1:8000/img/headshot.jpeg",
+        "name": "johny setiawan",
+        "desc": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deserunt distinctio modi recusandae minima beatae optio minus nemo."
+    }
+}
