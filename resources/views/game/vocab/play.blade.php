@@ -644,13 +644,22 @@
 
             if (showFavoritesOnly) {
                 if (favoriteCards.length > 0) {
+                    // Update untuk card mode
                     showNextFavoriteCard();
+
+                    // Update untuk list mode
+                    $('.list-mode tbody tr').hide(); // Sembunyikan semua row
+                    $('.list-mode td .favorite-emote').each(function() {
+                        $(this).closest('tr').show(); // Tampilkan row yang memiliki favorite
+                    });
                 } else {
                     $('.card').hide();
+                    $('.list-mode tbody tr').hide();
                     $('.score').text('0/0');
                 }
             } else {
                 showCard(currentIndex);
+                $('.list-mode tbody tr').show(); // Tampilkan semua row
                 updateProgressBar('normal');
             }
         });
