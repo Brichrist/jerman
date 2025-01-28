@@ -715,6 +715,7 @@
                 _token: '{{ csrf_token() }}'
             };
             let target = $('.card:visible .german-word');
+            let germanWord = target.text().trim().replace('❤', '');
 
             $.ajax({
                 url: '/vocab/favorite',
@@ -728,14 +729,27 @@
                     }, 1000);
 
                     if (response.action == 'add') {
+                        // Update di card mode
                         target.append(`<span class="favorite-emote">❤</span>`);
+
+                        // Update di list mode
+                        let listCell = $(`.list-mode td:contains('${germanWord}')`);
+                        listCell.addClass('favorite');
+                        listCell.append(`<span class="favorite-emote">❤</span>`);
                     } else {
+                        // Update di card mode
                         target.find('.favorite-emote').remove();
+
+                        // Update di list mode
+                        let listCell = $(`.list-mode td:contains('${germanWord}')`);
+                        listCell.removeClass('favorite');
+                        listCell.find('.favorite-emote').remove();
                     }
 
                     updateFavoritesList();
                     if (showFavoritesOnly && favoriteCards.length === 0) {
                         $('.card').hide();
+                        $('.list-mode tbody tr').hide();
                         $('.score').text('0/0');
                     }
                 }
