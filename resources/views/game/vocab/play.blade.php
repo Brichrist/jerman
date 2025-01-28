@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -89,7 +90,7 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 0.8rem;
             padding: 0.5rem;
-            margin-top: 1rem;
+            margin-top: 0.5rem;
         }
 
         button {
@@ -181,22 +182,94 @@
             .german-word {
                 font-size: 2rem;
             }
+
             .indonesian-word {
                 font-size: 1.8rem;
             }
+
             button {
                 padding: 0.8rem;
                 font-size: 0.8rem;
             }
         }
+
+        /* Tambahkan di bagian style */
+        .list-mode {
+            display: none;
+            width: 100%;
+        }
+
+        .list-mode table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .list-mode th,
+        .list-mode td {
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .list-mode th {
+            background: #6c5ce7;
+            color: white;
+        }
+
+        .list-mode tr:nth-child(even) {
+            background: #f5f5f5;
+        }
+
+        .control-buttons {
+            justify-content: space-between;
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        #backBtn,
+        #listModeBtn {
+            background: #636e72;
+            color: white;
+            padding: 0.5rem 1.5rem;
+        }
+
+        .list-mode td.favorite {
+            color: #ff7675;
+        }
+
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
     </style>
+
 </head>
+
 <body>
     <div class="container" data-aos="fade-up">
         <div class="progress-bar"></div>
         <div>
             <button class="favorite-only" id="toggleFavoriteBtn">Show Favorites Only ❤</button>
             <div class="score">0/{{ count($vocabularies) }}</div>
+        </div>
+        <div class="control-buttons">
+            <button id="backBtn">Back</button>
+            <button id="listModeBtn">List Mode</button>
         </div>
 
         <div class="vocab-pages">
@@ -222,6 +295,32 @@
                 </div>
             @endforeach
         </div>
+        <div style="text-align: center; margin-top: 10px">
+            ({{ $vocabulary->kapital }})
+        </div>
+        <div class="list-mode">
+            <table>
+                <thead>
+                    <tr>
+                        <th>German</th>
+                        <th>Indonesian</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($vocabularies as $vocabulary)
+                        <tr>
+                            <td class="{{ $vocabulary->linkfavorite->count() > 0 ? 'favorite' : '' }}">
+                                {{ $vocabulary->german_word }}
+                                @if ($vocabulary->linkfavorite->count() > 0)
+                                    <span class="favorite-emote">❤</span>
+                                @endif
+                            </td>
+                            <td>{{ $vocabulary->meaning }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
 
         <div class="buttons">
             <button id="revealBtn" data-aos="fade-up" data-aos-delay="200">
@@ -235,6 +334,46 @@
             </button>
         </div>
     </div>
+    <script>
+        // Tambahkan di bagian script
+        let isListMode = false;
+
+        $('#backBtn').on('touchstart click', function(e) {
+            e.preventDefault();
+            if (currentIndex > 0) {
+                currentIndex--;
+                if (showFavoritesOnly) {
+                    showNextFavoriteCard();
+                } else {
+                    showCard(currentIndex);
+                    updateProgressBar('normal');
+                }
+            }
+        });
+
+        $('#listModeBtn').on('touchstart click', function(e) {
+            e.preventDefault();
+            isListMode = !isListMode;
+
+            if (isListMode) {
+                $('.vocab-pages, .buttons').hide();
+                $('.list-mode').show();
+                $(this).text('Card Mode');
+            } else {
+                $('.vocab-pages, .buttons').show();
+                $('.list-mode').hide();
+                $(this).text('List Mode');
+            }
+        });
+
+        // Modifikasi fungsi showCard
+        function showCard(index) {
+            if (isListMode) return;
+            $('.card').hide();
+            $(`.card[data-index="${index}"]`).show();
+            $('.indonesian-word').removeClass('revealed');
+        }
+    </script>
 
     <script>
         let currentIndex = 0;
@@ -243,7 +382,7 @@
         let favoriteCards = [];
 
         function updateFavoritesList() {
-            favoriteCards = Array.from(document.querySelectorAll('.card')).filter(card => 
+            favoriteCards = Array.from(document.querySelectorAll('.card')).filter(card =>
                 card.querySelector('.favorite-emote') !== null
             ).map(card => parseInt(card.dataset.index));
         }
@@ -252,10 +391,10 @@
             e.preventDefault();
             showFavoritesOnly = !showFavoritesOnly;
             $(this).toggleClass('active');
-            
+
             updateFavoritesList();
             currentIndex = 0;
-            
+
             if (showFavoritesOnly) {
                 if (favoriteCards.length > 0) {
                     showNextFavoriteCard();
@@ -271,7 +410,7 @@
 
         function showNextFavoriteCard() {
             if (favoriteCards.length === 0) return;
-            
+
             currentIndex = favoriteCards[currentIndex % favoriteCards.length];
             showCard(currentIndex);
             updateProgressBar('favorite');
@@ -331,13 +470,13 @@
                     setTimeout(() => {
                         $('#favoriteBtn').removeClass('animate__animated animate__heartBeat');
                     }, 1000);
-                    
+
                     if (response.action == 'add') {
                         target.append(`<span class="favorite-emote">❤</span>`);
                     } else {
                         target.find('.favorite-emote').remove();
                     }
-                    
+
                     updateFavoritesList();
                     if (showFavoritesOnly && favoriteCards.length === 0) {
                         $('.card').hide();
@@ -357,4 +496,5 @@
         showCard(0);
     </script>
 </body>
+
 </html>

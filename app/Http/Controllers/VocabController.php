@@ -10,6 +10,9 @@ class VocabController extends Controller
 {
     protected $openai;
 
+
+
+    
     public function __construct()
     {
         $this->openai = OpenAI::client(env('OPENAI_API_KEY'));
@@ -164,7 +167,9 @@ class VocabController extends Controller
      */
     public function index()
     {
-        $vocabs = Vocab::orderBy('word_type')->get();
+        $vocabs = Vocab::when(request('kapital'), function ($query) {
+            $query->where('kapital', request('kapital'));
+        })->orderBy('word_type')->paginate(50);
         return view('be.vocab_index', compact('vocabs'));
     }
 
