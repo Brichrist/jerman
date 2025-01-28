@@ -430,7 +430,7 @@
                                     <span class="favorite-emote">❤</span>
                                 @endif
                             </td>
-                            <td class="indonesian-column">{{ $vocabulary->meaning }}</td>
+                            <td>{{ $vocabulary->meaning }}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -727,21 +727,26 @@
                     setTimeout(() => {
                         $('#favoriteBtn').removeClass('animate__animated animate__heartBeat');
                     }, 1000);
-
                     if (response.action == 'add') {
                         // Update di card mode
                         target.append(`<span class="favorite-emote">❤</span>`);
 
-                        // Update di list mode (selalu di kolom bahasa Jerman)
-                        let listCell = $(`.list-mode .german-column:contains('${germanWord}')`);
+                        // Update di list mode
+                        let listCell = $(`.list-mode td:contains('${germanWord}')`);
+                        if (!listCell.hasClass('german-column')) {
+                            listCell = listCell.siblings('.german-column');
+                        }
                         listCell.addClass('favorite');
                         listCell.append(`<span class="favorite-emote">❤</span>`);
                     } else {
                         // Update di card mode
                         target.find('.favorite-emote').remove();
 
-                        // Update di list mode (selalu di kolom bahasa Jerman)
-                        let listCell = $(`.list-mode .german-column:contains('${germanWord}')`);
+                        // Update di list mode
+                        let listCell = $(`.list-mode td:contains('${germanWord}')`);
+                        if (!listCell.hasClass('german-column')) {
+                            listCell = listCell.siblings('.german-column');
+                        }
                         listCell.removeClass('favorite');
                         listCell.find('.favorite-emote').remove();
                     }
