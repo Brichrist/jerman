@@ -424,13 +424,13 @@
                 <tbody>
                     @foreach ($vocabularies as $vocabulary)
                         <tr>
-                            <td class="{{ $vocabulary->linkfavorite->count() > 0 ? 'favorite' : '' }}">
+                            <td class="german-column {{ $vocabulary->linkfavorite->count() > 0 ? 'favorite' : '' }}">
                                 {{ $vocabulary->german_word }}
                                 @if ($vocabulary->linkfavorite->count() > 0)
                                     <span class="favorite-emote">❤</span>
                                 @endif
                             </td>
-                            <td>{{ $vocabulary->meaning }}</td>
+                            <td class="indonesian-column">{{ $vocabulary->meaning }}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -732,16 +732,16 @@
                         // Update di card mode
                         target.append(`<span class="favorite-emote">❤</span>`);
 
-                        // Update di list mode
-                        let listCell = $(`.list-mode td:contains('${germanWord}')`);
+                        // Update di list mode (selalu di kolom bahasa Jerman)
+                        let listCell = $(`.list-mode .german-column:contains('${germanWord}')`);
                         listCell.addClass('favorite');
                         listCell.append(`<span class="favorite-emote">❤</span>`);
                     } else {
                         // Update di card mode
                         target.find('.favorite-emote').remove();
 
-                        // Update di list mode
-                        let listCell = $(`.list-mode td:contains('${germanWord}')`);
+                        // Update di list mode (selalu di kolom bahasa Jerman)
+                        let listCell = $(`.list-mode .german-column:contains('${germanWord}')`);
                         listCell.removeClass('favorite');
                         listCell.find('.favorite-emote').remove();
                     }
