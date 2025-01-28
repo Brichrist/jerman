@@ -348,7 +348,50 @@
             background: rgba(0, 0, 0, 0.1);
         }
     </style>
+    <style>
+        /* Tambahkan atau update CSS berikut */
+        .list-mode table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            table-layout: fixed;
+            /* Penting untuk word wrap bekerja */
+        }
 
+        .list-mode th,
+        .list-mode td {
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            text-align: left;
+            word-wrap: break-word;
+            /* Memungkinkan word wrap */
+            overflow-wrap: break-word;
+            max-width: 0;
+            /* Diperlukan untuk word wrap bekerja dengan table-layout: fixed */
+        }
+
+        /* Atur lebar kolom */
+        .list-mode .german-column {
+            width: 50%;
+            /* Atau sesuaikan dengan kebutuhan */
+        }
+
+        .list-mode .indonesian-column {
+            width: 50%;
+            /* Atau sesuaikan dengan kebutuhan */
+        }
+
+        /* Pastikan emoji hati tidak wrap */
+        .favorite-emote {
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        /* Optional: tambahkan hover state untuk meningkatkan UX */
+        .list-mode tr:hover {
+            background-color: rgba(108, 92, 231, 0.05);
+        }
+    </style>
 </head>
 
 <body>
