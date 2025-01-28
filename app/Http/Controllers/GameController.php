@@ -14,6 +14,21 @@ class GameController extends Controller
     {
         return view('game.index');
     }
+    public function updateVocab(Request $request)
+    {
+        try {
+            $vocabulary = Vocab::find($request->id);
+            if ($vocabulary) {
+                $vocabulary->german_word = $request->german_word;
+                $vocabulary->meaning = $request->meaning;
+                $vocabulary->save();
+                return response()->json(['success' => true]);
+            }
+            return response()->json(['success' => false, 'message' => 'Word not found']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
 
     public function vocabIndex()
     {
@@ -28,8 +43,8 @@ class GameController extends Controller
         $language = $data['language'];
 
         $vocabularies = Vocab::when($kapital !== null, function ($query) use ($kapital) {
-                return $query->where('kapital', $kapital);
-            })
+            return $query->where('kapital', $kapital);
+        })
             ->when($useFavorites, function ($query) {
                 return $query->whereHas('linkFavorite');
             })

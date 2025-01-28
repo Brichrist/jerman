@@ -32,19 +32,20 @@ Route::middleware('auth')->group(function () {
     Route::resource('/gramatik', GramatikController::class)->name('index', 'gramatik.index');
     Route::get('/gramatik/preview/{id}', [GramatikController::class, 'preview'])->name('gramatik.preview');
     Route::post('/gramatik/practice', [GramatikController::class, 'practice'])->name('gramatik.practice');
-
-
+    
+    
     Route::get('/ai', function () {
         return view('ai');
     })->name('ai');
-
+    
     Route::post('/extract-pdf', [VocabController::class, 'extract']);
     Route::post('/get-data-ai', [VocabController::class, 'dataAi']);
-
+    
     Route::get('/game', [GameController::class, 'index'])->name('game.index');
     Route::get('/game/vocab/index', [GameController::class, 'vocabIndex'])->name('game.vocab.index');
     Route::get('/game/vocab/play', [GameController::class, 'vocabPlay'])->name('game.vocab.play');
     Route::post('/vocab/favorite', [GameController::class, 'toggleFavorite']);
+    Route::post('/updateVocab',  [GameController::class, 'updateVocab']);
 
     Route::get('/game/redemittel/index', [GameController::class, 'redemittelIndex'])->name('game.redemittel.index');
     Route::get('/game/redemittel/play', [GameController::class, 'redemittelPlay'])->name('game.redemittel.play');

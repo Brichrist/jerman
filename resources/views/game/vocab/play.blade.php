@@ -257,6 +257,97 @@
             }
         }
     </style>
+    <style>
+        .edit-form {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .edit-overlay {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .edit-input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .save-btn,
+        .cancel-btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .save-btn {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .cancel-btn {
+            background: #f44336;
+            color: white;
+        }
+
+        #editBtn {
+            background: #2196F3;
+            color: white;
+        }
+
+        .list-controls {
+            margin: 10px 0;
+            display: flex;
+            gap: 10px;
+            justify-content: space-between;
+        }
+
+        .list-controls button {
+            background: #636e72;
+            color: white;
+            padding: 0.5rem 1rem;
+        }
+
+        .hidden-cell {
+            color: transparent;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .hidden-cell:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+    </style>
 
 </head>
 
@@ -269,7 +360,26 @@
         </div>
         <div class="control-buttons">
             <button id="backBtn">Back</button>
+            <button id="editBtn">Edit</button>
             <button id="listModeBtn">List Mode</button>
+        </div>
+        <div class="edit-form" style="display: none;">
+            <div class="edit-overlay">
+                <form id="editForm">
+                    <div class="form-group">
+                        <label>{{ $language === 'indo' ? 'Indonesian Word:' : 'German Word:' }}</label>
+                        <input type="text" id="editGerman" class="edit-input">
+                    </div>
+                    <div class="form-group">
+                        <label>{{ $language === 'indo' ? 'German Meaning:' : 'Indonesian Meaning:' }}</label>
+                        <input type="text" id="editIndonesian" class="edit-input">
+                    </div>
+                    <div class="form-buttons">
+                        <button type="button" id="cancelEdit" class="cancel-btn">Cancel</button>
+                        <button type="submit" class="save-btn">Save</button>
+                    </div>
+                </form>
+            </div>
         </div>
 
         <div class="vocab-pages">
@@ -299,6 +409,11 @@
             ({{ $vocabulary->kapital }})
         </div>
         <div class="list-mode">
+            <div class="list-controls" style="display: none;">
+                <button id="hideLeftBtn">Hide Left</button>
+                <button id="hideRightBtn">Hide Right</button>
+                <button id="showAllBtn">Show All</button>
+            </div>
             <table>
                 <thead>
                     <tr>
@@ -335,6 +450,107 @@
         </div>
     </div>
     <script>
+        // Tambahkan di bagian inisialisasi
+        $(document).ready(function() {
+            $('.quiz-type-selection').show();
+            $('#quiz-container').hide();
+            $('.list-controls').hide();
+        });
+
+        // Tambahkan variabel untuk menyimpan data saat ini
+        let currentWord = '';
+        let currentId = '';
+        let currentMeaning = '';
+
+        // Handler untuk tombol edit
+        $('#editBtn').on('click', function() {
+            currentId = $('.card:visible .id-vocab').text();
+
+            // Tentukan posisi bahasa berdasarkan mode
+            const isIndonesianMode = '{{ $language }}' === 'indo';
+
+            if (isIndonesianMode) {
+                // Jika mode indo, text1 adalah bahasa Indonesia, text2 adalah bahasa Jerman
+                currentMeaning = $('.card:visible .german-word').text().trim().replace('❤', '');
+                currentWord = $('.card:visible .indonesian-word').text().trim();
+            } else {
+                // Jika mode german, text1 adalah bahasa Jerman, text2 adalah bahasa Indonesia
+                currentWord = $('.card:visible .german-word').text().trim().replace('❤', '');
+                currentMeaning = $('.card:visible .indonesian-word').text().trim();
+            }
+
+            // Isi form sesuai bahasa
+            $('#editGerman').val(currentMeaning); // text2 jika indo mode
+            $('#editIndonesian').val(currentWord); // text1 jika indo mode
+            $('.edit-form').css('display', 'flex');
+        });
+
+        // Handler untuk cancel
+        $('#cancelEdit').on('click', function() {
+            $('.edit-form').hide();
+        });
+
+        // Handler untuk submit form
+        $('#editForm').on('submit', function(e) {
+            e.preventDefault();
+            const newGerman = $('#editGerman').val();
+            const newIndonesian = $('#editIndonesian').val();
+            const isIndonesianMode = '{{ $language }}' === 'indo';
+
+            $.ajax({
+                url: '/updateVocab',
+                method: 'POST',
+                data: JSON.stringify({
+                    id: currentId,
+                    german_word: newGerman,
+                    meaning: newIndonesian,
+                    _token: '{{ csrf_token() }}'
+                }),
+                contentType: 'application/json',
+                success: function(response) {
+                    if (response.success) {
+                        let targetCard = $('.card:visible');
+                        let isFavorite = targetCard.find('.favorite-emote').length ? '<span class="favorite-emote">❤</span>' : '';
+
+                        // Update UI berdasarkan mode bahasa
+                        if (isIndonesianMode) {
+                            // Update text1 (Indonesian) dan text2 (German)
+                            targetCard.find('.german-word').html(newGerman + isFavorite);
+                            targetCard.find('.indonesian-word').text(newIndonesian);
+                        } else {
+                            // Update text1 (German) dan text2 (Indonesian)
+                            targetCard.find('.german-word').html(newGerman + isFavorite);
+                            targetCard.find('.indonesian-word').text(newIndonesian);
+                        }
+
+                        // Update list mode
+                        let targetRow = $(`.list-mode tr td:contains('${currentWord}')`).parent();
+                        if (isIndonesianMode) {
+                            targetRow.find('td:first').html(newIndonesian + isFavorite);
+                            targetRow.find('td:last').text(newGerman);
+                        } else {
+                            targetRow.find('td:first').html(newGerman + isFavorite);
+                            targetRow.find('td:last').text(newIndonesian);
+                        }
+
+                        $('.edit-form').hide();
+                        alert('Word updated successfully!');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert('Failed to update word. Please try again.');
+                }
+            });
+        });
+
+        // Close form ketika klik di luar
+        $('.edit-form').on('click', function(e) {
+            if (e.target === this) {
+                $(this).hide();
+            }
+        });
+    </script>
+    <script>
         // Tambahkan di bagian script
         let isListMode = false;
 
@@ -351,18 +567,49 @@
             }
         });
 
+        // Modifikasi listModeBtn handler
         $('#listModeBtn').on('touchstart click', function(e) {
             e.preventDefault();
             isListMode = !isListMode;
 
             if (isListMode) {
                 $('.vocab-pages, .buttons').hide();
-                $('.list-mode').show();
+                $('.list-mode, .list-controls').show();
                 $(this).text('Card Mode');
+                $('#backBtn, #editBtn').hide();
             } else {
                 $('.vocab-pages, .buttons').show();
-                $('.list-mode').hide();
+                $('.list-mode, .list-controls').hide();
                 $(this).text('List Mode');
+                $('#backBtn, #editBtn').show();
+            }
+        });
+
+        // Handler untuk hide left column
+        $('#hideLeftBtn').on('click', function() {
+            $('.list-mode table td:first-child').each(function() {
+                $(this).addClass('hidden-cell');
+            });
+        });
+
+        // Handler untuk hide right column
+        $('#hideRightBtn').on('click', function() {
+            $('.list-mode table td:last-child').each(function() {
+                $(this).addClass('hidden-cell');
+            });
+        });
+
+        // Handler untuk show all
+        $('#showAllBtn').on('click', function() {
+            $('.list-mode table td').removeClass('hidden-cell');
+        });
+
+        // Handler untuk toggle individual cell
+        $('.list-mode table td').on('click', function() {
+            if ($(this).hasClass('hidden-cell')) {
+                $(this).removeClass('hidden-cell');
+            } else {
+                $(this).addClass('hidden-cell');
             }
         });
 
