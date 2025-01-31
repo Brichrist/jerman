@@ -96,7 +96,7 @@ class GramatikController extends Controller
 
     public function index()
     {
-        $gramatiks = Gramatik::orderBy('kapital')->get();
+        $gramatiks = Gramatik::orderBy('kapital')->orderBy('created_at')->get();
         return view('be.gramatik_index', compact('gramatiks'));
     }
 
