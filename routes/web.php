@@ -22,6 +22,9 @@ Route::get('/test', function () {
     return view('welcome');
 });
 
+Route::get('/', function () {
+    return redirect('/dashboard');
+});
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
@@ -32,15 +35,15 @@ Route::middleware('auth')->group(function () {
     Route::resource('/gramatik', GramatikController::class)->name('index', 'gramatik.index');
     Route::get('/gramatik/preview/{id}', [GramatikController::class, 'preview'])->name('gramatik.preview');
     Route::post('/gramatik/practice', [GramatikController::class, 'practice'])->name('gramatik.practice');
-    
-    
+
+
     Route::get('/ai', function () {
         return view('ai');
     })->name('ai');
-    
+
     Route::post('/extract-pdf', [VocabController::class, 'extract']);
     Route::post('/get-data-ai', [VocabController::class, 'dataAi']);
-    
+
     Route::get('/game', [GameController::class, 'index'])->name('game.index');
     Route::get('/game/vocab/index', [GameController::class, 'vocabIndex'])->name('game.vocab.index');
     Route::get('/game/vocab/play', [GameController::class, 'vocabPlay'])->name('game.vocab.play');

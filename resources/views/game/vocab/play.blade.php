@@ -236,7 +236,7 @@
         }
 
         .list-mode td.favorite {
-            color: #ff7675;
+            /* color: #ff7675; */
         }
 
         .floating {
@@ -516,15 +516,19 @@
                 // Jika mode indo, text1 adalah bahasa Indonesia, text2 adalah bahasa Jerman
                 currentMeaning = $('.card:visible .german-word').text().trim().replace('❤', '');
                 currentWord = $('.card:visible .indonesian-word').text().trim();
+                // Isi form sesuai bahasa
+                $('#editGerman').val(currentMeaning); // text2 jika indo mode
+                $('#editIndonesian').val(currentWord); // text1 jika indo mode
             } else {
                 // Jika mode german, text1 adalah bahasa Jerman, text2 adalah bahasa Indonesia
                 currentWord = $('.card:visible .german-word').text().trim().replace('❤', '');
                 currentMeaning = $('.card:visible .indonesian-word').text().trim();
+                // Isi form sesuai bahasa
+                $('#editGerman').val(currentWord); // text2 jika indo mode
+                $('#editIndonesian').val(currentMeaning); // text1 jika indo mode
             }
 
-            // Isi form sesuai bahasa
-            $('#editGerman').val(currentMeaning); // text2 jika indo mode
-            $('#editIndonesian').val(currentWord); // text1 jika indo mode
+
             $('.edit-form').css('display', 'flex');
         });
 
@@ -536,9 +540,17 @@
         // Handler untuk submit form
         $('#editForm').on('submit', function(e) {
             e.preventDefault();
-            const newGerman = $('#editGerman').val();
-            const newIndonesian = $('#editIndonesian').val();
             const isIndonesianMode = '{{ $language }}' === 'indo';
+            let newGerman = null;
+            let newIndonesian = null;
+
+            if (isIndonesianMode) {
+                newGerman = $('#editIndonesian').val();
+                newIndonesian = $('#editGerman').val();
+            } else {
+                newGerman = $('#editGerman').val();
+                newIndonesian = $('#editIndonesian').val();
+            }
 
             $.ajax({
                 url: '/updateVocab',
@@ -558,8 +570,8 @@
                         // Update UI berdasarkan mode bahasa
                         if (isIndonesianMode) {
                             // Update text1 (Indonesian) dan text2 (German)
-                            targetCard.find('.german-word').html(newGerman + isFavorite);
-                            targetCard.find('.indonesian-word').text(newIndonesian);
+                            targetCard.find('.german-word').html(newIndonesian + isFavorite);
+                            targetCard.find('.indonesian-word').text(newGerman);
                         } else {
                             // Update text1 (German) dan text2 (Indonesian)
                             targetCard.find('.german-word').html(newGerman + isFavorite);
@@ -597,13 +609,35 @@
         // Tambahkan di bagian script
         let isListMode = false;
 
+        // $('#backBtn').on('touchstart click', function(e) {
+        //     e.preventDefault();
+        //     if (currentIndex > 0) {
+        //         currentIndex--;
+        //         if (showFavoritesOnly) {
+        //             showNextFavoriteCard();
+        //         } else {
+        //             showCard(currentIndex);
+        //             updateProgressBar('normal');
+        //         }
+        //     }
+        // });
         $('#backBtn').on('touchstart click', function(e) {
             e.preventDefault();
-            if (currentIndex > 0) {
-                currentIndex--;
-                if (showFavoritesOnly) {
+            if (showFavoritesOnly) {
+                currentIndex = (favoriteCards.indexOf(currentIndex) - 1) % favoriteCards.length;
+                if (currentIndex >= 0) {
                     showNextFavoriteCard();
                 } else {
+                    currentIndex = favoriteCards.length - 1;
+                    showNextFavoriteCard();
+                }
+            } else {
+                currentIndex = (currentIndex - 1) % totalCards;
+                if (currentIndex >= 0) {
+                    showCard(currentIndex);
+                    updateProgressBar('normal');
+                } else {
+                    currentIndex = totalCards - 1;
                     showCard(currentIndex);
                     updateProgressBar('normal');
                 }
