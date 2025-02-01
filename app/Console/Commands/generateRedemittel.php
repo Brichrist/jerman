@@ -37,7 +37,7 @@ class generateRedemittel extends Command
             foreach ($files_parent as $key => $v) {
                 $url = url('/storage/img/' . $value . '/' . $v);
                 GenerateRedemittelImg::dispatch($url)->delay(now()->addMinutes(1));
-                dd($url);
+                // dd($url);
             }
         }
     }
