@@ -37,9 +37,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/gramatik/practice', [GramatikController::class, 'practice'])->name('gramatik.practice');
 
 
-    Route::get('/ai', function () {
-        return view('ai');
-    })->name('ai');
+    Route::get('/ai', [App\Http\Controllers\AiController::class, 'index'])->name('ai.index');
+    Route::post('/ai', [App\Http\Controllers\AiController::class, 'askAi'])->name('ai.askAi');
 
     Route::post('/extract-pdf', [VocabController::class, 'extract']);
     Route::post('/get-data-ai', [VocabController::class, 'dataAi']);

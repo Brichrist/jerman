@@ -8,7 +8,7 @@
                         <p>{{ __('Learn new vocabulary words.') }}</p>
                     </div>
                 </a>
-                <a href="{{ route('game.redemittel.index') }}" class="block bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                {{-- <a href="{{ route('game.redemittel.index') }}" class="block bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
                         <h3 class="font-semibold text-lg">{{ __('Redemittel') }}</h3>
                         <p>{{ __('Useful phrases and expressions.') }}</p>
@@ -19,7 +19,7 @@
                         <h3 class="font-semibold text-lg">{{ __('Gramatik') }}</h3>
                         <p>{{ __('Grammar rules and tips.') }}</p>
                     </div>
-                </a>
+                </a> --}}
             </div>
         </div>
     </div>

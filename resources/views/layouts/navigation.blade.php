@@ -24,7 +24,7 @@
                     <x-nav-link :href="route('gramatik.index')" :active="request()->routeIs('gramatik.index')">
                         {{ __('Gramatik') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('ai')" :active="request()->routeIs('ai')">
+                    <x-nav-link :href="route('ai.index')" :active="request()->routeIs('ai.index')">
                         {{ __('AI') }}
                     </x-nav-link>
                     <x-nav-link :href="route('game.index')" :active="request()->is('game*')">
@@ -93,7 +93,7 @@
             <x-responsive-nav-link :href="route('gramatik.index')" :active="request()->routeIs('gramatik.index')">
                 {{ __('Gramatik') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('ai')" :active="request()->routeIs('ai')">
+            <x-responsive-nav-link :href="route('ai.index')" :active="request()->routeIs('ai.index')">
                 {{ __('AI') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('game.index')" :active="request()->is('game*')">
