@@ -579,7 +579,7 @@
             @endforeach
         </div>
         <div style="text-align: center; margin-top: 10px">
-            ({{ $kapital }})
+            ({{ $kapital ?? null }})
         </div>
         <div class="list-mode">
             <div class="list-controls" style="display: none;">
