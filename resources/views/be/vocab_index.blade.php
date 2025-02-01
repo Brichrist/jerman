@@ -105,7 +105,7 @@
                                     </tbody>
                                 </table>
                                 <div class="p-4 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                                    {{ $vocabs->links() }}
+                                    {{ $vocabs->appends(request()->query())->links() }}
                                 </div>
 
                                 @if ($vocabs->isEmpty())

@@ -102,7 +102,7 @@
                                     </tbody>
                                 </table>
                                 <div class="p-4 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                                    {{ $redemittels->links() }}
+                                    {{ $redemittels->appends(request()->query())->links() }}
                                 </div>
 
                                 @if ($redemittels->isEmpty())
