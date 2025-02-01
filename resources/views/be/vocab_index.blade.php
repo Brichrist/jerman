@@ -76,7 +76,8 @@
                                                 </td>
                                                 <td class="px-6 py-4">
                                                     {{ $word->word_type }}<br>
-                                                    {{ $word->additional_notes }}
+                                                    Example: {{ $word->example }}<br>
+                                                    Note: {{ $word->additional_notes }}
                                                 </td>
                                                 <td class="px-6 py-4 bg-gray-50 dark:bg-gray-900">
                                                     <div class="flex">
