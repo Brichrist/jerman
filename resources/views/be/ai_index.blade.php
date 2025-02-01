@@ -43,58 +43,9 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
         <script type="module">
-            $(document).ready(function() {
-                const form = $('#question-form');
-                const submitButton = $('#submit-question');
-                const loadingIndicator = $('#loading-indicator');
-
-                form.on('submit', function(event) {
-                    event.preventDefault();
-                    const formData = new FormData(this);
-
-                    submitButton.prop('disabled', true);
-                    loadingIndicator.removeClass('hidden');
-
-                    $.ajax({
-                        url: form.attr('action'),
-                        type: form.attr('method'),
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-                            'Accept': 'application/json',
-                        },
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        success: function(dt) {
-                            if (dt.success) {
-                                data = data.data;
-                                data = JSON.parse(data);
-                                console.log(data)
-                                $('#response-container').removeClass('hidden');
-                                $('#answer').text(data.answer);
-                                $('#conversation').val(dt.conversation);
-                                $('#hint').text(data.hint ? data.hint : '');
-                                form[0].reset();
-                            } else {
-                                alert('Terjadi kesalahan, silakan coba lagi.');
-                            }
-                        },
-                        error: function(error) {
-                            console.error('Error:', error);
-                            alert('Terjadi kesalahan, silakan coba lagi.');
-                        },
-                        complete: function() {
-                            submitButton.prop('disabled', false);
-                            loadingIndicator.addClass('hidden');
-                        }
-                    });
-                });
-            });
-        </script>
-
-        <script type="module">
-            let dollar = 0;
             let token = 0;
+            let dollar = 0;
+
             $(document).ready(function() {
                 anime({
                     targets: '.bot-message',
@@ -112,7 +63,12 @@
 
                     addMessage(question, null, 'user');
                     $('#question').val('');
-
+                    if (new URLSearchParams(window.location.search).get('free') != 'true') {
+                        if (dollar > 0.05) {
+                            addMessage("Maaf ya, Maria sudah capek buat jelasin.", "Silahkan reload url untuk chat dengan maria kembali", 'bot');
+                            return;
+                        }
+                    }
                     $.ajax({
                         url: $(this).attr('action'),
                         type: $(this).attr('method'),
@@ -158,19 +114,19 @@
                     const messageHTML = `
                         <div class="flex items-start ${isBot ? '' : 'justify-end'} message opacity-0">
                             ${isBot ? `
-                                                                <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
-                                                                    <img src="{{ asset('img/maria.jpg') }}" alt="Robot" class="w-full h-full object-cover">
-                                                                </div>
-                                                            ` : ''}
+                                                                                                        <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
+                                                                                                            <img src="{{ asset('img/maria.jpg') }}" alt="Robot" class="w-full h-full object-cover">
+                                                                                                        </div>
+                                                                                                    ` : ''}
                             <div class="mx-3 ${isBot ? 'bg-white text-gray-700' : 'gradient-bg text-white'} rounded-2xl p-4 max-w-[80%] shadow-sm">
                                 <p>${text}</p>
                                 ${hint ? `<hr class="my-2"><p class="text-sm text-gray-500">${hint}</p>` : ''}
                             </div>
                             ${!isBot ? `
-                                                                <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                                                                    <i class="fas fa-user text-gray-500 text-sm"></i>
-                                                                </div>
-                                                            ` : ''}
+                                                                                                        <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                                                                                            <i class="fas fa-user text-gray-500 text-sm"></i>
+                                                                                                        </div>
+                                                                                                    ` : ''}
                         </div>
                     `;
 

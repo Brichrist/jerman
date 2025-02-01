@@ -90,8 +90,13 @@ class helper extends Command
                 case 'C2':
                     $add1 = 6000;
                     break;
+                default:
+                    $add1 = 0;
+                    break;
             }
-            $add1 = $add1 + ((int)$lastPart * 10);
+            if ($add1 != 0) {
+                $add1 = $add1 + ((int)$lastPart * 10);
+            }
 
             $order[] = $kapital;
             $gramatik->update([
@@ -107,6 +112,5 @@ class helper extends Command
                 'order' =>  $c
             ]);
         }
-        
     }
 }
