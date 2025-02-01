@@ -36,6 +36,7 @@ class generateExample extends Command
         foreach ($chunks as $chunk) {
             $value = $chunk->pluck('german_word', 'id')->toArray();
             $value = json_encode($value);
+            \Log::info('Processing chunk: ' . $value);
             GenerateVocabExample::dispatch($value)->delay(now()->addMinutes(1));
         }
     }
