@@ -547,6 +547,9 @@
                 </form>
             </div>
         </div>
+        @php
+            $kapital;
+        @endphp
 
         <div class="vocab-pages">
             @foreach ($vocabularies as $index => $vocabulary)
@@ -559,6 +562,8 @@
                             $text1 = $vocabulary->german_word;
                             $text2 = $vocabulary->meaning;
                         }
+                        $kapital = $vocabulary->kapital;
+
                     @endphp
                     <div class="german-word floating">
                         {{ $text1 }}
@@ -574,7 +579,7 @@
             @endforeach
         </div>
         <div style="text-align: center; margin-top: 10px">
-            ({{ $vocabulary->kapital }})
+            ({{ $kapital }})
         </div>
         <div class="list-mode">
             <div class="list-controls" style="display: none;">
