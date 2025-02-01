@@ -486,7 +486,7 @@
             padding: 0.5rem;
             background: rgba(108, 92, 231, 0.05);
             border-radius: 8px;
-            display: flex;
+            list-style-type: none;
             align-items: center;
             justify-content: center;
         }
