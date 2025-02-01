@@ -10,6 +10,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
     <style>
+        u {
+            margin: 0 3px;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -228,6 +232,10 @@
             margin-bottom: 1rem;
         }
 
+        .control-buttons button {
+            padding: 0.7rem !important;
+        }
+
         #backBtn,
         #listModeBtn {
             background: #636e72;
@@ -392,6 +400,106 @@
             background-color: rgba(108, 92, 231, 0.05);
         }
     </style>
+    <style>
+        .example-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .example-modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .example-modal-content {
+            background: white;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 70vh;
+            overflow-y: auto;
+            padding: 2rem;
+            position: relative;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            transform: scale(0.7);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .example-modal-content.show {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .example-modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #ff7675;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .example-modal-close:hover {
+            background: #ff5252;
+        }
+
+        #exampleBtn {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .example-content {
+            text-align: center;
+        }
+
+        .example-content h2 {
+            color: #6c5ce7;
+            margin-bottom: 1rem;
+        }
+
+        .example-content .example-list {
+            text-align: left;
+            margin-top: 1rem;
+        }
+
+        .example-content .example-list li {
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(108, 92, 231, 0.05);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .example-content .example-list li strong {
+            color: #6c5ce7;
+            margin-right: 0.5rem;
+        }
+
+        .example-content .example-list li:hover {
+            background: rgba(108, 92, 231, 0.1);
+        }
+    </style>
 </head>
 
 <body>
@@ -404,7 +512,22 @@
         <div class="control-buttons">
             <button id="backBtn">Back</button>
             <button id="editBtn">Edit</button>
+            <button id="exampleBtn">Example</button>
             <button id="listModeBtn">List Mode</button>
+        </div>
+        <div class="example-modal" id="exampleModal">
+            <div class="example-modal-content">
+                <button class="example-modal-close" id="closeExampleModal">✕</button>
+                <div class="example-content">
+                    <h2>Example</h2>
+                    <div class="example-list">
+                        <ul>
+                            <li><strong class="word"></strong></li>
+                            <li class="example"></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="edit-form" style="display: none;">
             <div class="edit-overlay">
@@ -445,6 +568,8 @@
                     </div>
                     <div class="indonesian-word">{{ $text2 }}</div>
                     <div style="display: none" class="id-vocab">{{ $vocabulary->id }}</div>
+                    <div style="display: none" class="example-vocab">{{ $vocabulary->example }}</div>
+                    <div style="display: none" class="german-vocab">{{ $vocabulary->german_word }}</div>
                 </div>
             @endforeach
         </div>
@@ -653,12 +778,12 @@
                 $('.vocab-pages, .buttons').hide();
                 $('.list-mode, .list-controls').show();
                 $(this).text('Card Mode');
-                $('#backBtn, #editBtn').hide();
+                $('#backBtn, #editBtn, #exampleBtn').hide();
             } else {
                 $('.vocab-pages, .buttons').show();
                 $('.list-mode, .list-controls').hide();
                 $(this).text('List Mode');
-                $('#backBtn, #editBtn').show();
+                $('#backBtn, #editBtn, #exampleBtn').show();
             }
         });
 
@@ -697,6 +822,35 @@
             $(`.card[data-index="${index}"]`).show();
             $('.indonesian-word').removeClass('revealed');
         }
+    </script>
+    <script>
+        $(document).ready(function() {
+            // Example Modal Open
+            $('#exampleBtn').on('click', function() {
+                $('#exampleModal').addClass('show');
+                $('.example-content .word').html($('.card:visible  .german-vocab').text());
+                $('.example-content .example').html($('.card:visible  .example-vocab').text());
+                setTimeout(() => {
+                    $('.example-modal-content').addClass('show');
+                }, 50);
+            });
+
+            // Example Modal Close
+            $('#closeExampleModal, #exampleModal').on('click', function(e) {
+                // Close modal only if clicking on modal background or close button
+                if (e.target === this || $(e.target).hasClass('example-modal-close')) {
+                    $('.example-modal-content').removeClass('show');
+                    setTimeout(() => {
+                        $('#exampleModal').removeClass('show');
+                    }, 300);
+                }
+            });
+
+            // Prevent modal content from closing when clicked
+            $('.example-modal-content').on('click', function(e) {
+                e.stopPropagation();
+            });
+        });
     </script>
 
     <script>
