@@ -582,7 +582,7 @@
             <div class="list-controls" style="display: none;">
                 <button id="hideLeftBtn">Hide Left</button>
                 <button id="hideRightBtn">Hide Right</button>
-                <button id="showAllBtn">Show All</button>
+                {{-- <button id="showAllBtn">Show All</button> --}}
             </div>
             <table>
                 <thead>
@@ -791,22 +791,32 @@
 
         // Handler untuk hide left column
         $('#hideLeftBtn').on('click', function() {
-            $('.list-mode table td:first-child').each(function() {
-                $(this).addClass('hidden-cell');
-            });
+            const leftCells = $('.list-mode table td:first-child');
+            const hiddenLeftCells = leftCells.filter('.hidden-cell').length;
+
+            if (hiddenLeftCells >= leftCells.length / 2) {
+            leftCells.removeClass('hidden-cell');
+            } else {
+            leftCells.addClass('hidden-cell');
+            }
         });
 
         // Handler untuk hide right column
         $('#hideRightBtn').on('click', function() {
-            $('.list-mode table td:last-child').each(function() {
-                $(this).addClass('hidden-cell');
-            });
+            const rightCells = $('.list-mode table td:last-child');
+            const hiddenRightCells = rightCells.filter('.hidden-cell').length;
+
+            if (hiddenRightCells >= rightCells.length / 2) {
+            rightCells.removeClass('hidden-cell');
+            } else {
+            rightCells.addClass('hidden-cell');
+            }
         });
 
         // Handler untuk show all
-        $('#showAllBtn').on('click', function() {
-            $('.list-mode table td').removeClass('hidden-cell');
-        });
+        // $('#showAllBtn').on('click', function() {
+        //     $('.list-mode table td').removeClass('hidden-cell');
+        // });
 
         // Handler untuk toggle individual cell
         $('.list-mode table td').on('click', function() {
