@@ -72,7 +72,8 @@ class helper extends Command
                 'order' =>  $add1 + $order[$startValue][$lastPart]
             ]);
         }
-        $gramatiks = Gramatik::get();
+        $gramatiks = Gramatik::orderBy('order')->get();
+
         $c = 0;
         foreach ($gramatiks as $gramatik) {
             $c++;
