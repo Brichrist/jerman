@@ -55,10 +55,11 @@ class helper extends Command
         $gramatiks = Gramatik::get();
         $order = [];
         foreach ($gramatiks as $gramatik) {
-            $kapital = $gramatik->kapital;
+            $kapital = rtrim($gramatik->kapital, '-');
             $parts = explode('-', $kapital);
             $lastPart = end($parts);
             $startValue = reset($parts);
+            // dd($startValue, $lastPart);
 
             if (!in_array($startValue, $order)) {
                 $order[$startValue] = [];
