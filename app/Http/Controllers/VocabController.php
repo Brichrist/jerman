@@ -15,7 +15,7 @@ class VocabController extends Controller
     
     public function __construct()
     {
-        dd(env('OPENAI_API_KEY'));
+        // dd(env('OPENAI_API_KEY'));
         $this->openai = OpenAI::client(env('OPENAI_API_KEY'));
     }
     public function multiple(Request $request)
