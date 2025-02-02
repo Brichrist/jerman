@@ -36,16 +36,16 @@
                         </button>
                     </form>
                     <div class="mt-2 flex flex-wrap gap-2">
-                        <button type="button" class="quick-input px-3 py-2 text-sm rounded-full bg-purple-500 text-white hover:bg-purple-600 transition-colors" data-text="bantu saya mendapatkan data Genus, Bentuk jamak, Contoh umum. Dari kata ini: ">
+                        <button type="button" class="quick-input px-3 py-2 text-sm rounded-full bg-purple-500 text-white hover:bg-purple-600 transition-colors" data-text="bantu saya mendapatkan data berupa object untuk Genus (der, die, das, die-pl), Bentuk jamak, Contoh umum. Dari kata ini: ">
                             Nomen
                         </button>
-                        <button type="button" class="quick-input px-3 py-2 text-sm rounded-full bg-purple-500 text-white hover:bg-purple-600 transition-colors" data-text="bantu saya mendapatkan data Bentuk infinitif, Bentuk perfekt/Partizip II dan prateritumnya, Bentuk konjugasi (lengkap), bentuk verb lain dengan Prefiks berbeda (sebanyak banyaknya beserta artinya saja). dari kata ini: ">
+                        <button type="button" class="quick-input px-3 py-2 text-sm rounded-full bg-purple-500 text-white hover:bg-purple-600 transition-colors" data-text="bantu saya mendapatkan data berupa object untuk Bentuk infinitif, Bentuk perfekt/Partizip II dan prateritumnya, Bentuk konjugasi (lengkap), bentuk verb lain dengan Prefiks berbeda (sebanyak banyaknya beserta artinya saja). dari kata ini: ">
                             Verb
                         </button>
-                        <button type="button" class="quick-input px-3 py-2 text-sm rounded-full bg-purple-500 text-white hover:bg-purple-600 transition-colors" data-text="bantu saya mendapatkan data Perbandingan adjektive (Bentuk komparatif dan superlatif). Dari kata ini: ">
+                        <button type="button" class="quick-input px-3 py-2 text-sm rounded-full bg-purple-500 text-white hover:bg-purple-600 transition-colors" data-text="bantu saya mendapatkan data berupa object untuk Perbandingan adjektive (Bentuk komparatif dan superlatif). Dari kata ini: ">
                             Adjektiv
                         </button>
-                        <button type="button" class="quick-input px-3 py-2 text-sm rounded-full bg-purple-500 text-white hover:bg-purple-600 transition-colors" data-text="bantu saya mendapatkan data Perbandingan Adverb (Bentuk komparatif dan superlatif) Dari kata ini: ">
+                        <button type="button" class="quick-input px-3 py-2 text-sm rounded-full bg-purple-500 text-white hover:bg-purple-600 transition-colors" data-text="bantu saya mendapatkan data berupa object untuk Perbandingan Adverb (Bentuk komparatif dan superlatif) Dari kata ini: ">
                             Adverb
                         </button>
                     </div>
