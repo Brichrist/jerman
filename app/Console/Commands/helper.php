@@ -52,64 +52,81 @@ class helper extends Command
 
 
         //ordering
-        $gramatiks = Gramatik::get();
-        $order = [];
-        foreach ($gramatiks as $gramatik) {
-            $kapital = rtrim($gramatik->kapital, '.');
-            $parts = explode('-', $kapital);
-            $lastPart = end($parts);
-            $startValue = reset($parts);
-            // dd($startValue, $lastPart);
+        // $gramatiks = Gramatik::get();
+        // $order = [];
+        // foreach ($gramatiks as $gramatik) {
+        //     $kapital = rtrim($gramatik->kapital, '.');
+        //     $parts = explode('-', $kapital);
+        //     $lastPart = end($parts);
+        //     $startValue = reset($parts);
+        //     // dd($startValue, $lastPart);
 
-            if (!in_array($startValue, $order)) {
-                $order[$startValue] = [];
-            }
+        //     if (!in_array($startValue, $order)) {
+        //         $order[$startValue] = [];
+        //     }
 
-            if (!in_array($lastPart, $order[$startValue])) {
-                $order[$startValue][$lastPart] = 1;
-            } else {
-                $order[$startValue][$lastPart]++;
-            }
+        //     if (!in_array($lastPart, $order[$startValue])) {
+        //         $order[$startValue][$lastPart] = 1;
+        //     } else {
+        //         $order[$startValue][$lastPart]++;
+        //     }
 
-            switch ($startValue) {
-                case 'A1':
-                    $add1 = 1000;
-                    break;
-                case 'A2':
-                    $add1 = 2000;
-                    break;
-                case 'B1':
-                    $add1 = 3000;
-                    break;
-                case 'B2':
-                    $add1 = 4000;
-                    break;
-                case 'C1':
-                    $add1 = 5000;
-                    break;
-                case 'C2':
-                    $add1 = 6000;
-                    break;
-                default:
-                    $add1 = 0;
-                    break;
-            }
-            if ($add1 != 0) {
-                $add1 = $add1 + ((int)$lastPart * 10);
-            }
+        //     switch ($startValue) {
+        //         case 'A1':
+        //             $add1 = 1000;
+        //             break;
+        //         case 'A2':
+        //             $add1 = 2000;
+        //             break;
+        //         case 'B1':
+        //             $add1 = 3000;
+        //             break;
+        //         case 'B2':
+        //             $add1 = 4000;
+        //             break;
+        //         case 'C1':
+        //             $add1 = 5000;
+        //             break;
+        //         case 'C2':
+        //             $add1 = 6000;
+        //             break;
+        //         default:
+        //             $add1 = 0;
+        //             break;
+        //     }
+        //     if ($add1 != 0) {
+        //         $add1 = $add1 + ((int)$lastPart * 10);
+        //     }
 
-            $order[] = $kapital;
-            $gramatik->update([
-                'order' =>  $add1 + $order[$startValue][$lastPart]
+        //     $order[] = $kapital;
+        //     $gramatik->update([
+        //         'order' =>  $add1 + $order[$startValue][$lastPart]
+        //     ]);
+        // }
+        // $gramatiks = Gramatik::orderBy('order')->get();
+
+        // $c = 0;
+        // foreach ($gramatiks as $gramatik) {
+        //     $c++;
+        //     $gramatik->update([
+        //         'order' =>  $c
+        //     ]);
+        // }
+
+
+         // add - di kapital
+        $vocabs = Vocab::where('word_type','Adj')->get();
+      
+        foreach ($vocabs as $vocab) {
+            $vocab->update([
+                'word_type' =>  'Adjektiv'
             ]);
         }
-        $gramatiks = Gramatik::orderBy('order')->get();
-
-        $c = 0;
-        foreach ($gramatiks as $gramatik) {
-            $c++;
-            $gramatik->update([
-                'order' =>  $c
+        $vocabs = Vocab::where('word_type','Null')->get();
+      
+        foreach ($vocabs as $vocab) {
+            $vocab->update([
+                'word_type' =>  null
             ]);
         }
     }

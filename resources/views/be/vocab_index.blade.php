@@ -35,10 +35,37 @@
                 <div class=" md:w-3/4  md:pe-4 pt-12 md:pt-0">
                     <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                         <div class="w-full">
-                            <form method="GET" action="{{ route('vocab.index') }}" class="p-4 bg-white dark:bg-gray-800 shadow sm:rounded-lg mb-4 flex items-center space-x-4">
-                                <label for="filterKapital" class="block text-sm font-medium text-gray-700 dark:text-gray-400">Filter by Kapital</label>
-                                <input type="text" id="filterKapital" name="kapital" class="mt-1 block w-full border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-900 dark:text-gray-300" placeholder="Enter Kapital">
-                                <button type="submit" class="mt-1 bg-blue-500 text-white px-4 py-2 rounded">Filter</button>
+                            <form method="GET" action="{{ route('vocab.index') }}" class="p-4 bg-white dark:bg-gray-800 shadow sm:rounded-lg mb-4">
+                                <div class="grid md:grid-cols-2 gap-4">
+                                    <div class="space-y-4">
+                                        <div class="flex flex-col">
+                                            <label for="filterKapital" class="block text-sm font-medium text-gray-700 dark:text-gray-400">Filter by Kapital</label>
+                                            <input type="text" id="filterKapital" name="kapital" class="mt-1 block w-full border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-900 dark:text-gray-300" placeholder="Enter Kapital">
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <label for="filterGermanWord" class="block text-sm font-medium text-gray-700 dark:text-gray-400">Filter by German Word</label>
+                                            <input type="text" id="filterGermanWord" name="german_word" class="mt-1 block w-full border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-900 dark:text-gray-300" placeholder="Enter German Word">
+                                        </div>
+                                    </div>
+                                    <div class="space-y-4">
+                                        <div class="flex flex-col">
+                                            <label for="filterMeaning" class="block text-sm font-medium text-gray-700 dark:text-gray-400">Filter by Meaning</label>
+                                            <input type="text" id="filterMeaning" name="meaning" class="mt-1 block w-full border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-900 dark:text-gray-300" placeholder="Enter Meaning">
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <label for="filterWordType" class="block text-sm font-medium text-gray-700 dark:text-gray-400">Filter by Word Type</label>
+                                            <select id="filterWordType" name="word_type" class="mt-1 block w-full border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-900 dark:text-gray-300">
+                                                <option value="all" selected>All</option>
+                                                @foreach ($word_types as $item)
+                                                    <option value="{{ $item }}">{{ $item }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-span-full mt-4">
+                                        <button type="submit" class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">Filter</button>
+                                    </div>
+                                </div>
                             </form>
                             <div class="w-full relative overflow-x-auto shadow-md sm:rounded-lg border-slate-700 border-2">
                                 <!-- resources/views/german-dictionary/index.blade.php -->

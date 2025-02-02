@@ -12,7 +12,7 @@ class VocabController extends Controller
 
 
 
-    
+
     public function __construct()
     {
         // dd(env('OPENAI_API_KEY'));
@@ -170,8 +170,16 @@ class VocabController extends Controller
     {
         $vocabs = Vocab::when(request('kapital'), function ($query) {
             $query->where('kapital', request('kapital'));
+        })->when(request('word_type') != 'all', function ($query) {
+            $query->where('word_type', request('word_type'));
+        })->when(request('german_word'), function ($query) {
+            $query->where('german_word', 'like', '%' . request('german_word') . '%');
+        })->when(request('meaning'), function ($query) {
+            $query->where('meaning', 'like', '%' . request('meaning') . '%');
         })->orderBy('word_type')->paginate(50);
-        return view('be.vocab_index', compact('vocabs'));
+
+        $word_types = Vocab::select('word_type')->distinct()->get()->pluck('word_type')->toArray();
+        return view('be.vocab_index', compact('vocabs', 'word_types'));
     }
 
     /**

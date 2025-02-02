@@ -10,8 +10,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
     <style>
-      
-
         * {
             margin: 0;
             padding: 0;
@@ -89,7 +87,7 @@
 
         .buttons {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 0.8rem;
             padding: 0.5rem;
             margin-top: 0.5rem;
@@ -228,6 +226,11 @@
             display: flex;
             gap: 0.8rem;
             margin-bottom: 1rem;
+        }
+
+        #speakBtn {
+            background: #34495e;
+            color: white;
         }
 
         .control-buttons button {
@@ -397,6 +400,22 @@
         .list-mode tr:hover {
             background-color: rgba(108, 92, 231, 0.05);
         }
+
+        .example-speaker {
+            cursor: pointer;
+            margin-left: 0.5rem;
+            transition: transform 0.2s ease;
+        }
+
+        .example-speaker:hover {
+            transform: scale(1.2);
+        }
+
+        /* .example-content .example {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        } */
     </style>
     <style>
         .example-modal {
@@ -523,6 +542,7 @@
                             <li class="example"></li>
                         </ul>
                     </div>
+                    <div class="example-speaker">🔊</div>
                 </div>
             </div>
         </div>
@@ -616,6 +636,9 @@
             </button>
             <button id="favoriteBtn" data-aos="fade-up" data-aos-delay="400">
                 <span class="button-text">❤</span>
+            </button>
+            <button id="speakBtn" data-aos="fade-up" data-aos-delay="500">
+                <span class="button-text">🔊</span>
             </button>
         </div>
     </div>
@@ -795,9 +818,9 @@
             const hiddenLeftCells = leftCells.filter('.hidden-cell').length;
 
             if (hiddenLeftCells >= leftCells.length / 2) {
-            leftCells.removeClass('hidden-cell');
+                leftCells.removeClass('hidden-cell');
             } else {
-            leftCells.addClass('hidden-cell');
+                leftCells.addClass('hidden-cell');
             }
         });
 
@@ -807,9 +830,9 @@
             const hiddenRightCells = rightCells.filter('.hidden-cell').length;
 
             if (hiddenRightCells >= rightCells.length / 2) {
-            rightCells.removeClass('hidden-cell');
+                rightCells.removeClass('hidden-cell');
             } else {
-            rightCells.addClass('hidden-cell');
+                rightCells.addClass('hidden-cell');
             }
         });
 
@@ -837,14 +860,48 @@
     </script>
     <script>
         $(document).ready(function() {
+            // Speech synthesis
+            const synth = window.speechSynthesis;
             // Example Modal Open
             $('#exampleBtn').on('click', function() {
                 $('#exampleModal').addClass('show');
-                $('.example-content .word').html($('.card:visible  .german-vocab').text());
-                $('.example-content .example').html($('.card:visible  .example-vocab').text());
+                const germanWord = $('.card:visible .german-vocab').text();
+                const exampleText = $('.card:visible .example-vocab').text();
+
+                $('.example-content .word').html(germanWord);
+                $('.example-content .example').html(exampleText);
+
+                // Add speaker icon to example text
+
                 setTimeout(() => {
                     $('.example-modal-content').addClass('show');
                 }, 50);
+            });
+
+            // Example speaker click event with explicit context
+            $('.example-speaker').on('click', function(e) {
+                console.log('Speaking example text');
+                e.stopPropagation(); // Prevent modal from closing
+
+                let textToSpeak = $('.example-content .example').text().replace('🔊', '').trim();
+
+                // Check if speech synthesis is available
+                if ('speechSynthesis' in window) {
+                    // Create a new speech utterance
+                    const utterance = new SpeechSynthesisUtterance(textToSpeak);
+
+                    utterance.lang = 'de-DE';
+
+                    // Adjust speech parameters for better pronunciation
+                    utterance.rate = 0.9; // Slightly slower speech
+                    utterance.pitch = 1.0; // Normal pitch
+
+                    // Speak the text
+                    synth.speak(utterance);
+                } else {
+                    console.log('Speech synthesis not supported');
+                    alert('Text-to-speech is not supported in this browser');
+                }
             });
 
             // Example Modal Close
@@ -1012,6 +1069,29 @@
         });
         updateProgressBar('normal');
         showCard(0);
+    </script>
+    <script>
+        // Speech functionality
+        $(document).ready(function() {
+            const synth = window.speechSynthesis;
+
+            $('#speakBtn').on('click', function() {
+                // Get the text to speak (remove the heart emoji if present)
+                let textToSpeak = $('.card:visible .german-vocab').text().replace('❤', '').trim();
+
+                // Create a new speech utterance
+                const utterance = new SpeechSynthesisUtterance(textToSpeak);
+
+                utterance.lang = 'de-DE';
+
+                // Adjust speech parameters for better pronunciation
+                utterance.rate = 1.0; // Slightly slower speech
+                utterance.pitch = 1.0; // Normal pitch
+
+                // Speak the text
+                synth.speak(utterance);
+            });
+        });
     </script>
 </body>
 
