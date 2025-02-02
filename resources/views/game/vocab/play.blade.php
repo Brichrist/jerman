@@ -106,6 +106,10 @@
             overflow: hidden;
         }
 
+        .buttons button {
+            padding: 0.7rem !important;
+        }
+
         .favorite-only {
             background: white;
             color: #ff7675;
