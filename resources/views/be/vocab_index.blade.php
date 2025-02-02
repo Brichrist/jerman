@@ -40,24 +40,24 @@
                                     <div class="space-y-4">
                                         <div class="flex flex-col">
                                             <label for="filterKapital" class="block text-sm font-medium text-gray-700 dark:text-gray-400">Filter by Kapital</label>
-                                            <input type="text" id="filterKapital" name="kapital" class="mt-1 block w-full border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-900 dark:text-gray-300" placeholder="Enter Kapital">
+                                            <input type="text" id="filterKapital" name="kapital" value="{{ request('kapital') }}" class="mt-1 block w-full border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-900 dark:text-gray-300" placeholder="Enter Kapital">
                                         </div>
                                         <div class="flex flex-col">
                                             <label for="filterGermanWord" class="block text-sm font-medium text-gray-700 dark:text-gray-400">Filter by German Word</label>
-                                            <input type="text" id="filterGermanWord" name="german_word" class="mt-1 block w-full border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-900 dark:text-gray-300" placeholder="Enter German Word">
+                                            <input type="text" id="filterGermanWord" name="german_word" value="{{ request('german_word') }}" class="mt-1 block w-full border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-900 dark:text-gray-300" placeholder="Enter German Word">
                                         </div>
                                     </div>
                                     <div class="space-y-4">
                                         <div class="flex flex-col">
                                             <label for="filterMeaning" class="block text-sm font-medium text-gray-700 dark:text-gray-400">Filter by Meaning</label>
-                                            <input type="text" id="filterMeaning" name="meaning" class="mt-1 block w-full border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-900 dark:text-gray-300" placeholder="Enter Meaning">
+                                            <input type="text" id="filterMeaning" name="meaning" value="{{ request('meaning') }}" class="mt-1 block w-full border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-900 dark:text-gray-300" placeholder="Enter Meaning">
                                         </div>
                                         <div class="flex flex-col">
                                             <label for="filterWordType" class="block text-sm font-medium text-gray-700 dark:text-gray-400">Filter by Word Type</label>
                                             <select id="filterWordType" name="word_type" class="mt-1 block w-full border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-900 dark:text-gray-300">
-                                                <option value="all" selected>All</option>
+                                                <option value="all" {{ request('word_type') == 'all' ? 'selected' : '' }}>All</option>
                                                 @foreach ($word_types as $item)
-                                                    <option value="{{ $item }}">{{ $item }}</option>
+                                                    <option value="{{ $item }}" {{ request('word_type') == $item ? 'selected' : '' }}>{{ $item }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
