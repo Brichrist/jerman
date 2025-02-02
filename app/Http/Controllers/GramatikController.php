@@ -23,27 +23,27 @@ class GramatikController extends Controller
         $kapital = $request->kapital;
         $level = $request->level ?? 10;
 
-        $format = $type === 'short'
-            ? 'Dengan format: {id: number, question: "Ich ... nach ... Schule.", answers: ["gehe", "der"], blanks: 2, fullSentence: "Ich gehe nach der Schule."}'
-            : 'Dengan format: {id: number, question: "Ich ... aus Deutschland.", options: ["komme", "kommst", "kommen", "kommt"], correctAnswer: 0, fullSentence: "Ich komme aus Deutschland."}';
-        $other = $type === 'short'
-            ? ', Anda juga dapat menggunakan format ini : {id: number, question: "Mein Bruder ... Deutsch.", answers: ["lernt"], blanks: 1, fullSentence: "Mein Bruder lernt Deutsch." },'
-            : ', Anda juga dapat menggunakan format ini : {id: number, question: "Ich ... nach ... Schule.", options: ["gehen, die", "geht,dem", "gehe, die", "gehe, der"], correctAnswer: 3, fullSentence: "Ich gehe nach der Schule."}';
+        // $format = $type === 'short'
+        //     ? 'Dengan format: {id: number, question: "Ich ... nach ... Schule.", answers: ["gehe", "der"], blanks: 2, fullSentence: "Ich gehe nach der Schule."}'
+        //     : 'Dengan format: {id: number, question: "Ich ... aus Deutschland.", options: ["komme", "kommst", "kommen", "kommt"], correctAnswer: 0, fullSentence: "Ich komme aus Deutschland."}';
+        // $other = $type === 'short'
+        //     ? ', Anda juga dapat menggunakan format ini : {id: number, question: "Mein Bruder ... Deutsch.", answers: ["lernt"], blanks: 1, fullSentence: "Mein Bruder lernt Deutsch." },'
+        //     : ', Anda juga dapat menggunakan format ini : {id: number, question: "Ich ... nach ... Schule.", options: ["gehen, die", "geht,dem", "gehe, die", "gehe, der"], correctAnswer: 3, fullSentence: "Ich gehe nach der Schule."}';
 
         $format = $type === 'short'
             ? 'Dengan format: {id: number, question: "pertanyaan1(murid akan mengisi ... jangan lupa jika jawaban bisa random anda wajib memberikan hint arti kata dalam bahasa indonesia contoh "...(makanan)")", answers: ["jawaban_pertama"], blanks: "(contoh disini adalah 1, karena murid harus isi 1 titik-titik saja,anda bisa memberika hingga 3 titik-titik )", fullSentence: "kalimat setelah titik-titik diisi"}'
-            : 'Dengan format: {id: number, question: "pertanyaan1(murid akan mengisi ...)", options: ["pilihan ke-0", "pilihan ke-1", "pilihan ke-2", "pilihan ke-3"], correctAnswer: "(contoh 0, maka pilihan ke-0 adalah jawaban yang benar)", fullSentence: ""kalimat setelah titik-titik diisi"}';
+            : 'Dengan format: {id: number, question: "pertanyaan1(murid akan mengisi ... jangan lupa jika jawaban bisa random anda wajib memberikan hint arti kata dalam bahasa indonesia contoh "...(makanan)")", options: ["pilihan ke-0", "pilihan ke-1", "pilihan ke-2", "pilihan ke-3"], correctAnswer: "(contoh 0, maka pilihan ke-0 adalah jawaban yang benar)", fullSentence: ""kalimat setelah titik-titik diisi"}';
         $other = null;
         $response = $this->openai->chat()->create([
             'model' => 'gpt-4',
             'messages' => [
                 [
                     'role' => 'system',
-                    'content' => "Anda adalah guru bahasa Jerman yang mengajar murid dari Indonesia. Anda ahli dalam membuat latihan tata bahasa (gramatik) untuk anak yang sedang belajar {$kapital}. Selalu tampilkan array JSON yang valid dengan tepat 5 pertanyaan."
+                    'content' => "Anda adalah guru bahasa Jerman yang mengajar murid dari Indonesia. Anda ahli dalam membuat latihan tata bahasa (gramatik) untuk anak yang sedang belajar {$kapital}. Selalu tampilkan array JSON yang valid dengan tepat 3 pertanyaan."
                 ],
                 [
                     'role' => 'user',
-                    'content' => "Hasilkan 5 pertanyaan gramatik Jerman tentang materi ini '{$materi}'. Dengan tingkat kesulitan {$level}/10 dari perspektif orang Indonesia. {$format} {$other}"
+                    'content' => "Hasilkan 3 pertanyaan gramatik Jerman tentang materi ini '{$materi}'. Dengan tingkat kesulitan {$level}/10 dari perspektif orang Indonesia. {$format} {$other}"
                 ]
             ],
             'temperature' => 0.5,

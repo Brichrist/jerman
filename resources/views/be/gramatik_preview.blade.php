@@ -306,9 +306,10 @@
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
         }
-        header{
-            padding: 4rem 1rem 2rem 1rem!important;
-       }
+
+        header {
+            padding: 4rem 1rem 2rem 1rem !important;
+        }
     </style>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -350,19 +351,24 @@
                         $conversation = [
                             [
                                 'role' => 'system',
-                                'content' => "Anda adalah guru bahasa Jerman 'Maria' berumur 28 tahun yang mengajar murid dari Indonesia. Anda suka mendapat pertanyaan dari anak-anak, 
+                                'content' =>
+                                    "Anda adalah guru bahasa Jerman 'Maria' berumur 28 tahun yang mengajar murid dari Indonesia. Anda suka mendapat pertanyaan dari anak-anak, 
                                 dan akan menjelaskan secara simpel dan mudah dipahami oleh orang dengan IQ minimal 90. 
                                 Anda akan memberikan jawaban yang benar dan memberikan hint jika diperlukan. bahasa pengantar anda adalah bahasa Indonesia, 
                                 Anda juga akan memberikan salam jika ada yang berterima kasih kepada anda / menutup percakapan dengan Anda.
                                 Anda juga hanya akan membahas seputar bahasa jerman, dan anda akan menjadi marah dan akan tegas menolak apa pun yang berhubungan dangan 'NSFW'.
-                                Saat ini murid anda sedang belajar tentang ".$gramatik->title. "di level ".$gramatik->kapital.",
+                                Saat ini murid anda sedang belajar tentang " .
+                                    $gramatik->title .
+                                    'di level ' .
+                                    $gramatik->kapital .
+                                    ",
                                 anda akan menjawab dengan format JSON yang valid.
                                 format: {id-user: number, question: 'pertanyaan', answer: 'jawaban', hint: 'hint jika diperlukan jika tidak ada bisa dikosongkan'}",
                             ],
                         ];
                         $conversation = json_encode($conversation);
                     @endphp
-                    <input type="hidden" name="conversation" id="conversation" value="{{$conversation}}">
+                    <input type="hidden" name="conversation" id="conversation" value="{{ $conversation }}">
                     <input type="text" id="question" name="question" class="flex-1 p-4 rounded-xl border border-purple-200 text-gray-700 focus:outline-none focus:border-purple-400 placeholder-gray-400" placeholder="Type something nice..." autocomplete="off">
                     <button type="submit" class="gradient-bg text-white rounded-xl w-12 h-12 flex items-center justify-center hover:opacity-90 transition-all transform hover:scale-105">
                         <i class="fas fa-paper-plane"></i>
@@ -375,12 +381,12 @@
 
     <div id="q">
         <div class="container">
-            <button class="close-btn" onclick="$('#q').removeClass('active')">&times;</button>
+            <button class="close-btn">&times;</button>
             <div class="quiz-type-selection">
                 <h2>Pilih Jenis Soal</h2>
                 <div class="buttons">
-                    <button onclick="loadQuiz('short')" class="back-btn">Jawaban Singkat</button>
-                    <button onclick="loadQuiz('multiple')" class="back-btn">Pilihan Ganda</button>
+                    <button data-data="short" class="back-btn loadQuiz">Jawaban Singkat</button>
+                    <button data-data="multiple" class="back-btn loadQuiz ">Pilihan Ganda</button>
                 </div>
             </div>
             <div class="loading">
@@ -388,11 +394,11 @@
             </div>
 
             <div id="quiz-container" style="display:none; position: relative;">
-                {{-- <button class="close-btn" onclick="$('#q').removeClass('active')">&times;</button> --}}
+                {{-- <button class="close-btn">&times;</button> --}}
                 <div id="questions"></div>
                 <div class="buttons">
-                    <button class="back-btn" onclick="goBack()">Back</button>
-                    <button class="finish-btn" onclick="showAnswers()">Finish</button>
+                    <button class="back-btn">Back</button>
+                    <button class="finish-btn">Finish</button>
                 </div>
             </div>
         </div>
@@ -482,19 +488,19 @@
                 const messageHTML = `
                     <div class="flex items-start ${isBot ? '' : 'justify-end'} message opacity-0">
                         ${isBot ? `
-                                                                                                                        <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
-                                                                                                                            <img src="{{ asset('img/maria.jpg') }}" alt="Robot" class="w-full h-full object-cover">
-                                                                                                                        </div>
-                                                                                                                    ` : ''}
+                                                                                                                                            <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
+                                                                                                                                                <img src="{{ asset('img/maria.jpg') }}" alt="Robot" class="w-full h-full object-cover">
+                                                                                                                                            </div>
+                                                                                                                                        ` : ''}
                         <div class="mx-3 ${isBot ? 'bg-white text-gray-700' : 'gradient-bg text-white'} rounded-2xl p-4 max-w-[80%] shadow-sm">
                             <p>${text}</p>
                             ${hint ? `<hr class="my-2"><p class="text-sm text-gray-500">${hint}</p>` : ''}
                         </div>
                         ${!isBot ? `
-                                                                                                                        <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                                                                                                                            <i class="fas fa-user text-gray-500 text-sm"></i>
-                                                                                                                        </div>
-                                                                                                                    ` : ''}
+                                                                                                                                            <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                                                                                                                                <i class="fas fa-user text-gray-500 text-sm"></i>
+                                                                                                                                            </div>
+                                                                                                                                        ` : ''}
                     </div>
                 `;
 
@@ -646,10 +652,35 @@
         //     $('.answer-input').css('color', '');
         //     $('.option').removeClass('selected incorrect');
         // }
+        // Close button handler
+        $(document).on('click', '.close-btn', function() {
+            $('#q').removeClass('active');
+        });
+
+        // Back button handler 
+        $(document).on('click', '.back-btn:not(.loadQuiz)', function() {
+            goBack();
+        });
+
+        // Finish button handler
+        $(document).on('click', '.finish-btn', function() {
+            showAnswers();
+        });
+
+        // Next button handler (for dynamically added button)
+        $(document).on('click', '.next-btn', function() {
+            nextQuestions();
+        });
+
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
+        });
+
+        $('.loadQuiz').click(function(e) {
+            const type = $(this).data('data');
+            loadQuiz(type)
         });
 
         function loadQuiz(type) {
@@ -765,10 +796,10 @@
                 </div>
                 <div class="multiple-choice">
                     ${question.options.map((option, index) => `
-                                                                                                                        <div class="option" data-correct="${index === question.correctAnswer}">
-                                                                                                                            ${option}
-                                                                                                                        </div>
-                                                                                                                    `).join('')}
+                                                                                                                                            <div class="option" data-correct="${index === question.correctAnswer}">
+                                                                                                                                                ${option}
+                                                                                                                                            </div>
+                                                                                                                                        `).join('')}
                 </div>
                 <div class="answer">
                     <div class="answer-text">Jawaban: ${question.options[question.correctAnswer]}</div>
@@ -785,16 +816,16 @@
         }
 
         function showAnswers() {
-            // Menampilkan kunci jawaban
             $('.answer').show();
-
-            // Sembunyikan tombol finish
             $('.finish-btn').hide();
 
-            // Tambahkan tombol next
-            $('.buttons').append('<button class="next-btn" onclick="nextQuestions()">Next</button>');
+            // Use jQuery to create and append next button
+            $('<button>')
+                .addClass('next-btn')
+                .text('Next')
+                .appendTo('.buttons');
 
-            // Cek jawaban singkat
+            // Check short answer inputs
             $('.answer-input').each(function() {
                 const correctAnswer = $(this).data('correct');
                 const userAnswer = $(this).val().toLowerCase();
@@ -805,7 +836,7 @@
                 }
             });
 
-            // Cek jawaban pilihan ganda
+            // Check multiple choice options
             $('.option.selected').each(function() {
                 const isCorrect = $(this).data('correct') === true;
                 if (isCorrect) {
@@ -821,7 +852,6 @@
             $('#quiz-container').hide();
             $('.quiz-type-selection').show();
             $('#questions').empty();
-            // Reset warna dan state
             $('.answer-input').css('color', '');
             $('.option').removeClass('selected incorrect');
             $('.finish-btn').show();
