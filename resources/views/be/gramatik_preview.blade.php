@@ -369,7 +369,8 @@
                         $conversation = json_encode($conversation);
                     @endphp
                     <input type="hidden" name="conversation" id="conversation" value="{{ $conversation }}">
-                    <input type="text" id="question" name="question" class="flex-1 p-4 rounded-xl border border-purple-200 text-gray-700 focus:outline-none focus:border-purple-400 placeholder-gray-400" placeholder="Type something nice..." autocomplete="off">
+                    <textarea id="question" name="question" class="flex-1 p-4 rounded-xl border border-purple-200 text-gray-700 focus:outline-none focus:border-purple-400 placeholder-gray-400" placeholder="Type something nice..." autocomplete="off" rows="1"></textarea>
+                    {{-- <input type="text" id="question" name="question" class="flex-1 p-4 rounded-xl border border-purple-200 text-gray-700 focus:outline-none focus:border-purple-400 placeholder-gray-400" placeholder="Type something nice..." autocomplete="off"> --}}
                     <button type="submit" class="gradient-bg text-white rounded-xl w-12 h-12 flex items-center justify-center hover:opacity-90 transition-all transform hover:scale-105">
                         <i class="fas fa-paper-plane"></i>
                     </button>
@@ -414,6 +415,22 @@
             } else {
                 $('#ask-popup').css('display', 'flex');
             }
+        });
+
+        $('#question').on('keydown', function(e) {
+            if (e.key === 'Enter' && e.shiftKey) {
+                e.preventDefault();
+                const cursorPos = this.selectionStart;
+                const value = this.value;
+                this.value = value.substring(0, cursorPos) + '\n' + value.substring(cursorPos);
+                this.selectionStart = cursorPos + 1;
+                this.selectionEnd = cursorPos + 1;
+            }
+        });
+
+        $('#question').on('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight > 100 ? 100 : (this.scrollHeight + 5)) + 'px';
         });
     </script>
     <script type="module">
@@ -488,19 +505,19 @@
                 const messageHTML = `
                     <div class="flex items-start ${isBot ? '' : 'justify-end'} message opacity-0">
                         ${isBot ? `
-                                                                                                                                            <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
-                                                                                                                                                <img src="{{ asset('img/maria.jpg') }}" alt="Robot" class="w-full h-full object-cover">
-                                                                                                                                            </div>
-                                                                                                                                        ` : ''}
+                                                                                                                                                <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
+                                                                                                                                                    <img src="{{ asset('img/maria.jpg') }}" alt="Robot" class="w-full h-full object-cover">
+                                                                                                                                                </div>
+                                                                                                                                            ` : ''}
                         <div class="mx-3 ${isBot ? 'bg-white text-gray-700' : 'gradient-bg text-white'} rounded-2xl p-4 max-w-[80%] shadow-sm">
                             <p>${text}</p>
                             ${hint ? `<hr class="my-2"><p class="text-sm text-gray-500">${hint}</p>` : ''}
                         </div>
                         ${!isBot ? `
-                                                                                                                                            <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                                                                                                                                                <i class="fas fa-user text-gray-500 text-sm"></i>
-                                                                                                                                            </div>
-                                                                                                                                        ` : ''}
+                                                                                                                                                <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                                                                                                                                    <i class="fas fa-user text-gray-500 text-sm"></i>
+                                                                                                                                                </div>
+                                                                                                                                            ` : ''}
                     </div>
                 `;
 
@@ -796,10 +813,10 @@
                 </div>
                 <div class="multiple-choice">
                     ${question.options.map((option, index) => `
-                                                                                                                                            <div class="option" data-correct="${index === question.correctAnswer}">
-                                                                                                                                                ${option}
-                                                                                                                                            </div>
-                                                                                                                                        `).join('')}
+                                                                                                                                                <div class="option" data-correct="${index === question.correctAnswer}">
+                                                                                                                                                    ${option}
+                                                                                                                                                </div>
+                                                                                                                                            `).join('')}
                 </div>
                 <div class="answer">
                     <div class="answer-text">Jawaban: ${question.options[question.correctAnswer]}</div>

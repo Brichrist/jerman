@@ -30,7 +30,7 @@
                 <div class="p-4 bg-gray-50 border-t border-gray-100">
                     <form id="chat-form" action="{{ route('ai.askAi') }}" method="POST" class="flex gap-3">
                         <input type="hidden" name="conversation" id="conversation" value="">
-                        <input type="text" id="question" name="question" class="flex-1 p-4 rounded-xl border border-purple-200 text-gray-700 focus:outline-none focus:border-purple-400 placeholder-gray-400" placeholder="Type something nice..." autocomplete="off">
+                        <textarea id="question" name="question" class="flex-1 p-4 rounded-xl border border-purple-200 text-gray-700 focus:outline-none focus:border-purple-400 placeholder-gray-400" placeholder="Type something nice..." autocomplete="off" rows="1"></textarea>
                         <button type="submit" class="gradient-bg text-white rounded-xl w-12 h-12 flex items-center justify-center hover:opacity-90 transition-all transform hover:scale-105">
                             <i class="fas fa-paper-plane"></i>
                         </button>
@@ -53,6 +53,22 @@
                     translateY: [20, 0],
                     duration: 1200,
                     easing: 'spring(1, 80, 10, 0)'
+                });
+
+                $('#question').on('keydown', function(e) {
+                    if (e.key === 'Enter' && e.shiftKey) {
+                        e.preventDefault();
+                        const cursorPos = this.selectionStart;
+                        const value = this.value;
+                        this.value = value.substring(0, cursorPos) + '\n' + value.substring(cursorPos);
+                        this.selectionStart = cursorPos + 1;
+                        this.selectionEnd = cursorPos + 1;
+                    }
+                });
+
+                $('#question').on('input', function() {
+                    this.style.height = 'auto';
+                    this.style.height = (this.scrollHeight > 100 ? 100 : (this.scrollHeight+5)) + 'px';
                 });
 
                 $('#chat-form').on('submit', function(e) {
