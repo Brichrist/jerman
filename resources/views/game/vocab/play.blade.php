@@ -1097,6 +1097,16 @@
             });
         });
     </script>
+    <script>
+        window.speechSynthesis.onvoiceschanged = function() {
+            const voices = window.speechSynthesis.getVoices();
+            console.log('Daftar Suara Tersedia:')
+
+            voices.forEach((voice, index) => {
+                console.log(`${index + 1}. ${voice.name} - (${voice.lang})`);
+            });
+        };
+    </script>
 </body>
 
 </html>
