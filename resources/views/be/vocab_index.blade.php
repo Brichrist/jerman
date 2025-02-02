@@ -64,7 +64,7 @@
                                                 @endphp
                                                 <option value="all" {{ $val_word_type == 'all' ? 'selected' : '' }}>All</option>
                                                 @foreach ($word_types as $item)
-                                                    <option value="{{ $item }}" {{$val_word_type == $item ? 'selected' : '' }}>{{ $item }}</option>
+                                                    <option value="{{ $item }}" {{ $val_word_type == $item ? 'selected' : '' }}>{{ $item }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -232,13 +232,9 @@
                                 <div>
                                     <x-input-label for="word_type" :value="__('Word Type')" />
                                     <x-select id="word_type" class="block w-full" name="word_type">
-                                        <option value="" selected disabled hidden>{{ __('Choose an option') }}</option>
-                                        <option value="Nomen">Noun</option>
-                                        <option value="Verb">Verb</option>
-                                        <option value="Adjektiv">Adjective</option>
-                                        <option value="Präposition">Preposition</option>
-                                        <option value="Adverb">Adverb</option>
-                                        <option value="Konjunktion">Conjunction</option>
+                                        @foreach ($word_types as $item)
+                                            <option value="{{ $item }}">{{ $item }}</option>
+                                        @endforeach
                                     </x-select>
                                     <x-input-error class="mt-2" :messages="$errors->get('word_type')" />
                                 </div>
@@ -246,6 +242,11 @@
                                     <x-input-label for="additional_notes" :value="__('Additional Notes')" />
                                     <x-textarea id="additional_notes" name="additional_notes" class="mt-1 block w-full" :value="old('additional_notes')" autofocus autocomplete="additional_notes" />
                                     <x-input-error class="mt-2" :messages="$errors->get('additional_notes')" />
+                                </div>
+                                <div>
+                                    <x-input-label for="example" :value="__('Example')" />
+                                    <x-textarea id="example" name="example" class="mt-1 block w-full" :value="old('example')" autofocus autocomplete="example" />
+                                    <x-input-error class="mt-2" :messages="$errors->get('example')" />
                                 </div>
 
                                 <div class="flex items-between justify-between gap-4">
