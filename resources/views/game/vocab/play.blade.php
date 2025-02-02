@@ -883,6 +883,7 @@
             });
 
             // Example speaker click event with explicit context
+            let holdvoice = false
             $('.example-speaker').on('click', function(e) {
                 console.log('Speaking example text');
                 e.stopPropagation(); // Prevent modal from closing
@@ -890,7 +891,8 @@
                 let textToSpeak = $('.example-content .example').text().replace('🔊', '').trim();
 
                 // Check if speech synthesis is available
-                if ('speechSynthesis' in window) {
+                if ('speechSynthesis' in window && !holdvoice) {
+                    holdvoice = true
                     // Create a new speech utterance
                     const utterance = new SpeechSynthesisUtterance(textToSpeak);
 
@@ -902,9 +904,15 @@
 
                     // Speak the text
                     synth.speak(utterance);
+
+                    setTimeout(() => {
+                        holdvoice = false
+                    }, 2000);
                 } else {
                     console.log('Speech synthesis not supported');
-                    alert('Text-to-speech is not supported in this browser');
+                    if (!('speechSynthesis' in window)) {
+                        alert('Text-to-speech is not supported in this browser');
+                    }
                 }
             });
 
@@ -1078,22 +1086,31 @@
         // Speech functionality
         $(document).ready(function() {
             const synth = window.speechSynthesis;
-
+            let holdvoice = false
             $('#speakBtn').on('click', function() {
-                // Get the text to speak (remove the heart emoji if present)
-                let textToSpeak = $('.card:visible .german-vocab').text().replace('❤', '').trim();
+                if (!holdvoice) {
+                    holdvoice = true
 
-                // Create a new speech utterance
-                const utterance = new SpeechSynthesisUtterance(textToSpeak);
+                    // Get the text to speak (remove the heart emoji if present)
+                    let textToSpeak = $('.card:visible .german-vocab').text().replace('❤', '').trim();
 
-                utterance.lang = 'de-DE';
+                    // Create a new speech utterance
+                    const utterance = new SpeechSynthesisUtterance(textToSpeak);
 
-                // Adjust speech parameters for better pronunciation
-                utterance.rate = 1.0; // Slightly slower speech
-                utterance.pitch = 1.0; // Normal pitch
+                    utterance.lang = 'de-DE';
 
-                // Speak the text
-                synth.speak(utterance);
+                    // Adjust speech parameters for better pronunciation
+                    utterance.rate = 1.0; // Slightly slower speech
+                    utterance.pitch = 1.0; // Normal pitch
+
+                    // Speak the text
+                    synth.speak(utterance);
+                    // Disable the button for 1 second to prevent multiple clicks
+                    setTimeout(() => {
+                        holdvoice = false
+                    }, 2000);
+                }
+
             });
         });
     </script>
