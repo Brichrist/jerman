@@ -1125,7 +1125,10 @@
             
             let germanVoices = voices.filter(voice => voice.lang === 'de-DE');
             let text = ""
-            germanVoices.forEach((voice, index) => {
+            // germanVoices.forEach((voice, index) => {
+            //     text += `${index + 1}. ${voice.name} - (${voice.lang})\n`
+            // });
+            voices.forEach((voice, index) => {
                 text += `${index + 1}. ${voice.name} - (${voice.lang})\n`
             });
             alert(text)
