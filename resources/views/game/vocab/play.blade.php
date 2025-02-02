@@ -896,7 +896,11 @@
                     // Create a new speech utterance
                     const utterance = new SpeechSynthesisUtterance(textToSpeak);
 
-                    utterance.lang = 'de-DE';
+                    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                        utterance.lang = 'de_DE';
+                    } else {
+                        utterance.lang = 'de-DE';
+                    }
 
                     // Adjust speech parameters for better pronunciation
                     utterance.rate = 0.9; // Slightly slower speech
@@ -1097,7 +1101,11 @@
                     // Create a new speech utterance
                     const utterance = new SpeechSynthesisUtterance(textToSpeak);
 
-                    utterance.lang = 'de-DE';
+                    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                        utterance.lang = 'de_DE';
+                    } else {
+                        utterance.lang = 'de-DE';
+                    }
 
                     // Adjust speech parameters for better pronunciation
                     utterance.rate = 1.0; // Slightly slower speech
@@ -1123,12 +1131,9 @@
             });
             
             
-            let germanVoices = voices.filter(voice => voice.lang === 'de-DE');
+            let germanVoices = voices.filter(voice => voice.lang === 'de_DE');
             let text = ""
-            // germanVoices.forEach((voice, index) => {
-            //     text += `${index + 1}. ${voice.name} - (${voice.lang})\n`
-            // });
-            voices.forEach((voice, index) => {
+            germanVoices.forEach((voice, index) => {
                 text += `${index + 1}. ${voice.name} - (${voice.lang})\n`
             });
             alert(text)
