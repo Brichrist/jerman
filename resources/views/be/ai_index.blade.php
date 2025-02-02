@@ -36,16 +36,16 @@
                         </button>
                     </form>
                     <div class="mt-2 flex flex-wrap gap-2">
-                        <button type="button" class="quick-input px-3 py-2 text-sm rounded-full bg-purple-500 text-white hover:bg-purple-600 transition-colors" data-text="bantu saya mendapatkan data berupa object untuk Genus (der, die, das, die-pl), Bentuk jamak, Contoh umum. Dari kata ini: ">
+                        <button type="button" class="quick-input px-3 py-2 text-sm rounded-full bg-purple-500 text-white hover:bg-purple-600 transition-colors" data-text="bantu saya mendapatkan data berupa object untuk Arti, Genus (der, die, das, die-pl), Bentuk jamak, Contoh umum (beserta artinya). Dari kata ini: ">
                             Nomen
                         </button>
-                        <button type="button" class="quick-input px-3 py-2 text-sm rounded-full bg-purple-500 text-white hover:bg-purple-600 transition-colors" data-text="bantu saya mendapatkan data berupa object untuk Bentuk infinitif, Bentuk perfekt/Partizip II dan prateritumnya, Bentuk konjugasi (lengkap), bentuk verb lain dengan Prefiks berbeda (sebanyak banyaknya beserta artinya saja). dari kata ini: ">
+                        <button type="button" class="quick-input px-3 py-2 text-sm rounded-full bg-purple-500 text-white hover:bg-purple-600 transition-colors" data-text="bantu saya mendapatkan data berupa object untuk  Arti, Bentuk infinitif, Bentuk perfekt/Partizip II dan prateritumnya, Bentuk konjugasi (lengkap), bentuk verb lain dengan Prefiks berbeda (sebanyak banyaknya beserta artinya saja), Contoh umum (beserta artinya). Dari kata ini: ">
                             Verb
                         </button>
-                        <button type="button" class="quick-input px-3 py-2 text-sm rounded-full bg-purple-500 text-white hover:bg-purple-600 transition-colors" data-text="bantu saya mendapatkan data berupa object untuk Perbandingan adjektive (Bentuk komparatif dan superlatif). Dari kata ini: ">
+                        <button type="button" class="quick-input px-3 py-2 text-sm rounded-full bg-purple-500 text-white hover:bg-purple-600 transition-colors" data-text="bantu saya mendapatkan data berupa object untuk  Arti, Perbandingan adjektive (Bentuk komparatif dan superlatif), Contoh umum (beserta artinya). Dari kata ini: ">
                             Adjektiv
                         </button>
-                        <button type="button" class="quick-input px-3 py-2 text-sm rounded-full bg-purple-500 text-white hover:bg-purple-600 transition-colors" data-text="bantu saya mendapatkan data berupa object untuk Perbandingan Adverb (Bentuk komparatif dan superlatif) Dari kata ini: ">
+                        <button type="button" class="quick-input px-3 py-2 text-sm rounded-full bg-purple-500 text-white hover:bg-purple-600 transition-colors" data-text="bantu saya mendapatkan data berupa object untuk  Arti, Perbandingan Adverb (Bentuk komparatif dan superlatif), Contoh umum (beserta artinya). Dari kata ini: ">
                             Adverb
                         </button>
                     </div>
@@ -197,19 +197,19 @@
                     const messageHTML = `
                         <div class="flex items-start ${isBot ? '' : 'justify-end'} message opacity-0">
                             ${isBot ? `
-                                                <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
-                                                    <img src="{{ asset('img/maria.jpg') }}" alt="Robot" class="w-full h-full object-cover">
-                                                </div>
-                                            ` : ''}
+                                                        <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
+                                                            <img src="{{ asset('img/maria.jpg') }}" alt="Robot" class="w-full h-full object-cover">
+                                                        </div>
+                                                    ` : ''}
                             <div class="mx-3 ${isBot ? 'bg-white text-gray-700' : 'gradient-bg text-white'} rounded-2xl p-4 max-w-[80%] shadow-sm">
                                 ${formattedContent}
                                 ${hint ? `<hr class="my-2"><p class="text-sm text-gray-500">${hint}</p>` : ''}
                             </div>
                             ${!isBot ? `
-                                                <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                                                    <i class="fas fa-user text-gray-500 text-sm"></i>
-                                                </div>
-                                    ` : ''}
+                                                        <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                                            <i class="fas fa-user text-gray-500 text-sm"></i>
+                                                        </div>
+                                            ` : ''}
                         </div>
                     `;
 
