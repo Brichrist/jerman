@@ -185,8 +185,8 @@
                                             <span class="ml-2 text-gray-500">Loading...</span>
                                         </div>
                                         <div>
-                                            <x-input-label for="kapital" :value="__('Kapital')" />
-                                            <x-text-input id="kapital" name="kapital" type="text" class="mt-1 block w-full" :value="old('kapital')" autofocus autocomplete="kapital" />
+                                            <x-input-label for="kapital-multiple" :value="__('Kapital')" />
+                                            <x-text-input id="kapital-multiple" name="kapital" type="text" class="mt-1 block w-full" :value="old('kapital')" autofocus autocomplete="kapital" />
                                             <x-input-error class="mt-2" :messages="$errors->get('kapital')" />
                                         </div>
                                         <div class="flex items-center justify-end gap-4">
@@ -280,6 +280,7 @@
                 let data = $(this).data('data');
 
                 $.each(data, function(i, v) {
+                    console.log(i, v);
                     $('#' + i).val(v);
                 });
 
