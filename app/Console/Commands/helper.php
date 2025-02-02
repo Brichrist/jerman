@@ -35,17 +35,17 @@ class helper extends Command
         $vocabs = Vocab::get();
         foreach ($gramatiks as $gramatik) {
             $gramatik->update([
-                'kapital' => rtrim($gramatik->kapital) . '.'
+                'kapital' => str_replace('-.', '.', $gramatik->kapital)
             ]);
         }
         foreach ($redemittels as $redemittel) {
             $redemittel->update([
-                'kapital' => rtrim($redemittel->kapital) . '.'
+                'kapital' =>  str_replace('-.', '.', $redemittel->kapital)
             ]);
         }
         foreach ($vocabs as $vocab) {
             $vocab->update([
-                'kapital' => rtrim($vocab->kapital) . '.'
+                'kapital' =>  str_replace('-.', '.', $vocab->kapital)
             ]);
         }
 
@@ -55,10 +55,7 @@ class helper extends Command
         $gramatiks = Gramatik::get();
         $order = [];
         foreach ($gramatiks as $gramatik) {
-            // $kapital = rtrim($gramatik->kapital, '-');
-            // $newname = $kapital.'.';
-            $kapital = $gramatik->kapital;
-
+            $kapital = rtrim($gramatik->kapital, '.');
             $parts = explode('-', $kapital);
             $lastPart = end($parts);
             $startValue = reset($parts);
