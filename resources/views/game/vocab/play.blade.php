@@ -1117,11 +1117,18 @@
     <script>
         window.speechSynthesis.onvoiceschanged = function() {
             const voices = window.speechSynthesis.getVoices();
-            console.log('Daftar Suara Tersedia:')
-
+            // console.log('Daftar Suara Tersedia:')
             voices.forEach((voice, index) => {
-                console.log(`${index + 1}. ${voice.name} - (${voice.lang})`);
+                // console.log(`${index + 1}. ${voice.name} - (${voice.lang})`);
             });
+            
+            
+            let germanVoices = voices.filter(voice => voice.lang === 'de-DE');
+            let text = ""
+            germanVoices.forEach((voice, index) => {
+                text += `${index + 1}. ${voice.name} - (${voice.lang})\n`
+            });
+            alert(text)
         };
     </script>
 </body>
