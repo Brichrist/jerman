@@ -29,25 +29,25 @@ class helper extends Command
      */
     public function handle()
     {
-        // add - di kapital
-        $gramatiks = Gramatik::get();
-        $redemittels = Redemittel::get();
-        $vocabs = Vocab::get();
-        foreach ($gramatiks as $gramatik) {
-            $gramatik->update([
-                'kapital' => str_replace('-.', '.', $gramatik->kapital)
-            ]);
-        }
-        foreach ($redemittels as $redemittel) {
-            $redemittel->update([
-                'kapital' =>  str_replace('-.', '.', $redemittel->kapital)
-            ]);
-        }
-        foreach ($vocabs as $vocab) {
-            $vocab->update([
-                'kapital' =>  str_replace('-.', '.', $vocab->kapital)
-            ]);
-        }
+        // // add - di kapital
+        // $gramatiks = Gramatik::get();
+        // $redemittels = Redemittel::get();
+        // $vocabs = Vocab::get();
+        // foreach ($gramatiks as $gramatik) {
+        //     $gramatik->update([
+        //         'kapital' => str_replace('-.', '.', $gramatik->kapital)
+        //     ]);
+        // }
+        // foreach ($redemittels as $redemittel) {
+        //     $redemittel->update([
+        //         'kapital' =>  str_replace('-.', '.', $redemittel->kapital)
+        //     ]);
+        // }
+        // foreach ($vocabs as $vocab) {
+        //     $vocab->update([
+        //         'kapital' =>  str_replace('-.', '.', $vocab->kapital)
+        //     ]);
+        // }
 
 
 
