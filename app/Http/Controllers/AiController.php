@@ -58,6 +58,9 @@ class AiController extends Controller
             'max_tokens' => 3333
         ]);
         $answer = json_decode($response->choices[0]->message->content);
+        if (is_object($answer->answer)) {
+            $answer->answer = json_encode($answer->answer);
+        }
         $conversation[] = [
             'role' => 'system',
             'content' => $answer->answer
