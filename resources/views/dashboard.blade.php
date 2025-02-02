@@ -31,7 +31,7 @@
                         <p>{{ __('Grammar rules and tips.') }}</p>
                     </div>
                 </a>
-                <a href="{{ route('ai') }}" class="block bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <a href="{{ route('ai.index') }}" class="block bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
                         <h3 class="font-semibold text-lg">{{ __('AI') }}</h3>
                         <p>{{ __('Artificial Intelligence resources.') }}</p>

@@ -29,25 +29,25 @@ class helper extends Command
      */
     public function handle()
     {
-        //add - di kapital
-        // $gramatiks = Gramatik::get();
-        // $redemittels = Redemittel::get();
-        // $vocabs = Vocab::get();
-        // foreach ($gramatiks as $gramatik) {
-        //     $gramatik->update([
-        //         'kapital' => $gramatik->kapital . '-'
-        //     ]);
-        // }
-        // foreach ($redemittels as $redemittel) {
-        //     $redemittel->update([
-        //         'kapital' => $redemittel->kapital . '-'
-        //     ]);
-        // }
-        // foreach ($vocabs as $vocab) {
-        //     $vocab->update([
-        //         'kapital' => $vocab->kapital . '-'
-        //     ]);
-        // }
+        // add - di kapital
+        $gramatiks = Gramatik::get();
+        $redemittels = Redemittel::get();
+        $vocabs = Vocab::get();
+        foreach ($gramatiks as $gramatik) {
+            $gramatik->update([
+                'kapital' => rtrim($gramatik->kapital) . '.'
+            ]);
+        }
+        foreach ($redemittels as $redemittel) {
+            $redemittel->update([
+                'kapital' => rtrim($redemittel->kapital) . '.'
+            ]);
+        }
+        foreach ($vocabs as $vocab) {
+            $vocab->update([
+                'kapital' => rtrim($vocab->kapital) . '.'
+            ]);
+        }
 
 
 
@@ -55,7 +55,10 @@ class helper extends Command
         $gramatiks = Gramatik::get();
         $order = [];
         foreach ($gramatiks as $gramatik) {
-            $kapital = rtrim($gramatik->kapital, '-');
+            // $kapital = rtrim($gramatik->kapital, '-');
+            // $newname = $kapital.'.';
+            $kapital = $gramatik->kapital;
+
             $parts = explode('-', $kapital);
             $lastPart = end($parts);
             $startValue = reset($parts);
