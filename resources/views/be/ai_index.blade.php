@@ -64,6 +64,10 @@
                         this.selectionStart = cursorPos + 1;
                         this.selectionEnd = cursorPos + 1;
                     }
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        $('#chat-form').submit();
+                    }
                 });
 
                 $('#question').on('input', function() {

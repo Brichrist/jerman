@@ -426,6 +426,10 @@
                 this.selectionStart = cursorPos + 1;
                 this.selectionEnd = cursorPos + 1;
             }
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                $('#chat-form').submit();
+            }
         });
 
         $('#question').on('input', function() {
@@ -505,19 +509,19 @@
                 const messageHTML = `
                     <div class="flex items-start ${isBot ? '' : 'justify-end'} message opacity-0">
                         ${isBot ? `
-                                                                                                                                                <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
-                                                                                                                                                    <img src="{{ asset('img/maria.jpg') }}" alt="Robot" class="w-full h-full object-cover">
-                                                                                                                                                </div>
-                                                                                                                                            ` : ''}
+                                                                                                                                                    <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
+                                                                                                                                                        <img src="{{ asset('img/maria.jpg') }}" alt="Robot" class="w-full h-full object-cover">
+                                                                                                                                                    </div>
+                                                                                                                                                ` : ''}
                         <div class="mx-3 ${isBot ? 'bg-white text-gray-700' : 'gradient-bg text-white'} rounded-2xl p-4 max-w-[80%] shadow-sm">
                             <p>${text}</p>
                             ${hint ? `<hr class="my-2"><p class="text-sm text-gray-500">${hint}</p>` : ''}
                         </div>
                         ${!isBot ? `
-                                                                                                                                                <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                                                                                                                                                    <i class="fas fa-user text-gray-500 text-sm"></i>
-                                                                                                                                                </div>
-                                                                                                                                            ` : ''}
+                                                                                                                                                    <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                                                                                                                                        <i class="fas fa-user text-gray-500 text-sm"></i>
+                                                                                                                                                    </div>
+                                                                                                                                                ` : ''}
                     </div>
                 `;
 
@@ -813,10 +817,10 @@
                 </div>
                 <div class="multiple-choice">
                     ${question.options.map((option, index) => `
-                                                                                                                                                <div class="option" data-correct="${index === question.correctAnswer}">
-                                                                                                                                                    ${option}
-                                                                                                                                                </div>
-                                                                                                                                            `).join('')}
+                                                                                                                                                    <div class="option" data-correct="${index === question.correctAnswer}">
+                                                                                                                                                        ${option}
+                                                                                                                                                    </div>
+                                                                                                                                                `).join('')}
                 </div>
                 <div class="answer">
                     <div class="answer-text">Jawaban: ${question.options[question.correctAnswer]}</div>
