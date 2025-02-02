@@ -505,25 +505,68 @@
 
             function addMessage(text, hint, sender) {
                 const isBot = sender === 'bot';
-                text = text.replace(/\n/g, '<br>')
+
+                // Function to format JSON data
+                function formatJSONContent(content) {
+                    try {
+                        // If content is already an object, use it directly
+                        const jsonData = typeof content === 'string' ? JSON.parse(content) : content;
+
+                        // Function to create HTML for nested objects
+                        function createJSONView(obj, level = 0) {
+                            const padding = 20; // pixels of padding per level
+                            let html = '';
+
+                            Object.entries(obj).forEach(([key, value]) => {
+                                const indent = level * padding;
+                                const isObject = value !== null && typeof value === 'object';
+
+                                html += `
+                                        <div class="json-row" style="padding-left: ${indent}px">
+                                            <span class="font-semibold text-blue-600 dark:text-blue-400">${key}</span>
+                                            ${isObject ? ':' : `: <span class="text-gray-800 dark:text-gray-200">${value}</span>`}
+                                        </div>
+                                    `;
+
+                                if (isObject) {
+                                    html += createJSONView(value, level + 1);
+                                }
+                            });
+
+                            return html;
+                        }
+
+                        return `
+                                <div class="json-viewer bg-gray-50 dark:bg-gray-800 rounded p-3 font-mono text-sm overflow-x-auto">
+                                    ${createJSONView(jsonData)}
+                                </div>
+                            `;
+                    } catch (e) {
+                        // If not valid JSON or already processed, return original text with line breaks
+                        return text.replace(/\n/g, '<br>');
+                    }
+                }
+
+                const formattedContent = formatJSONContent(text);
+
                 const messageHTML = `
-                    <div class="flex items-start ${isBot ? '' : 'justify-end'} message opacity-0">
-                        ${isBot ? `
-                                                                                                                                                    <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
-                                                                                                                                                        <img src="{{ asset('img/maria.jpg') }}" alt="Robot" class="w-full h-full object-cover">
-                                                                                                                                                    </div>
-                                                                                                                                                ` : ''}
-                        <div class="mx-3 ${isBot ? 'bg-white text-gray-700' : 'gradient-bg text-white'} rounded-2xl p-4 max-w-[80%] shadow-sm">
-                            <p>${text}</p>
-                            ${hint ? `<hr class="my-2"><p class="text-sm text-gray-500">${hint}</p>` : ''}
+                        <div class="flex items-start ${isBot ? '' : 'justify-end'} message opacity-0">
+                            ${isBot ? `
+                                                    <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
+                                                        <img src="{{ asset('img/maria.jpg') }}" alt="Robot" class="w-full h-full object-cover">
+                                                    </div>
+                                                ` : ''}
+                            <div class="mx-3 ${isBot ? 'bg-white text-gray-700' : 'gradient-bg text-white'} rounded-2xl p-4 max-w-[80%] shadow-sm">
+                                ${formattedContent}
+                                ${hint ? `<hr class="my-2"><p class="text-sm text-gray-500">${hint}</p>` : ''}
+                            </div>
+                            ${!isBot ? `
+                                                    <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                                        <i class="fas fa-user text-gray-500 text-sm"></i>
+                                                    </div>
+                                        ` : ''}
                         </div>
-                        ${!isBot ? `
-                                                                                                                                                    <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                                                                                                                                                        <i class="fas fa-user text-gray-500 text-sm"></i>
-                                                                                                                                                    </div>
-                                                                                                                                                ` : ''}
-                    </div>
-                `;
+                    `;
 
                 const $messages = $('#chat-messages');
                 $messages.append(messageHTML);
@@ -536,6 +579,16 @@
                     duration: 1200,
                     easing: 'spring(1, 80, 10, 0)'
                 });
+
+                // Add hover effect to JSON rows
+                $('.json-row').hover(
+                    function() {
+                        $(this).addClass('bg-gray-100 dark:bg-gray-700');
+                    },
+                    function() {
+                        $(this).removeClass('bg-gray-100 dark:bg-gray-700');
+                    }
+                );
             }
         });
     </script>
@@ -817,10 +870,10 @@
                 </div>
                 <div class="multiple-choice">
                     ${question.options.map((option, index) => `
-                                                                                                                                                    <div class="option" data-correct="${index === question.correctAnswer}">
-                                                                                                                                                        ${option}
-                                                                                                                                                    </div>
-                                                                                                                                                `).join('')}
+                                                                                                                                                        <div class="option" data-correct="${index === question.correctAnswer}">
+                                                                                                                                                            ${option}
+                                                                                                                                                        </div>
+                                                                                                                                                    `).join('')}
                 </div>
                 <div class="answer">
                     <div class="answer-text">Jawaban: ${question.options[question.correctAnswer]}</div>
