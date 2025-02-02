@@ -1140,7 +1140,7 @@
             germanVoices.forEach((voice, index) => {
                 text += `${index + 1}. ${voice.name} - (${voice.lang})\n`
             });
-            alert(text)
+            // alert(text)
         };
     </script>
 </body>
