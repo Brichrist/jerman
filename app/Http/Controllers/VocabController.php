@@ -200,7 +200,7 @@ class VocabController extends Controller
             'german_word' => ['required', 'string'],
             'word_type' => ['nullable'],
             'meaning' => ['required', 'string'],
-            'example' => ['required', 'string'],
+            'example' => ['nullable', 'string'],
             'additional_notes' => ['nullable', 'string'],
         ];
 
