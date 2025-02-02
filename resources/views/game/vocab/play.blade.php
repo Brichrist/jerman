@@ -896,11 +896,13 @@
                     // Create a new speech utterance
                     const utterance = new SpeechSynthesisUtterance(textToSpeak);
 
-                    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-                        utterance.lang = 'de_DE';
-                    } else {
-                        utterance.lang = 'de-DE';
-                    }
+                    // if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                    //     utterance.lang = 'de_DE';
+                    // } else {
+                    //     utterance.lang = 'de-DE';
+                    // }
+                    utterance.lang = 'de-DE';
+
 
                     // Adjust speech parameters for better pronunciation
                     utterance.rate = 0.9; // Slightly slower speech
@@ -1101,11 +1103,13 @@
                     // Create a new speech utterance
                     const utterance = new SpeechSynthesisUtterance(textToSpeak);
 
-                    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-                        utterance.lang = 'de_DE';
-                    } else {
-                        utterance.lang = 'de-DE';
-                    }
+                    // if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                    //     utterance.lang = 'de_DE';
+                    // } else {
+                    //     utterance.lang = 'de-DE';
+                    // }
+                    utterance.lang = 'de-DE';
+
 
                     // Adjust speech parameters for better pronunciation
                     utterance.rate = 1.0; // Slightly slower speech
