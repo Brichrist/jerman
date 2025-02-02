@@ -170,7 +170,7 @@ class VocabController extends Controller
     {
         $vocabs = Vocab::when(request('kapital'), function ($query) {
             $query->where('kapital', request('kapital'));
-        })->when(request('word_type') != 'all', function ($query) {
+        })->when(request()->has('word_type') && request('word_type') != 'all', function ($query) {
             $query->where('word_type', request('word_type'));
         })->when(request('german_word'), function ($query) {
             $query->where('german_word', 'like', '%' . request('german_word') . '%');

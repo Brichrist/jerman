@@ -55,9 +55,16 @@
                                         <div class="flex flex-col">
                                             <label for="filterWordType" class="block text-sm font-medium text-gray-700 dark:text-gray-400">Filter by Word Type</label>
                                             <select id="filterWordType" name="word_type" class="mt-1 block w-full border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-900 dark:text-gray-300">
-                                                <option value="all" {{ request('word_type') == 'all' ? 'selected' : '' }}>All</option>
+                                                @php
+                                                    if (request()->has('word_type')) {
+                                                        $val_word_type = request('word_type');
+                                                    } else {
+                                                        $val_word_type = 'all';
+                                                    }
+                                                @endphp
+                                                <option value="all" {{ $val_word_type == 'all' ? 'selected' : '' }}>All</option>
                                                 @foreach ($word_types as $item)
-                                                    <option value="{{ $item }}" {{ request('word_type') == $item ? 'selected' : '' }}>{{ $item }}</option>
+                                                    <option value="{{ $item }}" {{$val_word_type == $item ? 'selected' : '' }}>{{ $item }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
