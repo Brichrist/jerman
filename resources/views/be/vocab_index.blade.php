@@ -104,13 +104,21 @@
                                                 </th>
                                                 <td class="px-6 py-4">
                                                     {{ $word->german_word }}
+                                                    <button type="button" class="speak-btn text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 transition-colors" data-text="{{ $word->german_word }}" title="Click to hear pronunciation">
+                                                        🔊
+                                                    </button>
                                                 </td>
                                                 <td class="px-6 py-4 bg-gray-50 dark:bg-gray-900">
                                                     {{ $word->meaning }}
                                                 </td>
                                                 <td class="px-6 py-4">
                                                     {{ $word->word_type }}<br>
-                                                    Example: {!! $word->example !!}<br>
+                                                    Example: {!! $word->example !!} @if ($word->example)
+                                                        <button type="button" class="speak-btn text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 transition-colors" data-text="{{ strip_tags($word->example) }}" title="Listen to example">
+                                                            🔊
+                                                        </button>
+                                                    @endif
+                                                    <br>
                                                     Note: {{ $word->additional_notes }}
                                                 </td>
                                                 <td class="px-6 py-4 bg-gray-50 dark:bg-gray-900">
@@ -261,6 +269,77 @@
         </div>
     </div>
     @push('js')
+        <script type="module">
+            $(document).ready(function() {
+                // Initialize speech synthesis
+                const synth = window.speechSynthesis;
+                let germanVoice = null;
+
+                // Get German voice
+                function loadVoices() {
+                    const voices = synth.getVoices();
+                    // Try to find a German voice
+                    germanVoice = voices.find(voice =>
+                        voice.lang.includes('de') && voice.name.includes('German')
+                    ) || voices.find(voice =>
+                        voice.lang.includes('de')
+                    ) || voices[0];
+
+                    // Log available voices for debugging
+                    console.log('Available voices:', voices);
+                    console.log('Selected voice:', germanVoice);
+                }
+
+                // Load voices when they're ready
+                if (speechSynthesis.onvoiceschanged !== undefined) {
+                    speechSynthesis.onvoiceschanged = loadVoices;
+                }
+                loadVoices();
+
+                // Handle speak button clicks
+                $(document).on('click', '.speak-btn', function() {
+                    // Cancel any ongoing speech
+                    synth.cancel();
+
+                    const $button = $(this);
+                    const text = $button.data('text');
+
+                    if (text && germanVoice) {
+                        // Show loading state
+                        $button.css('opacity', '0.5');
+
+                        const utterance = new SpeechSynthesisUtterance(text);
+                        utterance.voice = germanVoice;
+                        utterance.lang = 'de-DE';
+                        utterance.rate = 0.9; // Slightly slower for clarity
+                        utterance.pitch = 1;
+
+                        // Reset button state when done speaking
+                        utterance.onend = function() {
+                            $button.css('opacity', '1');
+                        };
+
+                        // Also reset on error
+                        utterance.onerror = function() {
+                            $button.css('opacity', '1');
+                            console.error('Speech synthesis error');
+                        };
+
+                        synth.speak(utterance);
+                    } else {
+                        console.error('No text to speak or no German voice available');
+                    }
+                });
+
+                // Add keyboard support
+                $(document).on('keydown', '.speak-btn', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        $(this).click();
+                    }
+                });
+            });
+        </script>
         <script type="module">
             document.querySelectorAll('[data-modal-target]').forEach(button => {
                 button.addEventListener('click', () => {
