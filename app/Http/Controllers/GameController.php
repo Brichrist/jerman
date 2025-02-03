@@ -72,6 +72,7 @@ class GameController extends Controller
         if ($model) {
             $favorite = Favorite::where('model', $model)
                 ->where('id_model', $request->id)
+                ->where('id_user', $request->id_user)
                 ->first();
 
             if ($favorite) {
@@ -79,6 +80,7 @@ class GameController extends Controller
             } else {
                 Favorite::create([
                     'model' => $model,
+                    'id_user' => $request->id_user,
                     'id_model' => $request->id,
                 ]);
             }

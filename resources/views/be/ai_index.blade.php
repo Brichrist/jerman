@@ -9,7 +9,10 @@
                         <i class="fas fa-message-smile text-white text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <h1 class="text-2xl text-white font-light">Ask Maria</h1>
+                        @php
+                            $name = auth()->user()->gender == 'male' ? 'Silvi' : 'David';
+                        @endphp
+                        <h1 class="text-2xl text-white font-light">Ask {{ $name }}</h1>
                         <div class="text-purple-100 text-sm">Your German language assistant ✨</div>
                     </div>
                 </div>
@@ -18,10 +21,10 @@
                 <div id="chat-messages" class="flex-1 p-6 space-y-6 overflow-y-auto bg-gray-50">
                     <div class="flex items-start bot-message opacity-0">
                         <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
-                            <img src="{{ asset('img/maria.jpg') }}" alt="Robot" class="w-full h-full object-cover">
+                            <img src="{{ asset('img/' . $name . '.jpg') }}" alt="Robot" class="w-full h-full object-cover">
                         </div>
                         <div class="ml-3 bg-white rounded-2xl p-4 max-w-[80%] shadow-sm">
-                            <p class="text-gray-700">Halo! Saya Maria, seorang guru bahasa Jerman berumur 28 tahun. Saya siap membantu Anda belajar bahasa Jerman. 😊</p>
+                            <p class="text-gray-700">Halo! Saya {{ $name }}, seorang guru bahasa Jerman berumur 28 tahun. Saya siap membantu Anda belajar bahasa Jerman. 😊</p>
                         </div>
                     </div>
                 </div>
@@ -31,9 +34,12 @@
                     <form id="chat-form" action="{{ route('ai.askAi') }}" method="POST" class="flex gap-3">
                         <input type="hidden" name="conversation" id="conversation" value="">
                         <textarea id="question" name="question" class="flex-1 p-4 rounded-xl border border-purple-200 text-gray-700 focus:outline-none focus:border-purple-400 placeholder-gray-400" placeholder="Type something nice..." autocomplete="off" rows="1"></textarea>
-                        <button type="submit" class="gradient-bg text-white rounded-xl w-12 h-12 flex items-center justify-center hover:opacity-90 transition-all transform hover:scale-105">
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
+                        <div class="flex flex-col items-center justify-center space-y-2">
+                            <button type="submit" class="gradient-bg text-white rounded-xl w-12 h-12 flex items-center justify-center hover:opacity-90 transition-all transform hover:scale-105">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                            <p class="text-xs whitespace-nowrap">sisa token: <span class="remaining">{{ auth()->user()->token ? auth()->user()->token * 100 : '∞' }}</span></p>
+                        </div>
                     </form>
                     <div class="mt-2 flex flex-wrap gap-2">
                         <button type="button" class="quick-input px-3 py-2 text-sm rounded-full bg-purple-500 text-white hover:bg-purple-600 transition-colors" data-text="bantu saya mendapatkan data berupa object untuk Arti, Genus (der, die, das, die-pl), Bentuk jamak, Contoh umum (beserta artinya). Dari kata ini: ">
@@ -105,7 +111,7 @@
                     $('#question').val('');
                     if (new URLSearchParams(window.location.search).get('free') != 'true') {
                         if (dollar > 0.05) {
-                            addMessage("Maaf ya, Maria sudah capek buat jelasin.", "Silahkan reload url untuk chat dengan maria kembali", 'bot');
+                            addMessage("Maaf ya, {{ $name }} sudah capek buat jelasin.", "Silahkan reload url untuk chat dengan {{ $name }} kembali", 'bot');
                             return;
                         }
                     }
@@ -128,6 +134,11 @@
                                     addMessage(data.answer, data.hint, 'bot');
                                 }, 1000);
                                 $('#conversation').val(response.conversation);
+                                if (response.remaining_dollar !== null) {
+                                    if ((response.remaining_dollar * 100) > 0) {
+                                        $('.remaining').text(response.remaining_dollar * 100);
+                                    }
+                                }
                                 let conversation = JSON.parse(response.conversation);
                                 for (let i = 0; i < conversation.length; i++) {
                                     console.log(conversation[i].role + ' : ' + conversation[i].content);
@@ -197,19 +208,19 @@
                     const messageHTML = `
                         <div class="flex items-start ${isBot ? '' : 'justify-end'} message opacity-0">
                             ${isBot ? `
-                                                        <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
-                                                            <img src="{{ asset('img/maria.jpg') }}" alt="Robot" class="w-full h-full object-cover">
-                                                        </div>
-                                                    ` : ''}
+                                                                <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
+                                                                    <img src="{{ asset('img/' . $name . '.jpg') }}" alt="Robot" class="w-full h-full object-cover">
+                                                                </div>
+                                                            ` : ''}
                             <div class="mx-3 ${isBot ? 'bg-white text-gray-700' : 'gradient-bg text-white'} rounded-2xl p-4 max-w-[80%] shadow-sm">
                                 ${formattedContent}
                                 ${hint ? `<hr class="my-2"><p class="text-sm text-gray-500">${hint}</p>` : ''}
                             </div>
                             ${!isBot ? `
-                                                        <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                                                            <i class="fas fa-user text-gray-500 text-sm"></i>
-                                                        </div>
-                                            ` : ''}
+                                                                <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                                                    <i class="fas fa-user text-gray-500 text-sm"></i>
+                                                                </div>
+                                                    ` : ''}
                         </div>
                     `;
 

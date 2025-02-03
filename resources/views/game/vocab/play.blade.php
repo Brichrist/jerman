@@ -531,7 +531,9 @@
         </div>
         <div class="control-buttons">
             <button id="backBtn">Back</button>
-            <button id="editBtn">Edit</button>
+            @if (auth()->user()->role === 'owner')
+                <button id="editBtn">Edit</button>
+            @endif
             <button id="exampleBtn">Example</button>
             <button id="listModeBtn">List Mode</button>
         </div>
@@ -1030,6 +1032,7 @@
             e.preventDefault();
             const currentWord = {
                 id: $('.card:visible .id-vocab').text(),
+                id_user: '{{ auth()->user()->id }}',
                 _token: '{{ csrf_token() }}'
             };
             let target = $('.card:visible .german-word');
@@ -1134,7 +1137,7 @@
                 // console.log(`${index + 1}. ${voice.name} - (${voice.lang})`);
             });
             
-            
+
             let germanVoices = voices.filter(voice => voice.lang === 'de_DE');
             let text = ""
             germanVoices.forEach((voice, index) => {

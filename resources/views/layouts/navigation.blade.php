@@ -30,11 +30,14 @@
                     <x-nav-link :href="route('game.index')" :active="request()->is('game*')">
                         {{ __('Game') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('report.index')" :active="request()->is('report*')">
+                        {{ __('Report') }}
+                    </x-nav-link>
                     <div class="hidden sm:flex sm:items-center sm:ms-6">
                         <x-dropdown align="right" width="48">
                             <x-slot name="trigger">
                                 <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
-                                    <div> {{ __('Spc_char') }}</div>
+                                    <div> {{ __('Copy') }}</div>
 
                                     <div class="ms-1">
                                         <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -79,6 +82,11 @@
                     </x-slot>
 
                     <x-slot name="content">
+                        @if (auth()->user()->role == 'owner')
+                            <x-dropdown-link :href="route('user.index')">
+                                {{ __('User') }}
+                            </x-dropdown-link>
+                        @endif
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Profile') }}
                         </x-dropdown-link>
@@ -129,6 +137,9 @@
             <x-responsive-nav-link :href="route('game.index')" :active="request()->is('game*')">
                 {{ __('Game') }}
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('report.index')" :active="request()->is('report*')">
+                {{ __('Report') }}
+            </x-responsive-nav-link>
         </div>
 
         <!-- Responsive Settings Options -->
@@ -139,6 +150,11 @@
             </div>
 
             <div class="mt-3 space-y-1">
+                @if (auth()->user()->role == 'owner')
+                    <x-responsive-nav-link :href="route('user.index')">
+                        {{ __('User') }}
+                    </x-responsive-nav-link>
+                @endif
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Profile') }}
                 </x-responsive-nav-link>

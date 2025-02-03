@@ -4,6 +4,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RedemittelController;
 use App\Http\Controllers\GramatikController;
 use App\Http\Controllers\VocabController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\GameController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,16 +27,18 @@ Route::get('/test', function () {
 Route::get('/', function () {
     return redirect('/dashboard');
 });
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth','expired'])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+    Route::resource('/user', UserController::class)->name('index', 'user.index');
     Route::resource('/vocab', VocabController::class)->name('index', 'vocab.index');
     Route::post('/multiple-vocab', [VocabController::class, 'multiple'])->name('vocab.multiple');
     Route::resource('/redemittel', RedemittelController::class)->name('index', 'redemittel.index');
     Route::resource('/gramatik', GramatikController::class)->name('index', 'gramatik.index');
     Route::get('/gramatik/preview/{id}', [GramatikController::class, 'preview'])->name('gramatik.preview');
     Route::post('/gramatik/practice', [GramatikController::class, 'practice'])->name('gramatik.practice');
+    Route::resource('/report', ReportController::class)->name('index', 'report.index');
 
 
     Route::get('/ai', [App\Http\Controllers\AiController::class, 'index'])->name('ai.index');

@@ -327,7 +327,10 @@
                     <i class="fas fa-message-smile text-white text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <h1 class="text-2xl text-white font-light">Ask Maria</h1>
+                    @php
+                        $name = auth()->user()->gender == 'male' ? 'Silvi' : 'David';
+                    @endphp
+                    <h1 class="text-2xl text-white font-light">Ask {{ $name }}</h1>
                     <div class="text-purple-100 text-sm">Your German language assistant ✨</div>
                 </div>
             </div>
@@ -336,10 +339,10 @@
             <div id="chat-messages" class="flex-1 p-6 space-y-6 overflow-y-auto bg-gray-50" style="max-height: 65vh;">
                 <div class="flex items-start bot-message opacity-0">
                     <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
-                        <img src="{{ asset('img/maria.jpg') }}" alt="Robot" class="w-full h-full object-cover">
+                        <img src="{{ asset('img/' . $name . '.jpg') }}" alt="Robot" class="w-full h-full object-cover">
                     </div>
                     <div class="ml-3 bg-white rounded-2xl p-4 max-w-[80%] shadow-sm">
-                        <p class="text-gray-700">Halo! Saya Maria, seorang guru bahasa Jerman berumur 28 tahun. Saya siap membantu Anda belajar bahasa Jerman. 😊</p>
+                        <p class="text-gray-700">Halo! Saya {{ $name }}, seorang guru bahasa Jerman berumur 28 tahun. Saya siap membantu Anda belajar bahasa Jerman. 😊</p>
                     </div>
                 </div>
             </div>
@@ -352,7 +355,7 @@
                             [
                                 'role' => 'system',
                                 'content' =>
-                                    "Anda adalah guru bahasa Jerman 'Maria' berumur 28 tahun yang mengajar murid dari Indonesia. Anda suka mendapat pertanyaan dari anak-anak, 
+                                    "Anda adalah guru bahasa Jerman ' {{ $name }}' berumur 28 tahun yang mengajar murid dari Indonesia. Anda suka mendapat pertanyaan dari anak-anak, 
                                 dan akan menjelaskan secara simpel dan mudah dipahami oleh orang dengan IQ minimal 90. 
                                 Anda akan memberikan jawaban yang benar dan memberikan hint jika diperlukan. bahasa pengantar anda adalah bahasa Indonesia, 
                                 Anda juga akan memberikan salam jika ada yang berterima kasih kepada anda / menutup percakapan dengan Anda.
@@ -371,9 +374,12 @@
                     <input type="hidden" name="conversation" id="conversation" value="{{ $conversation }}">
                     <textarea id="question" name="question" class="flex-1 p-4 rounded-xl border border-purple-200 text-gray-700 focus:outline-none focus:border-purple-400 placeholder-gray-400" placeholder="Type something nice..." autocomplete="off" rows="1"></textarea>
                     {{-- <input type="text" id="question" name="question" class="flex-1 p-4 rounded-xl border border-purple-200 text-gray-700 focus:outline-none focus:border-purple-400 placeholder-gray-400" placeholder="Type something nice..." autocomplete="off"> --}}
-                    <button type="submit" class="gradient-bg text-white rounded-xl w-12 h-12 flex items-center justify-center hover:opacity-90 transition-all transform hover:scale-105">
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
+                    <div class="flex flex-col items-center justify-center space-y-2">
+                        <button type="submit" class="gradient-bg text-white rounded-xl w-12 h-12 flex items-center justify-center hover:opacity-90 transition-all transform hover:scale-105">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                        <p class="text-xs whitespace-nowrap">sisa token: <span class="remaining">{{ auth()->user()->token ? auth()->user()->token * 100 : '∞' }}</span></p>
+                    </div>
                 </form>
             </div>
 
@@ -442,6 +448,10 @@
         let dollar = 0;
 
         $(document).ready(function() {
+            $('table').each(function() {
+                $(this).before('<span style="color: red;">NB: Untuk tampilan lebih baik, putar ponsel Anda ke mode horizontal.</span>');
+                $(this).wrap('<div style="overflow-x:auto;"></div></div>');
+            });
             anime({
                 targets: '.bot-message',
                 opacity: [0, 1],
@@ -460,7 +470,7 @@
                 $('#question').val('');
                 if (new URLSearchParams(window.location.search).get('free') != 'true') {
                     if (dollar > 0.05) {
-                        addMessage("Maaf ya, Maria sudah capek buat jelasin.", "Silahkan reload url untuk chat dengan maria kembali", 'bot');
+                        addMessage("Maaf ya, {{ $name }} sudah capek buat jelasin.", "Silahkan reload url untuk chat dengan {{ $name }} kembali", 'bot');
                         return;
                     }
                 }
@@ -483,6 +493,11 @@
                                 addMessage(data.answer, data.hint, 'bot');
                             }, 1000);
                             $('#conversation').val(response.conversation);
+                            if (response.remaining_dollar !== null) {
+                                if ((response.remaining_dollar * 100) > 0) {
+                                    $('.remaining').text(response.remaining_dollar * 100);
+                                }
+                            }
                             let conversation = JSON.parse(response.conversation);
                             for (let i = 0; i < conversation.length; i++) {
                                 console.log(conversation[i].role + ' : ' + conversation[i].content);
@@ -552,19 +567,19 @@
                 const messageHTML = `
                         <div class="flex items-start ${isBot ? '' : 'justify-end'} message opacity-0">
                             ${isBot ? `
-                                                    <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
-                                                        <img src="{{ asset('img/maria.jpg') }}" alt="Robot" class="w-full h-full object-cover">
-                                                    </div>
-                                                ` : ''}
+                                                        <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
+                                                            <img src="{{ asset('img/' . $name . '.jpg') }}" alt="Robot" class="w-full h-full object-cover">
+                                                        </div>
+                                                    ` : ''}
                             <div class="mx-3 ${isBot ? 'bg-white text-gray-700' : 'gradient-bg text-white'} rounded-2xl p-4 max-w-[80%] shadow-sm">
                                 ${formattedContent}
                                 ${hint ? `<hr class="my-2"><p class="text-sm text-gray-500">${hint}</p>` : ''}
                             </div>
                             ${!isBot ? `
-                                                    <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                                                        <i class="fas fa-user text-gray-500 text-sm"></i>
-                                                    </div>
-                                        ` : ''}
+                                                        <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                                            <i class="fas fa-user text-gray-500 text-sm"></i>
+                                                        </div>
+                                            ` : ''}
                         </div>
                     `;
 
@@ -870,10 +885,10 @@
                 </div>
                 <div class="multiple-choice">
                     ${question.options.map((option, index) => `
-                                                                                                                                                        <div class="option" data-correct="${index === question.correctAnswer}">
-                                                                                                                                                            ${option}
-                                                                                                                                                        </div>
-                                                                                                                                                    `).join('')}
+                                                                                                                                                            <div class="option" data-correct="${index === question.correctAnswer}">
+                                                                                                                                                                ${option}
+                                                                                                                                                            </div>
+                                                                                                                                                        `).join('')}
                 </div>
                 <div class="answer">
                     <div class="answer-text">Jawaban: ${question.options[question.correctAnswer]}</div>

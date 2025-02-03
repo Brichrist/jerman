@@ -100,7 +100,11 @@ class GramatikController extends Controller
         // $gramatiks = Gramatik::orderByDesc('created_at')->get();
         $gramatiks = Gramatik::when(request('kapital'), function ($query) {
             $query->where('kapital', "like", "%" . request('kapital') . "%");
-        })->orderBy('order')->paginate(25);
+        })->when(request('title'), function ($query) {
+            $query->where('title', "like", "%" . request('title') . "%");
+        })->when(request('favorite') == 'yes', function ($query) {
+            $query->whereHas('linkFavorite');
+        })->orderBy('order')->with(['linkFavorite'])->paginate(25);
 
         return view('be.gramatik_index', compact('gramatiks'));
     }

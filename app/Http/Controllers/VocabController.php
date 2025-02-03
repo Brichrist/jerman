@@ -176,7 +176,9 @@ class VocabController extends Controller
             $query->where('german_word', 'like', '%' . request('german_word') . '%');
         })->when(request('meaning'), function ($query) {
             $query->where('meaning', 'like', '%' . request('meaning') . '%');
-        })->orderBy('word_type')->paginate(50);
+        })->when(request('favorite') == 'yes', function ($query) {
+            $query->whereHas('linkFavorite');
+        })->orderBy('word_type')->with(['linkFavorite'])->paginate(50);
 
         $word_types = Vocab::select('word_type')->distinct()->get()->pluck('word_type')->toArray();
         return view('be.vocab_index', compact('vocabs', 'word_types'));

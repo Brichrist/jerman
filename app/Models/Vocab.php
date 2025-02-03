@@ -12,6 +12,6 @@ class Vocab extends Model
 
     public function linkFavorite()
     {
-        return $this->hasMany(Favorite::class, 'id_model', 'id')->where('model', 'vocab');
+        return $this->hasMany(Favorite::class, 'id_model', 'id')->where('id_user', auth()->user()->id)->where('model', 'vocab');
     }
 }

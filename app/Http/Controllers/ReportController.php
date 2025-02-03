@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Redemittel;
+use App\Models\Report;
 use Illuminate\Http\Request;
 use OpenAI;
 
-class RedemittelController extends Controller
+class ReportController extends Controller
 {
     protected $openai;
 
@@ -18,52 +18,46 @@ class RedemittelController extends Controller
     public function multiple(Request $request)
     {
         $rules = [
-            'kapital' => ['nullable', 'string'],
-            'de.*' => ['required', 'string'],
-            'idn.*' => ['nullable', 'string'],
-            'tag.*' => ['nullable', 'string'],
+            'id_user' => ['required', 'integer'],
+            'type' => ['required', 'in:report,saran'],
+            'subject' => ['required', 'string'],
+            'description' => ['nullable', 'string'],
         ];
 
         $request->validate($rules);
 
-        $des = $request->input('de', []);
-        $idns = $request->input('idn', []);
-        $tags = $request->input('tag', []);
+        $data = [
+            'id_user' => $request->input('id_user'),
+            'type' => $request->input('type'),
+            'subject' => $request->input('subject'),
+            'description' => $request->input('description'),
+        ];
 
-        foreach ($des as $index => $de) {
-            $data = [
-                'kapital' => $request->input('kapital'),
-                'de' => $de,
-                'idn' => $idns[$index] ?? null,
-                'tag' => $tags[$index] ?? null,
-            ];
-
-            $existingRedemittel = Redemittel::where('de', $de)->first();
-            if ($existingRedemittel) {
-                $existingRedemittel->update($data);
-            } else {
-                Redemittel::create($data);
-            }
+        $existingReport = Report::where('subject', $data['subject'])->first();
+        if ($existingReport) {
+            $existingReport->update($data);
+        } else {
+            Report::create($data);
         }
 
         $request->session()->flash('notif', ["success" => 'Data Saved']);
-        return redirect('/redemittel');
+        return redirect('/report');
     }
 
     public function dataAi(Request $request)
     {
-        $des = $request->de;
+        $subject = $request->subject;
 
         $promptData = [
             'model' => 'gpt-4',
             'messages' => [
                 [
                     'role' => 'system',
-                    'content' => 'You are a German language expert. Analyze the German words and provide detailed grammatical information in JSON format.'
+                    'content' => 'You are an expert. Analyze the subject and provide detailed information in JSON format.'
                 ],
                 [
                     'role' => 'user',
-                    'content' => "Provide grammatical details for these German words in JSON array format with these fields: kapital, de, idn, tag. Words: " . implode(', ', $des)
+                    'content' => "Provide detailed information for this subject in JSON format: " . $subject
                 ]
             ],
             'temperature' => 1
@@ -73,13 +67,11 @@ class RedemittelController extends Controller
             $response = $this->openai->chat()->create($promptData);
             $result = json_decode($response->choices[0]->message->content, true);
 
-            foreach ($result as $redemittel) {
-                Redemittel::create($redemittel);
-            }
+            Report::create($result);
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Vocabulary processed successfully',
+                'message' => 'Data processed successfully',
                 'data' => $result
             ]);
         } catch (\Exception $e) {
@@ -109,7 +101,7 @@ class RedemittelController extends Controller
                     'messages' => [
                         [
                             'role' => 'user',
-                            'content' => "buatkan obj yang berisi list bahasa Jerman dari teks berikut dalam format JSON beserta artinya dalam bahasa indonesia. Format: {'bahasaJerman': {'kata1':{'meaning':'arti1','tag':'tag1'}, 'kata2':{'meaning':'arti2','tag':'tag2'}, ...}}: \n\n" . $text
+                            'content' => "Extract information from the following text in JSON format: \n\n" . $text
                         ]
                     ]
                 ]);
@@ -123,7 +115,7 @@ class RedemittelController extends Controller
                             'content' => [
                                 [
                                     'type' => 'text',
-                                    'text' => "buatkan obj yang berisi list bahasa Jerman dari file ini dalam format JSON beserta artinya dalam bahasa indonesia. Wajib pastikan ulang semua vocab sudah masuk dalam list. Dengan Format: {'bahasaJerman': {'kata1':{'meaning':'arti1','tag':'tag1'}, 'kata2':{'meaning':'arti2','tag':'tag2'}, ...}}:"
+                                    'text' => "Extract information from this file in JSON format."
                                 ],
                                 [
                                     'type' => 'image_url',
@@ -151,23 +143,25 @@ class RedemittelController extends Controller
 
     public function index()
     {
-        $redemittels = Redemittel::when(request('kapital'), function ($query) {
-            $query->where('kapital', "like", "%" . request('kapital') . "%");
-        })->when(request('tag'), function ($query) {
-            $query->where('tag', "like", "%" . request('tag') . "%");
-        })->when(request('favorite') == 'yes', function ($query) {
-            $query->whereHas('linkFavorite');
-        })->orderBy('created_at')->with(['linkFavorite'])->paginate(50);
-        return view('be.redemittel_index', compact('redemittels'));
+        $reports = Report::when(request('subject'), function ($query) {
+            $query->where('subject', "like", "%" . request('subject') . "%");
+        })
+        ->when(auth()->user()->role !== 'owner', function ($query) {
+            $query->where('id_user', auth()->id());
+        })
+        ->orderBy('created_at')
+        ->with(['linkUser'])
+        ->paginate(50);
+        return view('be.report_index', compact('reports'));
     }
 
     public function store(Request $request)
     {
         $rules = [
-            'kapital' => ['nullable', 'string'],
-            'de' => ['required', 'string'],
-            'idn' => ['nullable', 'string'],
-            'tag' => ['nullable', 'string'],
+            'id_user' => ['required', 'integer'],
+            'type' => ['required', 'in:report,saran'],
+            'subject' => ['required', 'string'],
+            'description' => ['nullable', 'string'],
         ];
 
         $request->validate($rules);
@@ -175,20 +169,20 @@ class RedemittelController extends Controller
         $data = $request->except(['id', '_token']);
 
         if ($request->id ?? null) {
-            Redemittel::where('id', $request->id)->update($data);
+            Report::where('id', $request->id)->update($data);
         } else {
-            Redemittel::create($data);
+            Report::create($data);
         }
 
         $request->session()->flash('notif', ["success" => 'Data Saved']);
-        return redirect('/redemittel');
+        return redirect('/report');
     }
 
     public function destroy(Request $request, $id)
     {
-        Redemittel::where('id', $id)->delete();
+        Report::where('id', $id)->delete();
         $request->session()->flash('notif', ["success" => 'Data Deleted']);
 
-        return redirect('/redemittel');
+        return redirect('/report');
     }
 }
