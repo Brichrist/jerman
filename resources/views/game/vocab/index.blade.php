@@ -15,6 +15,7 @@
                                             <x-input-label for="kapital" :value="__('Kapital')" />
                                             <x-text-input id="kapital" name="kapital" type="text" class="mt-1 block w-full" :value="old('kapital')" autofocus autocomplete="kapital" />
                                             <x-input-error class="mt-2" :messages="$errors->get('kapital')" />
+                                            <p class="text-white">Contoh: A2-12.</p>
                                         </div>
                                         <div class="form-group mb-3">
                                             <x-input-label for="use_favorites" :value="__('Gunakan Favorit')" />
