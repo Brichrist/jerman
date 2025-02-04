@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Forum;
+use App\Models\TemaForum;
 use Illuminate\Http\Request;
 
 class ForumController extends Controller
@@ -12,7 +13,8 @@ class ForumController extends Controller
      */
     public function index($id)
     {
-        return view('be.forum_index', compact('id'));
+        $data = TemaForum::where('id', $id)->first();
+        return view('be.forum_index', compact('id','data'));
     }
     public function getMessages($id)
     {

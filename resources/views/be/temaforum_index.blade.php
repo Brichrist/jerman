@@ -88,10 +88,22 @@
                         <textarea name="description" id="description" rows="4" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
                     </div>
                     @if (auth()->user()->role === 'owner')
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+
                         <select id="status" name="status" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             <option value="active">Active</option>
                             <option value="inactive">Inactive</option>
                             <option value="closed">Closed</option>
+                        </select>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Locked</label>
+                        <select id="locked" name="locked" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="yes">yes</option>
+                            <option value="no">no</option>
+                        </select>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Important</label>
+                        <select id="important" name="important" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="1">yes</option>
+                            <option value="0">no</option>
                         </select>
                     @endif
                     <div class="flex justify-end gap-3 mt-6">

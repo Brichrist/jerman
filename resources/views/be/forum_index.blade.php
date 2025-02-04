@@ -37,8 +37,14 @@
             <div class="max-w-2xl mx-auto w-full bg-white rounded-2xl shadow-xl flex flex-col">
                 <!-- Header -->
                 <div class="px-6 py-4 border-b">
-                    <h1 class="text-xl font-semibold text-gray-800">Forum Chat</h1>
-                    <p class="text-sm text-gray-500">Pesan akan diperbarui setiap 15 detik.</p>
+                    <h1 class="text-xl font-semibold text-gray-800">Forum Chat {{ $data->locked == 'yes' ? '🔒' : '' }}</h1>
+                    <p class="text-sm text-gray-500">
+                        @if ($data->locked == 'yes' && auth()->user()->role !== 'owner')
+                            Forum ini telah dikunci
+                        @else
+                            Pesan akan diperbarui setiap 15 detik.
+                        @endif
+                    </p>
                 </div>
 
                 <!-- Messages Area -->
@@ -48,13 +54,18 @@
 
                 <!-- Input Area -->
                 <div class="border-t px-6 py-4 bg-white rounded-b-2xl">
-                    <form id="messageForm" class="flex gap-3">
+                    <form id="messageForm" class="flex gap-3" @if ($data->locked == 'yes' && auth()->user()->role !== 'owner') style="display: none;" @endif>
                         @csrf
                         <input type="text" name="message" class="flex-1 rounded-lg border border-gray-200 px-4 py-2.5 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400" placeholder="Tulis pesan..." id="message" autocomplete="off">
                         <button type="button" id="sendButton" class="px-6 py-2.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium">
                             Kirim
                         </button>
                     </form>
+                    @if ($data->locked == 'yes' && auth()->user()->role !== 'owner')
+                        <div class="text-center text-gray-500">
+                            <p>Forum ini telah dikunci. Tidak dapat mengirim pesan baru.</p>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -67,6 +78,8 @@
                 const $messages = $('#forum-messages');
                 const currentUserId = {{ auth()->user()->id }};
                 const id_tema = {{ $id }};
+                const isLocked = "{{ $data->locked }}" === "yes";
+                const isOwner = "{{ auth()->user()->role }}" === "owner";
 
                 function formatTime(dateString) {
                     return new Date(dateString).toLocaleTimeString('id-ID', {
@@ -123,6 +136,8 @@
                 loadMessages();
 
                 function sendMessage() {
+                    if (isLocked && !isOwner) return;
+
                     const $messageInput = $('#message');
                     const message = $messageInput.val().trim();
 
@@ -151,22 +166,22 @@
                     }
                 }
 
-                // Handle button click
-                $('#sendButton').on('click', sendMessage);
-
-                // Handle form submission
-                $('#messageForm').on('submit', function(e) {
-                    e.preventDefault();
-                    sendMessage();
-                });
-
-                // Handle enter key
-                $('#message').on('keypress', function(e) {
-                    if (e.which === 13 && !e.shiftKey) {
+                if (!isLocked || isOwner) {
+                    // Handle button click
+                    $('#sendButton').on('click', sendMessage);
+                    $('#messageForm').on('submit', function(e) {
                         e.preventDefault();
                         sendMessage();
-                    }
-                });
+                    });
+
+                    // Handle enter key
+                    $('#message').on('keypress', function(e) {
+                        if (e.which === 13 && !e.shiftKey) {
+                            e.preventDefault();
+                            sendMessage();
+                        }
+                    });
+                }
             });
         </script>
     @endpush
