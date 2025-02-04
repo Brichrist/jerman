@@ -58,6 +58,21 @@
                                             <label for="filterTitle" class="block text-sm font-medium text-gray-700 dark:text-gray-400">Filter by Title</label>
                                             <input type="text" id="filterTitle" name="title" value="{{ request('title') }}" class="mt-1 block w-full border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-900 dark:text-gray-300" placeholder="Enter Title">
                                         </div>
+                                        {{-- <div class="flex flex-col">
+                                            <label for="filterOwner" class="block text-sm font-medium text-gray-700 dark:text-gray-400">Filter by Owner</label>
+                                            <select id="filterOwner" name="owner" class="mt-1 block w-full border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-900 dark:text-gray-300">
+                                                @php
+                                                    if (auth()->user()->role == 'owner') {
+                                                        $val_owner = request('owner', 'default');
+                                                    } else {
+                                                        $val_owner = request('owner', 'all');
+                                                    }
+                                                @endphp
+                                                <option value="all" {{ $val_owner == 'all' ? 'selected' : '' }}>all</option>
+                                                <option value="default" {{ $val_owner == 'default' ? 'selected' : '' }}>default</option>
+                                                <option value="me" {{ $val_owner == 'me' ? 'selected' : '' }}>me</option>
+                                            </select>
+                                        </div> --}}
                                     </div>
                                     <div class="col-span-full mt-4">
                                         <button type="submit" class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">Filter</button>
@@ -242,10 +257,10 @@
                 $('.title-form').text('Clone Gramatik');
             });
             $('.reset-btn').click(function(e) {
-                $('.title-form').text('Add Gramatik');
-                $('input').val("").trigger('change')
-                $('textarea').text("").val("").trigger('change')
-                $("option:selected").prop("selected", false)
+                $(this).parents('form').find('.title-form').text('Add Redemittel');
+                $(this).parents('form').find('input').not('[name=_token]').val("").trigger('change')
+                $(this).parents('form').find('textarea').text("").val("").trigger('change')
+                $(this).parents('form').find("option:selected").prop("selected", false)
             });
             $('.delete-btn').click(function(e) {
                 Swal.fire({

@@ -104,7 +104,26 @@ class GramatikController extends Controller
             $query->where('title', "like", "%" . request('title') . "%");
         })->when(request('favorite') == 'yes', function ($query) {
             $query->whereHas('linkFavorite');
-        })->orderBy('order')->with(['linkFavorite'])->paginate(25);
+        })
+            // ->when(auth()->user()->role == 'owner', function ($query) {
+            //     if ((request('owner') ?? null) == 'default') {
+            //         $query->whereNull('id_user');
+            //     } elseif ((request('owner') ?? null) == 'me') {
+            //         $query->where('id_user', auth()->user()->id);
+            //     }
+            // })->when(auth()->user()->role == 'user', function ($query) {
+            //     if ((request('owner') ?? null) == 'default') {
+            //         $query->whereNull('id_user');
+            //     } elseif ((request('owner') ?? null) == 'me') {
+            //         $query->where('id_user', auth()->user()->id);
+            //     } else {
+            //         $query->where(function ($q) {
+            //             $q->whereNull('id_user')
+            //                 ->orWhere('id_user', auth()->id());
+            //         });
+            //     }
+            // })
+            ->orderBy('order')->with(['linkFavorite'])->paginate(25);
 
         return view('be.gramatik_index', compact('gramatiks'));
     }
@@ -130,6 +149,9 @@ class GramatikController extends Controller
         if ($request->id ?? null) {
             Gramatik::where('id', $request->id)->update($data);
         } else {
+            if (auth()->user()->role == 'user') {
+                $data['id_user'] = auth()->user()->id;
+            }
             Gramatik::create($data);
         }
 

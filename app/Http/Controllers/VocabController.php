@@ -178,7 +178,26 @@ class VocabController extends Controller
             $query->where('meaning', 'like', '%' . request('meaning') . '%');
         })->when(request('favorite') == 'yes', function ($query) {
             $query->whereHas('linkFavorite');
-        })->orderBy('word_type')->with(['linkFavorite'])->paginate(50);
+        })
+            ->when(auth()->user()->role == 'owner', function ($query) {
+                if ((request('owner') ?? null) == 'default') {
+                    $query->whereNull('id_user');
+                } elseif ((request('owner') ?? null) == 'me') {
+                    $query->where('id_user', auth()->user()->id);
+                }
+            })->when(auth()->user()->role == 'user', function ($query) {
+                if ((request('owner') ?? null) == 'default') {
+                    $query->whereNull('id_user');
+                } elseif ((request('owner') ?? null) == 'me') {
+                    $query->where('id_user', auth()->user()->id);
+                } else {
+                    $query->where(function ($q) {
+                        $q->whereNull('id_user')
+                            ->orWhere('id_user', auth()->id());
+                    });
+                }
+            })
+            ->orderBy('word_type')->with(['linkFavorite'])->paginate(50);
 
         $word_types = Vocab::select('word_type')->distinct()->get()->pluck('word_type')->toArray();
         return view('be.vocab_index', compact('vocabs', 'word_types'));
@@ -213,6 +232,9 @@ class VocabController extends Controller
         if ($request->id ?? null) {
             Vocab::where('id', $request->id)->update($data);
         } else {
+            if (auth()->user()->role == 'user') {
+                $data['id_user'] = auth()->user()->id;
+            }
             Vocab::create($data);
         }
 

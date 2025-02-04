@@ -58,12 +58,73 @@
                                             <label for="filterTag" class="block text-sm font-medium text-gray-700 dark:text-gray-400">Filter by Tag</label>
                                             <input type="text" id="filterTag" name="tag" value="{{ request('tag') }}" class="mt-1 block w-full border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-900 dark:text-gray-300" placeholder="Enter Tag">
                                         </div>
+                                        <div class="flex flex-col">
+                                            <label for="filterOwner" class="block text-sm font-medium text-gray-700 dark:text-gray-400">Filter by Owner</label>
+                                            <select id="filterOwner" name="owner" class="mt-1 block w-full border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-900 dark:text-gray-300">
+                                                @php
+                                                    if (auth()->user()->role == 'owner') {
+                                                        $val_owner = request('owner', 'default');
+                                                    } else {
+                                                        $val_owner = request('owner', 'all');
+                                                    }
+                                                @endphp
+                                                <option value="all" {{ $val_owner == 'all' ? 'selected' : '' }}>all</option>
+                                                <option value="default" {{ $val_owner == 'default' ? 'selected' : '' }}>default</option>
+                                                <option value="me" {{ $val_owner == 'me' ? 'selected' : '' }}>me</option>
+                                            </select>
+                                        </div>
                                     </div>
                                     <div class="col-span-full mt-4">
                                         <button type="submit" class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">Filter</button>
                                     </div>
                                 </div>
                             </form>
+                            @if (auth()->user()->role == 'user')
+                                <div class="col-span-full mt-4 mb-4 w-1/4 float-right">
+                                    <button type="button" class="btn-add-user w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors">Add your own Redemittel</button>
+                                </div>
+
+                                <div id="addRedemittelModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 items-center justify-center flex hidden z-50">
+                                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md max-h-screen overflow-y-auto">
+                                        <header class="flex justify-between items-center">
+                                            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 title-form">
+                                                Add Redemittel
+                                            </h2>
+                                            <button type="button" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" data-modal-close="addRedemittelModal">
+                                                &times;
+                                            </button>
+                                        </header>
+                                        <form method="post" action="{{ route('redemittel.store') }}" class="mt-6 space-y-6">
+                                            @csrf
+                                            <input type="text" class="hidden" id="id" name="id">
+                                            <div>
+                                                <x-input-label for="kapital" :value="__('Kapital')" />
+                                                <x-text-input id="kapital" name="kapital" type="text" class="mt-1 block w-full" :value="old('kapital')" autofocus autocomplete="kapital" />
+                                                <x-input-error class="mt-2" :messages="$errors->get('kapital')" />
+                                            </div>
+                                            <div>
+                                                <x-input-label for="de" :value="__('German Word')" />
+                                                <x-text-input id="de" name="de" type="text" class="mt-1 block w-full" :value="old('de')" required autofocus autocomplete="de" />
+                                                <x-input-error class="mt-2" :messages="$errors->get('de')" />
+                                            </div>
+                                            <div>
+                                                <x-input-label for="idn" :value="__('Indonesian Meaning')" />
+                                                <x-text-input id="idn" name="idn" type="text" class="mt-1 block w-full" :value="old('idn')" autofocus autocomplete="idn" />
+                                                <x-input-error class="mt-2" :messages="$errors->get('idn')" />
+                                            </div>
+                                            <div>
+                                                <x-input-label for="tag" :value="__('Tag')" />
+                                                <x-text-input id="tag" name="tag" type="text" class="mt-1 block w-full" :value="old('tag')" autofocus autocomplete="tag" />
+                                                <x-input-error class="mt-2" :messages="$errors->get('tag')" />
+                                            </div>
+                                            <div class="flex items-center justify-end gap-4">
+                                                <x-secondary-button type="button" data-modal-close="addRedemittelModal">{{ __('Cancel') }}</x-secondary-button>
+                                                <x-primary-button>{{ __('Save') }}</x-primary-button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            @endif
                             <div class="w-full relative overflow-x-auto shadow-md sm:rounded-lg border-slate-700 border-2">
                                 <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                                     <thead class="text-xs text-gray-700 uppercase dark:text-gray-400">
@@ -105,6 +166,20 @@
                                                         <button data-model="redemittel" data-id="{{ $word->id }}" type="button" class="favorite-btn focus:outline-none text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:ring-blue-500 font-medium rounded-lg text-sm px-2.5 py-2.5 me-2 mb-2 dark:focus:ring-blue-950">
                                                             <span class="favorite-emote">❤</span>
                                                         </button>
+                                                        @if (auth()->user()->role == 'user' && $word->id_user == auth()->user()->id)
+                                                            <button data-data="{{ $word }}" data-id="{{ $word->id }}" type="button" class="btn-edit-user focus:outline-none text-white bg-yellow-500 hover:bg-yellow-600 focus:ring-4 focus:ring-yellow-500 font-medium rounded-lg text-sm px-2.5 py-2.5 me-2 mb-2 dark:focus:ring-yellow-950">
+                                                                ✏️
+                                                            </button>
+                                                            <button type="button" class="delete-btn focus:outline-none text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:ring-red-500 font-medium rounded-lg text-sm px-2.5 py-2.5 me-2 mb-2 dark:focus:ring-red-950">
+                                                                🗑️
+                                                            </button>
+
+                                                            <form action="{{ route('redemittel.destroy', $word->id) }}" class="hidden delete-form" method="POST">
+                                                                @csrf
+                                                                <input type="hidden" name="_method" value="DELETE" />
+                                                                <button type="submit"></button>
+                                                            </form>
+                                                        @endif
                                                         @if (auth()->user()->role == 'owner')
                                                             <button type="button" data-data="{{ $word }}" class="clone-btn focus:outline-none text-white bg-green-500 hover:bg-green-600 focus:ring-4 focus:ring-green-500 font-medium rounded-lg text-sm px-2.5 py-2.5 me-2 mb-2 dark:focus:ring-green-950">
                                                                 📄
@@ -241,6 +316,34 @@
     </div>
     @push('js')
         <script type="module">
+            $(document).ready(function() {
+                $('.btn-add-user').on('click', function() {
+                    $('#addRedemittelModal').removeClass('hidden');
+                    $('.title-form').text('Add Redemittel');
+                    $('#addRedemittelModal input').not('[name=_token]').val("").trigger('change')
+                    $('#addRedemittelModal textarea').text("").val("").trigger('change')
+                    $("#addRedemittelModal option:selected").prop("selected", false)
+                });
+
+                $('[data-modal-close]').on('click', function() {
+                    const modal = $(this).data('modal-close');
+                    $('#' + modal).addClass('hidden');
+                });
+                $('.btn-edit-user').click(function(e) {
+                    $('#addRedemittelModal').removeClass('hidden');
+
+                    let data = $(this).data('data');
+
+                    $.each(data, function(i, v) {
+                        console.log(i, v)
+                        $('#' + i).val(v);
+                    });
+
+                    $('.title-form').text('Edit Redemittel');
+                });
+            });
+        </script>
+        <script type="module">
             document.querySelectorAll('[data-modal-target]').forEach(button => {
                 button.addEventListener('click', () => {
                     const modal = document.getElementById(button.getAttribute('data-modal-target'));
@@ -300,10 +403,10 @@
                 $('.title-form').text('Clone Redemittel');
             });
             $('.reset-btn').click(function(e) {
-                $('.title-form').text('Add Redemittel');
-                $('input').val("").trigger('change')
-                $('textarea').text("").val("").trigger('change')
-                $("option:selected").prop("selected", false)
+                $(this).parents('form').find('.title-form').text('Add Redemittel');
+                $(this).parents('form').find('input').not('[name=_token]').val("").trigger('change')
+                $(this).parents('form').find('textarea').text("").val("").trigger('change')
+                $(this).parents('form').find("option:selected").prop("selected", false)
             });
             $('.delete-btn').click(function(e) {
                 Swal.fire({

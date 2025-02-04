@@ -30,6 +30,9 @@
                     <x-nav-link :href="route('game.index')" :active="request()->is('game*')">
                         {{ __('Game') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('forum.index')" :active="request()->is('forum*')">
+                        {{ __('Forum') }}
+                    </x-nav-link>
                     <x-nav-link :href="route('report.index')" :active="request()->is('report*')">
                         {{ __('Report') }}
                     </x-nav-link>
@@ -141,6 +144,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('game.index')" :active="request()->is('game*')">
                 {{ __('Game') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('forum.index')" :active="request()->is('forum*')">
+                {{ __('Forum') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('report.index')" :active="request()->is('report*')">
                 {{ __('Report') }}

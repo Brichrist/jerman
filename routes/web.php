@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ForumController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RedemittelController;
 use App\Http\Controllers\GramatikController;
@@ -7,6 +8,7 @@ use App\Http\Controllers\VocabController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\GameController;
+use App\Http\Controllers\TemaForumController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -40,6 +42,12 @@ Route::middleware(['auth','expired'])->group(function () {
     Route::post('/gramatik/practice', [GramatikController::class, 'practice'])->name('gramatik.practice');
     Route::resource('/report', ReportController::class)->name('index', 'report.index');
 
+    Route::resource('/forum', TemaForumController::class)->name('index', 'forum.index');
+    
+    Route::get('/forum-chat/{id}', [ForumController::class, 'index']);
+    Route::get('/forum-chat/messages/{id}', [ForumController::class, 'getMessages']);
+    Route::get('/forum-chat/stream/{id}', [ForumController::class, 'stream']);
+    Route::post('/forum-chat/send', [ForumController::class, 'send']);
 
     Route::get('/ai', [App\Http\Controllers\AiController::class, 'index'])->name('ai.index');
     Route::post('/ai', [App\Http\Controllers\AiController::class, 'askAi'])->name('ai.askAi');
