@@ -56,10 +56,12 @@
                 <div class="border-t px-6 py-4 bg-white rounded-b-2xl">
                     <form id="messageForm" class="flex gap-3" @if ($data->locked == 'yes' && auth()->user()->role !== 'owner') style="display: none;" @endif>
                         @csrf
-                        <input type="text" name="message" class="flex-1 rounded-lg border border-gray-200 px-4 py-2.5 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400" placeholder="Tulis pesan..." id="message" autocomplete="off">
-                        <button type="button" id="sendButton" class="px-6 py-2.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium">
-                            Kirim
-                        </button>
+                        <textarea type="text" name="message" class="flex-1 rounded-lg border border-gray-200 px-4 py-2.5 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400" placeholder="Tulis pesan..." id="message" autocomplete="off"></textarea>
+                        <div class="flex gap-3 justify-end flex-col">
+                            <button type="button" id="sendButton" class="px-6 py-2.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium">
+                                Kirim
+                            </button>
+                        </div>
                     </form>
                     @if ($data->locked == 'yes' && auth()->user()->role !== 'owner')
                         <div class="text-center text-gray-500">
@@ -100,15 +102,15 @@
                                 rounded-lg px-4 py-2">
                                 <div class="flex items-baseline gap-2 ${isCurrentUser ? 'justify-end' : ''}">
                                     ${!isCurrentUser ? `
-                                                <span class="font-medium text-sm ${isOwner ? 'text-yellow-600' : 'text-blue-600'}">
-                                                    ${msg.link_user?.name || 'User'} 
-                                                    ${isOwner ? '<span class="ml-1 px-2 py-0.5 bg-yellow-200 text-yellow-700 text-xs rounded-full">Developer</span>' : ''}
-                                                </span>
-                                            ` : ''}
+                                                        <span class="font-medium text-sm ${isOwner ? 'text-yellow-600' : 'text-blue-600'}">
+                                                            ${msg.link_user?.name || 'User'} 
+                                                            ${isOwner ? '<span class="ml-1 px-2 py-0.5 bg-yellow-200 text-yellow-700 text-xs rounded-full">Developer</span>' : ''}
+                                                        </span>
+                                                    ` : ''}
                                     <span class="text-xs text-gray-500">${formatTime(msg.created_at)}</span>
                                     ${isCurrentUser ? `<span class="font-medium text-sm text-blue-600">You</span>` : ''}
                                 </div>
-                                <p class="text-gray-700 mt-1">${msg.description}</p>
+                                <p class="text-gray-700 mt-1">${msg.description.replace(/\n/g, '<br>')}</p>
                             </div>
                         </div>
                     </div>
