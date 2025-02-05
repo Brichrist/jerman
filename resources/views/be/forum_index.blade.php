@@ -116,6 +116,12 @@
                     </div>
                     `;
                 }
+                let isScrolledToBottom = true;
+
+                $messages.on('scroll', function() {
+                    isScrolledToBottom = Math.abs(($messages[0].scrollHeight - $messages.scrollTop()) - $messages.height()) < 200;
+                    console.log(isScrolledToBottom);
+                });
 
                 // Function untuk reload messages
                 function loadMessages() {
@@ -123,16 +129,22 @@
                         url: '/forum-chat/messages/' + id_tema, // Endpoint baru yang perlu dibuat
                         method: 'GET',
                         success: function(data) {
-                            // Balik urutan array data sebelum di-render
+                            const scrollPos = $messages.scrollTop();
                             const reversedData = data.reverse();
                             $messages.html(reversedData.map(createMessageHTML).join(''));
-                            $messages.scrollTop($messages[0].scrollHeight);
+
+                            if (isScrolledToBottom) {
+                                $messages.scrollTop($messages[0].scrollHeight);
+                            } else {
+                                $messages.scrollTop(scrollPos);
+                            }
                         }
                     });
                 }
 
                 // Load messages setiap beberapa detik
                 setInterval(loadMessages, 15000); // Reload setiap 3 detik
+                // setInterval(loadMessages, 3000); // Reload setiap 3 detik
 
                 // Load messages pertama kali
                 loadMessages();
@@ -158,6 +170,7 @@
                             }),
                             success: function(response) {
                                 $messageInput.val('').focus();
+                                isScrolledToBottom = true
                                 // Reload messages setelah mengirim
                                 loadMessages();
                             },
