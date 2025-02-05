@@ -120,7 +120,7 @@
 
                 $messages.on('scroll', function() {
                     isScrolledToBottom = Math.abs(($messages[0].scrollHeight - $messages.scrollTop()) - $messages.height()) < 200;
-                    console.log(isScrolledToBottom);
+                    // console.log(isScrolledToBottom);
                 });
 
                 // Function untuk reload messages
