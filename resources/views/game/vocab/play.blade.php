@@ -982,7 +982,7 @@
                                     <span class="favorite-emote">❤</span>
                                 @endif
                             </td>
-                            <td>{{ $vocabulary->meaning }}</td>
+                            <td class="meaning">{{ $vocabulary->meaning }}</td>
                             <td style="display: none">{!! $vocabulary->example !!}</td>
                         </tr>
                     @endforeach
@@ -1204,7 +1204,7 @@
 
         // Handler untuk hide right column
         $('#hideRightBtn').on('click', function() {
-            const rightCells = $('.list-mode table td:last-child');
+            const rightCells = $('.list-mode table td.meaning');
             const hiddenRightCells = rightCells.filter('.hidden-cell').length;
 
             if (hiddenRightCells >= rightCells.length / 2) {
