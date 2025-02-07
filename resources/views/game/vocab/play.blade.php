@@ -371,51 +371,69 @@
             /* Penting untuk word wrap bekerja */
         }
 
-        .list-mode th,
-        .list-mode td {
-            padding: 0.8rem;
-            border: 1px solid #ddd;
-            text-align: left;
-            word-wrap: break-word;
-            /* Memungkinkan word wrap */
-            overflow-wrap: break-word;
-            max-width: 0;
-            /* Diperlukan untuk word wrap bekerja dengan table-layout: fixed */
+        .list-mode tr.read {
+            background-color: rgba(108, 92, 231, 0.1);
         }
 
-        /* Atur lebar kolom */
-        .list-mode .german-column {
-            width: 50%;
-            /* Atau sesuaikan dengan kebutuhan */
+        .list-mode tr.reading {
+            background-color: rgba(108, 92, 231, 0.2);
+            transition: background-color 0.3s ease;
         }
 
-        .list-mode .indonesian-column {
-            width: 50%;
-            /* Atau sesuaikan dengan kebutuhan */
-        }
+        .progress-indicator {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: #6c5ce7;
+            width: 0;
+            transition: width 0.3s ease;
 
-        /* Pastikan emoji hati tidak wrap */
-        .favorite-emote {
-            display: inline-block;
-            white-space: nowrap;
-        }
+            .list-mode th,
+            .list-mode td {
+                padding: 0.8rem;
+                border: 1px solid #ddd;
+                text-align: left;
+                word-wrap: break-word;
+                /* Memungkinkan word wrap */
+                overflow-wrap: break-word;
+                max-width: 0;
+                /* Diperlukan untuk word wrap bekerja dengan table-layout: fixed */
+            }
 
-        /* Optional: tambahkan hover state untuk meningkatkan UX */
-        .list-mode tr:hover {
-            background-color: rgba(108, 92, 231, 0.05);
-        }
+            /* Atur lebar kolom */
+            .list-mode .german-column {
+                width: 50%;
+                /* Atau sesuaikan dengan kebutuhan */
+            }
 
-        .example-speaker {
-            cursor: pointer;
-            margin-left: 0.5rem;
-            transition: transform 0.2s ease;
-        }
+            .list-mode .indonesian-column {
+                width: 50%;
+                /* Atau sesuaikan dengan kebutuhan */
+            }
 
-        .example-speaker:hover {
-            transform: scale(1.2);
-        }
+            /* Pastikan emoji hati tidak wrap */
+            .favorite-emote {
+                display: inline-block;
+                white-space: nowrap;
+            }
 
-        /* .example-content .example {
+            /* Optional: tambahkan hover state untuk meningkatkan UX */
+            .list-mode tr:hover {
+                background-color: rgba(108, 92, 231, 0.05);
+            }
+
+            .example-speaker {
+                cursor: pointer;
+                margin-left: 0.5rem;
+                transition: transform 0.2s ease;
+            }
+
+            .example-speaker:hover {
+                transform: scale(1.2);
+            }
+
+            /* .example-content .example {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -447,7 +465,7 @@
             border-radius: 20px;
             width: 90%;
             max-width: 500px;
-            max-height: 70vh;
+            max-height: 85vh;
             overflow-y: auto;
             padding: 2rem;
             position: relative;
@@ -520,6 +538,274 @@
             background: rgba(108, 92, 231, 0.1);
         }
     </style>
+    <style>
+        .audio-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 50px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .audio-modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .audio-modal-content {
+            background: white;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 420px;
+            padding: 2rem;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            transform: scale(0.7);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .audio-modal-content.show {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .audio-modal-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .audio-modal-title {
+            color: #6c5ce7;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .audio-modal-subtitle {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .audio-settings-group {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .setting-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .setting-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .setting-label {
+            display: block;
+            color: #2d3436;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .setting-value {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .range-slider {
+            flex: 1;
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #dfe6e9;
+            outline: none;
+        }
+
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #6c5ce7;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .range-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        .range-value {
+            min-width: 45px;
+            padding: 0.3rem 0.8rem;
+            background: #6c5ce7;
+            color: white;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .option-group {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .option-button {
+            flex: 1;
+            min-width: 100px;
+            padding: 0.8rem;
+            border: 2px solid #6c5ce7;
+            background: white;
+            color: #6c5ce7;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option-button.active {
+            background: #6c5ce7;
+            color: white;
+        }
+
+        .option-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(108, 92, 231, 0.2);
+        }
+
+        .start-button {
+            width: 100%;
+            padding: 1rem;
+            background: #6c5ce7;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 1.5rem;
+        }
+
+        .start-button:hover {
+            background: #5a4bd1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(108, 92, 231, 0.2);
+        }
+
+        .audio-modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #ff7675;
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+        }
+
+        .audio-modal-close:hover {
+            background: #ff5252;
+            transform: rotate(90deg);
+        }
+
+        /* Animation for active state */
+        .option-button.active {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(108, 92, 231, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(108, 92, 231, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(108, 92, 231, 0);
+            }
+        }
+
+        .control-buttons-container {
+            display: none;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .control-buttons-container.show {
+            display: flex !important;
+        }
+
+        .control-buttons-container button {
+            flex: 1;
+        }
+
+        .control-buttons-container {
+            display: none;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        /* Pastikan start button dan control buttons bisa tampil bersamaan */
+        .start-button,
+        .control-buttons-container {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .resume-button,
+        .restart-button {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .resume-button {
+            background: #00b894;
+            color: white;
+        }
+
+        .restart-button {
+            background: #ff7675;
+            color: white;
+        }
+
+        .resume-button:hover,
+        .restart-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(108, 92, 231, 0.2);
+        }
+    </style>
 </head>
 
 <body>
@@ -536,6 +822,51 @@
             @endif
             <button id="exampleBtn">Example</button>
             <button id="listModeBtn">List Mode</button>
+            <button id="playAudio" style="display: none">Play Audio</button>
+        </div>
+        <div class="audio-modal" id="audioModal">
+            <div class="audio-modal-content">
+                <button class="audio-modal-close" id="closeAudioModal">✕</button>
+                <div class="audio-modal-header">
+                    <h2 class="audio-modal-title">Audio Settings</h2>
+                    <p class="audio-modal-subtitle">Customize your audio playback experience</p>
+                </div>
+
+                <div class="audio-settings-group">
+                    <div class="setting-item">
+                        <label class="setting-label">Speech Rate</label>
+                        <div class="setting-value">
+                            <input type="range" id="rateSlider" class="range-slider" min="0.5" max="2" step="0.1" value="1">
+                            <span class="range-value" id="rateValue">1.0x</span>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <label class="setting-label">Pause</label>
+                        <div class="setting-value">
+                            <input type="range" id="pauseSlider" class="range-slider" min="0.5" max="2" step="0.1" value="1">
+                            <span class="range-value" id="pauseValue">1.0x</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <label class="setting-label">What to read?</label>
+                    <div class="option-group">
+                        <button class="option-button active" data-option="german">German</button>
+                        <button class="option-button" data-option="indonesia">Bahasa</button>
+                        <button class="option-button" data-option="example">Example</button>
+                    </div>
+                </div>
+
+                <button class="start-button" id="startAudio">
+                    Start Reading ▶
+                </button>
+                <div class="control-buttons-container" id="controlButtons">
+                    <button class="resume-button" id="resumeButton">Resume ▶</button>
+                    <button class="restart-button" id="restartButton">Restart 🔄</button>
+                </div>
+            </div>
         </div>
         <div class="example-modal" id="exampleModal">
             <div class="example-modal-content">
@@ -605,6 +936,7 @@
             ({{ $kapital ?? null }})
         </div>
         <div class="list-mode">
+            <hr>
             <div class="list-controls" style="display: none;">
                 <button id="hideLeftBtn">Hide Left</button>
                 <button id="hideRightBtn">Hide Right</button>
@@ -615,6 +947,7 @@
                     <tr>
                         <th>German</th>
                         <th>Indonesian</th>
+                        <th style="display: none">example</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -627,6 +960,7 @@
                                 @endif
                             </td>
                             <td>{{ $vocabulary->meaning }}</td>
+                            <td style="display: none">{!! $vocabulary->example !!}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -648,6 +982,19 @@
             </button>
         </div>
     </div>
+    <script>
+        $(document).ready(function() {
+            $('#playAudio').on('click', function() {
+                $('#audioModal').addClass('show');
+                $('#audioRate').val(1);
+                $('#audioRate').attr('data-audio', 'A');
+                $('#audioRate').focus();
+                setTimeout(() => {
+                    $('.audio-modal-content').addClass('show');
+                }, 50);
+            });
+        });
+    </script>
     <script>
         // Tambahkan di bagian inisialisasi
         $(document).ready(function() {
@@ -804,17 +1151,19 @@
         $('#listModeBtn').on('touchstart click', function(e) {
             e.preventDefault();
             isListMode = !isListMode;
-
             if (isListMode) {
                 $('.vocab-pages, .buttons').hide();
                 $('.list-mode, .list-controls').show();
                 $(this).text('Card Mode');
                 $('#backBtn, #editBtn, #exampleBtn').hide();
+                $('#playAudio').show();
             } else {
                 $('.vocab-pages, .buttons').show();
                 $('.list-mode, .list-controls').hide();
                 $(this).text('List Mode');
                 $('#backBtn, #editBtn, #exampleBtn').show();
+
+                $('#playAudio').hide();
             }
         });
 
@@ -925,12 +1274,18 @@
             });
 
             // Example Modal Close
-            $('#closeExampleModal, #exampleModal').on('click', function(e) {
+            $('#closeExampleModal, #exampleModal, #audioModal').on('click', function(e) {
                 // Close modal only if clicking on modal background or close button
                 if (e.target === this || $(e.target).hasClass('example-modal-close')) {
                     $('.example-modal-content').removeClass('show');
                     setTimeout(() => {
                         $('#exampleModal').removeClass('show');
+                    }, 300);
+                }
+                if (e.target === this || $(e.target).hasClass('audio-modal-close')) {
+                    $('.audio-modal-content').removeClass('show');
+                    setTimeout(() => {
+                        $('#audioModal').removeClass('show');
                     }, 300);
                 }
             });
@@ -1136,7 +1491,7 @@
             voices.forEach((voice, index) => {
                 // console.log(`${index + 1}. ${voice.name} - (${voice.lang})`);
             });
-            
+
 
             let germanVoices = voices.filter(voice => voice.lang === 'de_DE');
             let text = ""
@@ -1145,6 +1500,194 @@
             });
             // alert(text)
         };
+    </script>
+    <script>
+        // Script untuk audio functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // State variables
+            let lastPosition = 0;
+            const resumeButton = document.getElementById('resumeButton');
+            const restartButton = document.getElementById('restartButton');
+            const controlButtons = document.getElementById('controlButtons');
+            const startButton = document.getElementById('startAudio');
+            const synth = window.speechSynthesis;
+            let isReading = false;
+            let currentRow = null;
+
+            // Initialize UI state
+            controlButtons.style.display = 'none';
+            document.getElementById('rateValue').textContent = '1.0x';
+            document.getElementById('pauseValue').textContent = '1.0x';
+
+            // Update slider values on input
+            document.getElementById('rateSlider').addEventListener('input', function() {
+                document.getElementById('rateValue').textContent = this.value + 'x';
+            });
+
+            document.getElementById('pauseSlider').addEventListener('input', function() {
+                document.getElementById('pauseValue').textContent = this.value + 'x';
+            });
+
+            // Option buttons dengan multiple selection
+            const optionButtons = document.querySelectorAll('.option-button');
+            optionButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                });
+            });
+
+            function sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            function createUtterance(text, lang, rate) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = lang;
+                utterance.rate = rate;
+                return utterance;
+            }
+
+            async function speakText(text, lang, rate) {
+                return new Promise((resolve) => {
+                    const utterance = createUtterance(text, lang, rate);
+                    utterance.onend = resolve;
+                    synth.speak(utterance);
+                });
+            }
+
+            function updateRowState(row, state) {
+                document.querySelectorAll('.list-mode tbody tr').forEach(r => {
+                    r.classList.remove('reading');
+                });
+
+                if (state === 'reading') {
+                    row.classList.add('reading');
+                    // row.scrollIntoView({
+                    //     behavior: 'smooth',
+                    //     block: 'center'
+                    // });
+                } else if (state === 'read') {
+                    row.classList.remove('reading');
+                    row.classList.add('read');
+                }
+            }
+
+            async function processRow(row, rate, pause) {
+                if (!isReading) return;
+
+                updateRowState(row, 'reading');
+                currentRow = row;
+
+                const germanText = row.cells[0].textContent.replace('❤', '').trim();
+                const indoText = row.cells[1].textContent.trim();
+                const exampleText = row.cells[2]?.textContent.trim();
+
+                // Baca bahasa Jerman jika opsi dipilih
+                if (document.querySelector('[data-option="german"].active')) {
+                    await speakText(germanText, 'de-DE', rate);
+                }
+
+                // Baca bahasa Indonesia jika opsi dipilih
+                if (document.querySelector('[data-option="indonesia"].active')) {
+                    await sleep(500); // Jeda 0.5 detik sebelum membaca bahasa Indonesia
+                    await speakText(indoText, 'id-ID', rate);
+                }
+
+                // Baca contoh jika opsi dipilih
+                if (document.querySelector('[data-option="example"].active') && exampleText) {
+                    await sleep(500); // Jeda 0.5 detik sebelum membaca contoh
+                    await speakText(exampleText, 'de-DE', rate);
+                }
+
+                if (isReading) {
+                    updateRowState(row, 'read');
+                    await sleep(pause * 1000); // Jeda antar baris sesuai setting user
+                }
+            }
+
+            async function startReading(fromPosition = 0) {
+                const rate = parseFloat(document.getElementById('rateSlider').value);
+                const pause = parseFloat(document.getElementById('pauseSlider').value);
+                const rows = Array.from(document.querySelectorAll('.list-mode tbody tr'));
+
+                for (let i = fromPosition; i < rows.length; i++) {
+                    if (!isReading) break;
+                    lastPosition = i;
+                    await processRow(rows[i], rate, pause);
+                }
+
+                if (isReading) {
+                    isReading = false;
+                    startButton.textContent = 'Start Reading ▶';
+                    startButton.style.display = 'block';
+                    controlButtons.classList.remove('show');
+                }
+            }
+
+            startButton.addEventListener('click', async function() {
+                if (isReading) {
+                    isReading = false;
+                    synth.cancel();
+                    this.style.display = 'none'; // Hide the start button
+                    this.textContent = 'Start Reading ▶';
+                    controlButtons.classList.add('show'); // Show the control buttons (resume & restart)
+                    if (currentRow) {
+                        updateRowState(currentRow, 'read');
+                    }
+                    return;
+                }
+
+                // Check if at least one option is selected
+                const hasSelectedOption = document.querySelector('.option-button.active');
+                if (!hasSelectedOption) {
+                    alert('Please select at least one language option');
+                    return;
+                }
+
+                isReading = true;
+                this.textContent = 'Stop Reading ⏹';
+                controlButtons.classList.remove('show');
+                await startReading(0);
+            });
+
+            resumeButton.addEventListener('click', async function() {
+                isReading = true;
+                controlButtons.classList.remove('show');
+                startButton.style.display = 'block';
+                startButton.textContent = 'Stop Reading ⏹';
+                await startReading(lastPosition);
+            });
+
+            restartButton.addEventListener('click', async function() {
+                document.querySelectorAll('.list-mode tbody tr').forEach(row => {
+                    row.classList.remove('read', 'reading');
+                });
+                lastPosition = 0;
+                isReading = true;
+                controlButtons.classList.remove('show');
+                startButton.style.display = 'block';
+                startButton.textContent = 'Stop Reading ⏹';
+                await startReading(0);
+            });
+
+            document.getElementById('closeAudioModal').addEventListener('click', function() {
+                isReading = false;
+                synth.cancel();
+                startButton.textContent = 'Start Reading ▶';
+                startButton.style.display = 'block';
+                controlButtons.classList.remove('show');
+                if (currentRow) {
+                    updateRowState(currentRow, 'read');
+                }
+
+                const modal = document.getElementById('audioModal');
+                const modalContent = modal.querySelector('.audio-modal-content');
+                modalContent.classList.remove('show');
+                setTimeout(() => {
+                    modal.classList.remove('show');
+                }, 300);
+            });
+        });
     </script>
 </body>
 
