@@ -1633,7 +1633,7 @@
 
                 if (state === 'reading') {
                     row.classList.add('reading');
-                    let germanText = row.cells[1].textContent.replace('❤', '').trim();
+                    let germanText = row.cells[1].textContent.trim();
                     let indoText = row.cells[2].textContent.trim();
                     let exampleText = row.cells[3]?.textContent.trim();
                     $('.audio-preview-group').find('.jerman').text(germanText + " = ")
