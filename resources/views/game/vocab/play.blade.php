@@ -1396,6 +1396,9 @@
 
         $('#nextBtn').on('touchstart click', function(e) {
             e.preventDefault();
+            if ($(this).data('disabled')) return;
+            $(this).data('disabled', true);
+           
             if (showFavoritesOnly) {
                 currentIndex = (favoriteCards.indexOf(currentIndex) + 1) % favoriteCards.length;
                 showNextFavoriteCard();
@@ -1404,6 +1407,9 @@
                 showCard(currentIndex);
                 updateProgressBar('normal');
             }
+            setTimeout(() => {
+                $(this).data('disabled', false);
+            }, 500);
         });
 
         $('#favoriteBtn').on('touchstart click', function(e) {
