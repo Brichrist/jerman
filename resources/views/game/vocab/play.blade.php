@@ -602,6 +602,20 @@
             margin-bottom: 1.5rem;
         }
 
+        .audio-preview-group {
+            text-align: center;
+            background: #f0f0f0;
+            width: 100%;
+            min-height: 100px;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .preview-item {
+            margin-bottom: 1.5rem;
+        }
+
         .setting-item {
             margin-bottom: 1.5rem;
         }
@@ -859,6 +873,15 @@
                     </div>
                 </div>
 
+                <div class="audio-preview-group">
+                    <div class="preview-item">
+                        <span class="jerman"></span>
+                        <span class="indo"></span>
+                    </div>
+                    <div class="preview-item">
+                        <span class="sample"></span>
+                    </div>
+                </div>
                 <button class="start-button" id="startAudio">
                     Start Reading ▶
                 </button>
@@ -1562,6 +1585,13 @@
 
                 if (state === 'reading') {
                     row.classList.add('reading');
+                    let germanText = row.cells[0].textContent.replace('❤', '').trim();
+                    let indoText = row.cells[1].textContent.trim();
+                    let exampleText = row.cells[2]?.textContent.trim();
+                    $('.audio-preview-group').find('.jerman').text(germanText + " = ")
+                    $('.audio-preview-group').find('.indo').text(indoText)
+                    $('.audio-preview-group').find('.sample').text(exampleText)
+                    // console.log($('.audio-preview-group').find('.sample').length, exampleText)
                     // row.scrollIntoView({
                     //     behavior: 'smooth',
                     //     block: 'center'
