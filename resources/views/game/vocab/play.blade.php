@@ -991,17 +991,17 @@
         </div>
 
         <div class="buttons">
+            <button id="speakBtn" data-aos="fade-up" data-aos-delay="500">
+                <span class="button-text">🔊</span>
+            </button>
+            <button id="favoriteBtn" data-aos="fade-up" data-aos-delay="400">
+                <span class="button-text">❤</span>
+            </button>
             <button id="revealBtn" data-aos="fade-up" data-aos-delay="200">
                 <span class="button-text">Reveal</span>
             </button>
             <button id="nextBtn" data-aos="fade-up" data-aos-delay="300">
                 <span class="button-text">Next</span>
-            </button>
-            <button id="favoriteBtn" data-aos="fade-up" data-aos-delay="400">
-                <span class="button-text">❤</span>
-            </button>
-            <button id="speakBtn" data-aos="fade-up" data-aos-delay="500">
-                <span class="button-text">🔊</span>
             </button>
         </div>
     </div>
