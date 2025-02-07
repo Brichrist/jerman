@@ -829,7 +829,7 @@
                 <button class="audio-modal-close" id="closeAudioModal">✕</button>
                 <div class="audio-modal-header">
                     <h2 class="audio-modal-title">Audio Settings</h2>
-                    <p class="audio-modal-subtitle">Customize your audio playback experience</p>
+                    <p class="audio-modal-subtitle">jika suara yang di hasilkan jelek (khususnya HP). coba lihat petunjuk penggunaan <a href="https://jerman.suralaya.web.id/forum-chat/1" target="_blank">di link ini</a> no 11</p>
                 </div>
 
                 <div class="audio-settings-group">
@@ -932,7 +932,7 @@
                 </div>
             @endforeach
         </div>
-        <div style="text-align: center; margin-top: 10px">
+        <div style="text-align: center; margin: 20px 0">
             ({{ $kapital ?? null }})
         </div>
         <div class="list-mode">
