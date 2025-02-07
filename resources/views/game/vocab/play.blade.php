@@ -852,6 +852,21 @@
             margin-top: 0.5rem;
             display: none;
         }
+
+        @media (max-width: 600px) {
+            .notification-controls {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: rgba(255, 255, 255, 0.95);
+                padding: 1rem;
+                box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+                z-index: 1000;
+                display: flex;
+                justify-content: space-around;
+            }
+        }
     </style>
 </head>
 
@@ -1049,6 +1064,29 @@
     </div>
     <script>
         $(document).ready(function() {
+            // Register service worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => console.log('ServiceWorker registered'))
+                    .catch(err => console.error('ServiceWorker registration failed:', err));
+            }
+
+            // Handle messages from service worker
+            navigator.serviceWorker.addEventListener('message', (event) => {
+                if (event.data.action === 'stopAudio') {
+                    isReading = false;
+                    synth.cancel();
+                    startButton.textContent = 'Start Reading ▶';
+                } else if (event.data.action === 'pauseAudio') {
+                    isReading = false;
+                    synth.pause();
+                    startButton.textContent = 'Resume ▶';
+                } else if (event.data.action === 'resumeAudio') {
+                    isReading = true;
+                    synth.resume();
+                    startButton.textContent = 'Stop Reading ⏹';
+                }
+            });
             $('#playAudio').on('click', function() {
                 $('#audioModal').addClass('show');
                 $('#audioRate').val(1);
@@ -1684,20 +1722,48 @@
             }
 
             async function startReading(fromPosition = 0) {
+                // Request notification permission
+                if ('Notification' in window) {
+                    const permission = await Notification.requestPermission();
+                    if (permission === 'granted') {
+                        // Show notification with controls
+                        const notification = new Notification('German Vocabulary', {
+                            body: 'Audio is playing in background',
+                            icon: '/favicon.ico', // Sesuaikan dengan icon Anda
+                            tag: 'vocab-audio',
+                            renotify: true,
+                            silent: true,
+                            actions: [{
+                                    action: 'pause',
+                                    title: '⏸ Pause'
+                                },
+                                {
+                                    action: 'stop',
+                                    title: '⏹ Stop'
+                                }
+                            ]
+                        });
+                    }
+                }
+
                 const rate = parseFloat(document.getElementById('rateSlider').value);
                 const pause = parseFloat(document.getElementById('pauseSlider').value);
                 const startNumber = parseInt(document.getElementById('startNumber').value) || 1;
                 const rows = Array.from(document.querySelectorAll('.list-mode tbody tr'));
 
-                // Validasi nomor awal
                 if (startNumber < 1 || startNumber > rows.length) {
                     document.getElementById('numberError').style.display = 'block';
                     return;
                 }
                 document.getElementById('numberError').style.display = 'none';
 
-                // Mulai dari nomor yang diinginkan (kurangi 1 karena array dimulai dari 0)
                 let startIndex = Math.max(startNumber - 1, fromPosition);
+
+                // Set audio context
+                if ('AudioContext' in window) {
+                    const audioContext = new AudioContext();
+                    await audioContext.resume();
+                }
 
                 for (let i = startIndex; i < rows.length; i++) {
                     if (!isReading) break;
