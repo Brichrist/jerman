@@ -819,6 +819,39 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(108, 92, 231, 0.2);
         }
+
+        .start-number-input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-size: 1rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .start-number-input:focus {
+            border-color: #6c5ce7;
+            outline: none;
+        }
+
+        .start-number-input::-webkit-inner-spin-button,
+        .start-number-input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .start-number-input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .setting-error {
+            color: #ff5252;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
     </style>
 </head>
 
@@ -881,6 +914,13 @@
                     <div class="preview-item">
                         <span class="sample"></span>
                     </div>
+                </div>
+                <div class="setting-item">
+                    <label class="setting-label">Start from number</label>
+                    <div class="setting-value">
+                        <input type="number" id="startNumber" class="start-number-input" min="1" placeholder="Enter start number">
+                    </div>
+                    <div class="setting-error" id="numberError">Please enter a valid number between 1 and total words</div>
                 </div>
                 <button class="start-button" id="startAudio">
                     Start Reading ▶
@@ -968,6 +1008,7 @@
             <table>
                 <thead>
                     <tr>
+                        <th style="width: 50px">no</th>
                         <th>German</th>
                         <th>Indonesian</th>
                         <th style="display: none">example</th>
@@ -976,6 +1017,7 @@
                 <tbody>
                     @foreach ($vocabularies as $vocabulary)
                         <tr>
+                            <td style="width: 50px">{{ $loop->iteration }}</td>
                             <td class="german-column {{ $vocabulary->linkfavorite->count() > 0 ? 'favorite' : '' }}">
                                 {{ $vocabulary->german_word }}
                                 @if ($vocabulary->linkfavorite->count() > 0)
@@ -1107,11 +1149,11 @@
                         // Update list mode
                         let targetRow = $(`.list-mode tr td:contains('${currentWord}')`).parent();
                         if (isIndonesianMode) {
-                            targetRow.find('td:first').html(newIndonesian + isFavorite);
-                            targetRow.find('td:last').text(newGerman);
+                            targetRow.find('td.german-column').html(newIndonesian + isFavorite);
+                            targetRow.find('td.meaning').text(newGerman);
                         } else {
-                            targetRow.find('td:first').html(newGerman + isFavorite);
-                            targetRow.find('td:last').text(newIndonesian);
+                            targetRow.find('td.german-column').html(newGerman + isFavorite);
+                            targetRow.find('td.meaning').text(newIndonesian);
                         }
 
                         $('.edit-form').hide();
@@ -1192,7 +1234,7 @@
 
         // Handler untuk hide left column
         $('#hideLeftBtn').on('click', function() {
-            const leftCells = $('.list-mode table td:first-child');
+            const leftCells = $('.list-mode table td.german-column');
             const hiddenLeftCells = leftCells.filter('.hidden-cell').length;
 
             if (hiddenLeftCells >= leftCells.length / 2) {
@@ -1398,7 +1440,7 @@
             e.preventDefault();
             if ($(this).data('disabled')) return;
             $(this).data('disabled', true);
-           
+
             if (showFavoritesOnly) {
                 currentIndex = (favoriteCards.indexOf(currentIndex) + 1) % favoriteCards.length;
                 showNextFavoriteCard();
@@ -1591,9 +1633,9 @@
 
                 if (state === 'reading') {
                     row.classList.add('reading');
-                    let germanText = row.cells[0].textContent.replace('❤', '').trim();
-                    let indoText = row.cells[1].textContent.trim();
-                    let exampleText = row.cells[2]?.textContent.trim();
+                    let germanText = row.cells[1].textContent.replace('❤', '').trim();
+                    let indoText = row.cells[2].textContent.trim();
+                    let exampleText = row.cells[3]?.textContent.trim();
                     $('.audio-preview-group').find('.jerman').text(germanText + " = ")
                     $('.audio-preview-group').find('.indo').text(indoText)
                     $('.audio-preview-group').find('.sample').text(exampleText)
@@ -1614,9 +1656,9 @@
                 updateRowState(row, 'reading');
                 currentRow = row;
 
-                const germanText = row.cells[0].textContent.replace('❤', '').trim();
-                const indoText = row.cells[1].textContent.trim();
-                const exampleText = row.cells[2]?.textContent.trim();
+                const germanText = row.cells[1].textContent.replace('❤', '').trim();
+                const indoText = row.cells[2].textContent.trim();
+                const exampleText = row.cells[3]?.textContent.trim();
 
                 // Baca bahasa Jerman jika opsi dipilih
                 if (document.querySelector('[data-option="german"].active')) {
@@ -1644,9 +1686,20 @@
             async function startReading(fromPosition = 0) {
                 const rate = parseFloat(document.getElementById('rateSlider').value);
                 const pause = parseFloat(document.getElementById('pauseSlider').value);
+                const startNumber = parseInt(document.getElementById('startNumber').value) || 1;
                 const rows = Array.from(document.querySelectorAll('.list-mode tbody tr'));
 
-                for (let i = fromPosition; i < rows.length; i++) {
+                // Validasi nomor awal
+                if (startNumber < 1 || startNumber > rows.length) {
+                    document.getElementById('numberError').style.display = 'block';
+                    return;
+                }
+                document.getElementById('numberError').style.display = 'none';
+
+                // Mulai dari nomor yang diinginkan (kurangi 1 karena array dimulai dari 0)
+                let startIndex = Math.max(startNumber - 1, fromPosition);
+
+                for (let i = startIndex; i < rows.length; i++) {
                     if (!isReading) break;
                     lastPosition = i;
                     await processRow(rows[i], rate, pause);
@@ -1664,9 +1717,9 @@
                 if (isReading) {
                     isReading = false;
                     synth.cancel();
-                    this.style.display = 'none'; // Hide the start button
+                    this.style.display = 'none';
                     this.textContent = 'Start Reading ▶';
-                    controlButtons.classList.add('show'); // Show the control buttons (resume & restart)
+                    controlButtons.classList.add('show');
                     if (currentRow) {
                         updateRowState(currentRow, 'read');
                     }
@@ -1683,9 +1736,8 @@
                 isReading = true;
                 this.textContent = 'Stop Reading ⏹';
                 controlButtons.classList.remove('show');
-                await startReading(0);
+                await startReading(0); // Akan menggunakan nilai dari input startNumber
             });
-
             resumeButton.addEventListener('click', async function() {
                 isReading = true;
                 controlButtons.classList.remove('show');
