@@ -1729,7 +1729,7 @@
                         // Show notification with controls
                         const notification = new Notification('German Vocabulary', {
                             body: 'Audio is playing in background',
-                            icon: '/favicon.ico', // Sesuaikan dengan icon Anda
+                            icon: '/img/Silvi.jpg', // Sesuaikan dengan icon Anda
                             tag: 'vocab-audio',
                             renotify: true,
                             silent: true,
