@@ -1727,7 +1727,8 @@
                     const permission = await Notification.requestPermission();
                     if (permission === 'granted') {
                         // Show notification with controls
-                        const notification = new Notification('German Vocabulary', {
+                        const registration = await navigator.serviceWorker.ready;
+                        await registration.showNotification('German Vocabulary', {
                             body: 'Audio is playing in background',
                             icon: '/img/Silvi.jpg', // Sesuaikan dengan icon Anda
                             tag: 'vocab-audio',
