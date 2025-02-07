@@ -5,10 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>German Vocabulary Game</title>
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="screen-orientation" content="portrait">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
@@ -856,21 +852,6 @@
             margin-top: 0.5rem;
             display: none;
         }
-
-        @media (max-width: 600px) {
-            .notification-controls {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                background: rgba(255, 255, 255, 0.95);
-                padding: 1rem;
-                box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-                z-index: 1000;
-                display: flex;
-                justify-content: space-around;
-            }
-        }
     </style>
 </head>
 
@@ -1068,26 +1049,6 @@
     </div>
     <script>
         $(document).ready(function() {
-            // Register service worker
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(registration => console.log('ServiceWorker registered'))
-                    .catch(err => console.error('ServiceWorker registration failed:', err));
-            }
-
-            navigator.serviceWorker.addEventListener('message', (event) => {
-                console.log('Received message from service worker:', event.data);
-
-                if (event.data.action === 'stop') {
-                    isReading = false;
-                    synth.cancel();
-                    startButton.textContent = 'Start Reading ▶';
-                } else if (event.data.action === 'pause') {
-                    isReading = false;
-                    synth.pause();
-                    startButton.textContent = 'Resume ▶';
-                }
-            });
             $('#playAudio').on('click', function() {
                 $('#audioModal').addClass('show');
                 $('#audioRate').val(1);
@@ -1657,34 +1618,10 @@
                 return utterance;
             }
 
-            // Modifikasi fungsi speakText
             async function speakText(text, lang, rate) {
                 return new Promise((resolve) => {
-                    const utterance = new SpeechSynthesisUtterance(text);
-                    utterance.lang = lang;
-                    utterance.rate = rate;
+                    const utterance = createUtterance(text, lang, rate);
                     utterance.onend = resolve;
-
-                    // Tambahkan error handling
-                    utterance.onerror = (event) => {
-                        console.error('Speech error:', event);
-                        resolve(); // Tetap resolve agar proses bisa lanjut
-                    };
-
-                    // Set volume maksimal
-                    utterance.volume = 1.0;
-
-                    // Tambahkan timeout untuk mencegah hang
-                    const timeout = setTimeout(() => {
-                        synth.cancel();
-                        resolve();
-                    }, 10000); // 10 detik timeout
-
-                    utterance.onend = () => {
-                        clearTimeout(timeout);
-                        resolve();
-                    };
-
                     synth.speak(utterance);
                 });
             }
@@ -1747,102 +1684,32 @@
             }
 
             async function startReading(fromPosition = 0) {
-                try {
-                    // Request wakeLock
-                    let wakeLock = null;
-                    if ('wakeLock' in navigator) {
-                        wakeLock = await navigator.wakeLock.request('screen');
-                    }
+                const rate = parseFloat(document.getElementById('rateSlider').value);
+                const pause = parseFloat(document.getElementById('pauseSlider').value);
+                const startNumber = parseInt(document.getElementById('startNumber').value) || 1;
+                const rows = Array.from(document.querySelectorAll('.list-mode tbody tr'));
 
-                    // Request notification permission
-                    if ('Notification' in window && 'serviceWorker' in navigator) {
-                        const permission = await Notification.requestPermission();
-                        if (permission === 'granted') {
-                            const registration = await navigator.serviceWorker.ready;
-                            await registration.showNotification('German Vocabulary', {
-                                body: 'Audio is playing in background',
-                                icon: '/img/Silvi.jpg',
-                                tag: 'vocab-audio',
-                                renotify: true,
-                                requireInteraction: true, // Notifikasi tidak akan hilang sampai user berinteraksi
-                                actions: [{
-                                        action: 'pause',
-                                        title: '⏸ Pause'
-                                    },
-                                    {
-                                        action: 'stop',
-                                        title: '⏹ Stop'
-                                    }
-                                ]
-                            });
-                        }
-                    }
+                // Validasi nomor awal
+                if (startNumber < 1 || startNumber > rows.length) {
+                    document.getElementById('numberError').style.display = 'block';
+                    return;
+                }
+                document.getElementById('numberError').style.display = 'none';
 
-                    // Setup audio context
-                    if ('AudioContext' in window) {
-                        const audioContext = new AudioContext();
-                        await audioContext.resume();
-                    }
+                // Mulai dari nomor yang diinginkan (kurangi 1 karena array dimulai dari 0)
+                let startIndex = Math.max(startNumber - 1, fromPosition);
 
-                    // Prevent screen lock
-                    if ('wakeLock' in navigator) {
-                        try {
-                            wakeLock = await navigator.wakeLock.request('screen');
-                        } catch (err) {
-                            console.log(`${err.name}, ${err.message}`);
-                        }
-                    }
+                for (let i = startIndex; i < rows.length; i++) {
+                    if (!isReading) break;
+                    lastPosition = i;
+                    await processRow(rows[i], rate, pause);
+                }
 
-                    // Add audio session handling for mobile
-                    if ('mediaSession' in navigator) {
-                        navigator.mediaSession.setActionHandler('pause', () => {
-                            isReading = false;
-                            synth.pause();
-                        });
-                        navigator.mediaSession.setActionHandler('play', () => {
-                            isReading = true;
-                            synth.resume();
-                        });
-                        navigator.mediaSession.setActionHandler('stop', () => {
-                            isReading = false;
-                            synth.cancel();
-                        });
-                    }
-
-                    // Proses pembacaan seperti sebelumnya
-                    const rate = parseFloat(document.getElementById('rateSlider').value);
-                    const pause = parseFloat(document.getElementById('pauseSlider').value);
-                    const startNumber = parseInt(document.getElementById('startNumber').value) || 1;
-                    const rows = Array.from(document.querySelectorAll('.list-mode tbody tr'));
-
-                    if (startNumber < 1 || startNumber > rows.length) {
-                        document.getElementById('numberError').style.display = 'block';
-                        return;
-                    }
-                    document.getElementById('numberError').style.display = 'none';
-
-                    let startIndex = Math.max(startNumber - 1, fromPosition);
-
-                    // Set audio context
-                    if ('AudioContext' in window) {
-                        const audioContext = new AudioContext();
-                        await audioContext.resume();
-                    }
-
-                    for (let i = startIndex; i < rows.length; i++) {
-                        if (!isReading) break;
-                        lastPosition = i;
-                        await processRow(rows[i], rate, pause);
-                    }
-
-                    if (isReading) {
-                        isReading = false;
-                        startButton.textContent = 'Start Reading ▶';
-                        startButton.style.display = 'block';
-                        controlButtons.classList.remove('show');
-                    }
-                } catch (error) {
-                    console.error('Error in startReading:', error);
+                if (isReading) {
+                    isReading = false;
+                    startButton.textContent = 'Start Reading ▶';
+                    startButton.style.display = 'block';
+                    controlButtons.classList.remove('show');
                 }
             }
 
