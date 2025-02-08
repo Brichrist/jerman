@@ -1012,6 +1012,9 @@
 
                 <div class="audio-preview-group">
                     <div class="preview-item">
+                        <span class="number"></span>
+                    </div>
+                    <div class="preview-item">
                         <span class="jerman"></span>
                         <span class="indo"></span>
                     </div>
@@ -1801,12 +1804,14 @@
 
                 if (state === 'reading') {
                     row.classList.add('reading');
+                    let number = row.cells[0].textContent.trim();
                     let germanText = row.cells[1].textContent.trim();
                     let indoText = row.cells[2].textContent.trim();
                     let exampleText = row.cells[3]?.textContent.trim();
                     $('.audio-preview-group').find('.jerman').text(germanText + " = ")
                     $('.audio-preview-group').find('.indo').text(indoText)
                     $('.audio-preview-group').find('.sample').text(exampleText)
+                    $('.audio-preview-group').find('.number').text(number)
                     // console.log($('.audio-preview-group').find('.sample').length, exampleText)
                     // row.scrollIntoView({
                     //     behavior: 'smooth',
