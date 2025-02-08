@@ -1814,7 +1814,9 @@
                             $('.audio-preview-group').find('.indo').text(indoText)
                             $('.audio-preview-group').find('.sample').text(exampleText)
                             $('.audio-preview-group').find('.number').text(number)
-                            $('#startNumber').val(parseInt(number) - 2).trigger('change');
+                            let helper_number = parseInt(number) - 2
+                            helper_number = helper_number < 1 ? 1 : helper_number
+                            $('#startNumber').val(helper_number).trigger('change');
                         }, 800);
                     // console.log($('.audio-preview-group').find('.sample').length, exampleText)
                     // row.scrollIntoView({
