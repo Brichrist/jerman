@@ -1919,6 +1919,7 @@
             });
             resumeButton.addEventListener('click', async function() {
                 synth.cancel();
+                await new Promise(resolve => setTimeout(resolve, 100));
                 isReading = true;
                 controlButtons.classList.remove('show');
                 startButton.style.display = 'block';
@@ -1928,6 +1929,7 @@
 
             restartButton.addEventListener('click', async function() {
                 synth.cancel();
+                await new Promise(resolve => setTimeout(resolve, 100));
                 document.querySelectorAll('.list-mode tbody tr').forEach(row => {
                     row.classList.remove('read', 'reading');
                 });
