@@ -996,7 +996,7 @@
                         <label class="setting-label">Pause</label>
                         <div class="setting-value">
                             <input type="range" id="pauseSlider" class="range-slider" min="1" max="4" step="0.1" value="2">
-                            <span class="range-value" id="pauseValue">2.0x</span>
+                            <span class="range-value" id="pauseValue">2x</span>
                         </div>
                     </div>
                 </div>
@@ -1759,7 +1759,7 @@
             // Initialize UI state
             controlButtons.style.display = 'none';
             document.getElementById('rateValue').textContent = '1.0x';
-            document.getElementById('pauseValue').textContent = '1.0x';
+            document.getElementById('pauseValue').textContent = '2x';
 
             // Update slider values on input
             document.getElementById('rateSlider').addEventListener('input', function() {
