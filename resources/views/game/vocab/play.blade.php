@@ -1836,15 +1836,15 @@
                 const indoText = row.cells[2].textContent.trim();
                 const exampleText = row.cells[3]?.textContent.trim();
 
-                // Baca bahasa Jerman jika opsi dipilih
-                if (document.querySelector('[data-option="german"].active')) {
-                    await speakText(germanText, 'de-DE', rate);
-                }
-
                 // Baca bahasa Indonesia jika opsi dipilih
                 if (document.querySelector('[data-option="indonesia"].active')) {
-                    await sleep(500); // Jeda 0.5 detik sebelum membaca bahasa Indonesia
                     await speakText(indoText, 'id-ID', rate);
+                }
+
+                // Baca bahasa Jerman jika opsi dipilih
+                if (document.querySelector('[data-option="german"].active')) {
+                    await sleep(500); // Jeda 0.5 detik sebelum membaca bahasa jerman
+                    await speakText(germanText, 'de-DE', rate);
                 }
 
                 // Baca contoh jika opsi dipilih
