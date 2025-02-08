@@ -987,7 +987,7 @@
                     <div class="setting-item">
                         <label class="setting-label">Speech Rate</label>
                         <div class="setting-value">
-                            <input type="range" id="rateSlider" class="range-slider" min="0.5" max="2" step="0.1" value="1">
+                            <input type="range" id="rateSlider" class="range-slider" min="0.5" max="1.5" step="0.1" value="1">
                             <span class="range-value" id="rateValue">1.0x</span>
                         </div>
                     </div>
@@ -995,7 +995,7 @@
                     <div class="setting-item">
                         <label class="setting-label">Pause</label>
                         <div class="setting-value">
-                            <input type="range" id="pauseSlider" class="range-slider" min="0.5" max="2" step="0.1" value="1">
+                            <input type="range" id="pauseSlider" class="range-slider" min="0.5" max="3" step="0.1" value="1">
                             <span class="range-value" id="pauseValue">1.0x</span>
                         </div>
                     </div>
