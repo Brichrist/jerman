@@ -852,6 +852,100 @@
             margin-top: 0.5rem;
             display: none;
         }
+
+        .score-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .score-modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .score-modal-content {
+            background: white;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 320px;
+            padding: 2rem;
+            position: relative;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            transform: scale(0.7);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .score-modal-content.show {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .score-input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #6c5ce7;
+            border-radius: 12px;
+            font-size: 1rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .score-input:focus {
+            outline: none;
+            border-color: #5a4bd1;
+        }
+
+        .score-btn {
+            width: 100%;
+            padding: 1rem;
+            background: #6c5ce7;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .score-btn:hover {
+            background: #5a4bd1;
+            transform: translateY(-2px);
+        }
+
+        .score-modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #ff7675;
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .score-modal-close:hover {
+            background: #ff5252;
+            transform: rotate(90deg);
+        }
     </style>
 </head>
 
@@ -870,6 +964,16 @@
             <button id="exampleBtn">Example</button>
             <button id="listModeBtn">List Mode</button>
             <button id="playAudio" style="display: none">Play Audio</button>
+        </div>
+        <div class="score-modal" id="scoreModal">
+            <div class="score-modal-content">
+                <button class="score-modal-close" id="closeScoreModal">✕</button>
+                <div class="audio-modal-header">
+                    <h2 class="audio-modal-title">Go to Number</h2>
+                </div>
+                <input type="number" class="score-input" id="scoreInput" min="1" placeholder="Enter number">
+                <button class="score-btn" id="goToScore">Go</button>
+            </div>
         </div>
         <div class="audio-modal" id="audioModal">
             <div class="audio-modal-content">
@@ -1465,6 +1569,57 @@
             setTimeout(() => {
                 $(this).data('disabled', false);
             }, 500);
+        });
+        // Ketika skor diklik
+        $('.score').on('click', function() {
+            $('#scoreModal').addClass('show');
+            setTimeout(() => {
+                $('.score-modal-content').addClass('show');
+                $('#scoreInput').focus();
+            }, 50);
+        });
+
+        // Tutup modal
+        $('#closeScoreModal, #scoreModal').on('click', function(e) {
+            if (e.target === this || $(e.target).hasClass('score-modal-close')) {
+                $('.score-modal-content').removeClass('show');
+                setTimeout(() => {
+                    $('#scoreModal').removeClass('show');
+                }, 300);
+            }
+        });
+
+        // Mencegah modal menutup ketika konten diklik
+        $('.score-modal-content').on('click', function(e) {
+            e.stopPropagation();
+        });
+
+        // Handler untuk tombol Go
+        $('#goToScore').on('click', function() {
+            const targetNumber = parseInt($('#scoreInput').val());
+            if (targetNumber && targetNumber > 0 && targetNumber <= totalCards) {
+                currentIndex = targetNumber - 1;
+                if (showFavoritesOnly) {
+                    showNextFavoriteCard();
+                } else {
+                    showCard(currentIndex);
+                    updateProgressBar('normal');
+                }
+                // Tutup modal
+                $('.score-modal-content').removeClass('show');
+                setTimeout(() => {
+                    $('#scoreModal').removeClass('show');
+                }, 300);
+            } else {
+                alert('Please enter a valid number between 1 and ' + totalCards);
+            }
+        });
+
+        // Handler untuk enter key pada input
+        $('#scoreInput').on('keypress', function(e) {
+            if (e.which === 13) {
+                $('#goToScore').click();
+            }
         });
 
         $('#favoriteBtn').on('touchstart click', function(e) {
