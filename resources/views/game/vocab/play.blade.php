@@ -1049,6 +1049,47 @@
     </div>
     <script>
         $(document).ready(function() {
+            // Simpan URL lengkap termasuk parameter
+            const currentURL = window.location.href;
+
+            // Fungsi untuk menampilkan pesan konfirmasi saat reload/close
+            function showConfirmation(e) {
+                const message = "Apakah Anda yakin ingin meninggalkan halaman ini?";
+
+                // Mencegah default behavior
+                e.preventDefault();
+                e.returnValue = message; // Untuk Chrome
+                return message; // Untuk Firefox
+            }
+
+            // Event handler untuk beforeunload (reload/close tab)
+            window.onbeforeunload = function(e) {
+                // Simpan URL lengkap ke sessionStorage
+                sessionStorage.setItem('lastURL', currentURL);
+                return showConfirmation(e);
+            };
+
+            // Menangani tombol back browser
+            window.onpopstate = function(e) {
+                const confirmLeave = confirm("Apakah Anda yakin ingin kembali ke halaman sebelumnya?");
+
+                if (!confirmLeave) {
+                    // Jika user memilih cancel, push state dengan URL lengkap
+                    history.pushState(null, null, currentURL);
+                    return false;
+                }
+            };
+
+            // Push state awal dengan URL lengkap
+            history.pushState(null, null, currentURL);
+
+            // Cek jika ada URL tersimpan saat halaman dimuat
+            window.onload = function() {
+                const lastURL = sessionStorage.getItem('lastURL');
+                if (lastURL && window.location.href !== lastURL) {
+                    window.location.href = lastURL;
+                }
+            };
             $('#playAudio').on('click', function() {
                 $('#audioModal').addClass('show');
                 $('#audioRate').val(1);
