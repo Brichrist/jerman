@@ -995,7 +995,7 @@
                     <div class="setting-item">
                         <label class="setting-label">Pause</label>
                         <div class="setting-value">
-                            <input type="range" id="pauseSlider" class="range-slider" min="0.5" max="3" step="0.1" value="1">
+                            <input type="range" id="pauseSlider" class="range-slider" min="1" max="4" step="0.1" value="2">
                             <span class="range-value" id="pauseValue">1.0x</span>
                         </div>
                     </div>
@@ -1808,10 +1808,13 @@
                     let germanText = row.cells[1].textContent.trim();
                     let indoText = row.cells[2].textContent.trim();
                     let exampleText = row.cells[3]?.textContent.trim();
-                    $('.audio-preview-group').find('.jerman').text(germanText + " = ")
-                    $('.audio-preview-group').find('.indo').text(indoText)
-                    $('.audio-preview-group').find('.sample').text(exampleText)
-                    $('.audio-preview-group').find('.number').text(number)
+                    setTimeout(
+                        function() {
+                            $('.audio-preview-group').find('.jerman').text(germanText + " = ")
+                            $('.audio-preview-group').find('.indo').text(indoText)
+                            $('.audio-preview-group').find('.sample').text(exampleText)
+                            $('.audio-preview-group').find('.number').text(number)
+                        }, 800);
                     // console.log($('.audio-preview-group').find('.sample').length, exampleText)
                     // row.scrollIntoView({
                     //     behavior: 'smooth',
