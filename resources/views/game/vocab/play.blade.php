@@ -1049,47 +1049,87 @@
     </div>
     <script>
         $(document).ready(function() {
+            // Deteksi perangkat mobile
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
             // Simpan URL lengkap termasuk parameter
             const currentURL = window.location.href;
 
-            // Fungsi untuk menampilkan pesan konfirmasi saat reload/close
-            function showConfirmation(e) {
-                const message = "Apakah Anda yakin ingin meninggalkan halaman ini?";
-
-                // Mencegah default behavior
-                e.preventDefault();
-                e.returnValue = message; // Untuk Chrome
-                return message; // Untuk Firefox
+            // Fungsi untuk menampilkan pesan konfirmasi
+            function showConfirmation() {
+                return "Apakah Anda yakin ingin meninggalkan halaman ini?";
             }
 
-            // Event handler untuk beforeunload (reload/close tab)
-            window.onbeforeunload = function(e) {
-                // Simpan URL lengkap ke sessionStorage
-                sessionStorage.setItem('lastURL', currentURL);
-                return showConfirmation(e);
-            };
+            // Fungsi untuk menangani reload dan navigasi
+            function handleNavigation(e) {
+                if (isMobile) {
+                    // Untuk perangkat mobile, simpan URL ke localStorage (lebih persisten)
+                    localStorage.setItem('lastURL', currentURL);
+                } else {
+                    // Untuk desktop, gunakan sessionStorage
+                    sessionStorage.setItem('lastURL', currentURL);
+                }
 
-            // Menangani tombol back browser
+                const message = showConfirmation();
+
+                // Untuk browser modern
+                (e || window.event).returnValue = message;
+                return message;
+            }
+
+            // Event listeners untuk desktop dan mobile
+            window.onbeforeunload = handleNavigation;
+
+            // Khusus untuk mobile, tambahkan event listener tambahan
+            if (isMobile) {
+                // Tangani event pagehide (khusus mobile)
+                window.addEventListener('pagehide', function() {
+                    localStorage.setItem('lastURL', currentURL);
+                });
+
+                // Tangani event pageshow (khusus mobile)
+                window.addEventListener('pageshow', function(e) {
+                    if (e.persisted) {
+                        // Halaman di-restore dari bfcache
+                        const lastURL = localStorage.getItem('lastURL');
+                        if (lastURL && window.location.href !== lastURL) {
+                            window.location.href = lastURL;
+                        }
+                    }
+                });
+            }
+
+            // Menangani tombol back
             window.onpopstate = function(e) {
                 const confirmLeave = confirm("Apakah Anda yakin ingin kembali ke halaman sebelumnya?");
 
                 if (!confirmLeave) {
-                    // Jika user memilih cancel, push state dengan URL lengkap
                     history.pushState(null, null, currentURL);
                     return false;
                 }
             };
 
-            // Push state awal dengan URL lengkap
+            // Push state awal
             history.pushState(null, null, currentURL);
 
-            // Cek jika ada URL tersimpan saat halaman dimuat
+            // Cek URL tersimpan saat load
             window.onload = function() {
-                const lastURL = sessionStorage.getItem('lastURL');
+                const storageType = isMobile ? localStorage : sessionStorage;
+                const lastURL = storageType.getItem('lastURL');
+
                 if (lastURL && window.location.href !== lastURL) {
                     window.location.href = lastURL;
                 }
             };
+
+            // Bersihkan storage saat user benar-benar meninggalkan halaman
+            window.addEventListener('unload', function() {
+                if (isMobile) {
+                    localStorage.removeItem('lastURL');
+                } else {
+                    sessionStorage.removeItem('lastURL');
+                }
+            });
             $('#playAudio').on('click', function() {
                 $('#audioModal').addClass('show');
                 $('#audioRate').val(1);
