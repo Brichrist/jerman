@@ -1049,87 +1049,19 @@
     </div>
     <script>
         $(document).ready(function() {
-            // Deteksi perangkat mobile
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-            // Simpan URL lengkap termasuk parameter
-            const currentURL = window.location.href;
-
-            // Fungsi untuk menampilkan pesan konfirmasi
-            function showConfirmation() {
+            // Untuk reload dan close tab
+            window.onbeforeunload = function(e) {
+                e.preventDefault();
                 return "Apakah Anda yakin ingin meninggalkan halaman ini?";
-            }
-
-            // Fungsi untuk menangani reload dan navigasi
-            function handleNavigation(e) {
-                if (isMobile) {
-                    // Untuk perangkat mobile, simpan URL ke localStorage (lebih persisten)
-                    localStorage.setItem('lastURL', currentURL);
-                } else {
-                    // Untuk desktop, gunakan sessionStorage
-                    sessionStorage.setItem('lastURL', currentURL);
-                }
-
-                const message = showConfirmation();
-
-                // Untuk browser modern
-                (e || window.event).returnValue = message;
-                return message;
-            }
-
-            // Event listeners untuk desktop dan mobile
-            window.onbeforeunload = handleNavigation;
-
-            // Khusus untuk mobile, tambahkan event listener tambahan
-            if (isMobile) {
-                // Tangani event pagehide (khusus mobile)
-                window.addEventListener('pagehide', function() {
-                    localStorage.setItem('lastURL', currentURL);
-                });
-
-                // Tangani event pageshow (khusus mobile)
-                window.addEventListener('pageshow', function(e) {
-                    if (e.persisted) {
-                        // Halaman di-restore dari bfcache
-                        const lastURL = localStorage.getItem('lastURL');
-                        if (lastURL && window.location.href !== lastURL) {
-                            window.location.href = lastURL;
-                        }
-                    }
-                });
-            }
-
-            // Menangani tombol back
+            };
+            // Untuk tombol back
             window.onpopstate = function(e) {
-                const confirmLeave = confirm("Apakah Anda yakin ingin kembali ke halaman sebelumnya?");
-
-                if (!confirmLeave) {
-                    history.pushState(null, null, currentURL);
-                    return false;
+                if (!confirm("Apakah Anda yakin ingin kembali?")) {
+                    history.pushState(null, null, window.location.href);
                 }
             };
-
-            // Push state awal
-            history.pushState(null, null, currentURL);
-
-            // Cek URL tersimpan saat load
-            window.onload = function() {
-                const storageType = isMobile ? localStorage : sessionStorage;
-                const lastURL = storageType.getItem('lastURL');
-
-                if (lastURL && window.location.href !== lastURL) {
-                    window.location.href = lastURL;
-                }
-            };
-
-            // Bersihkan storage saat user benar-benar meninggalkan halaman
-            window.addEventListener('unload', function() {
-                if (isMobile) {
-                    localStorage.removeItem('lastURL');
-                } else {
-                    sessionStorage.removeItem('lastURL');
-                }
-            });
+            // Initial state
+            history.pushState(null, null, window.location.href);
             $('#playAudio').on('click', function() {
                 $('#audioModal').addClass('show');
                 $('#audioRate').val(1);
