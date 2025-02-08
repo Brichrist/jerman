@@ -1033,8 +1033,8 @@
                     Start Reading ▶
                 </button>
                 <div class="control-buttons-container" id="controlButtons">
-                    <button class="resume-button" id="resumeButton">Resume ▶</button>
                     <button class="restart-button" id="restartButton">Restart 🔄</button>
+                    <button class="resume-button" id="resumeButton">Resume ▶</button>
                 </div>
             </div>
         </div>
