@@ -1918,6 +1918,7 @@
                 await startReading(0); // Akan menggunakan nilai dari input startNumber
             });
             resumeButton.addEventListener('click', async function() {
+                synth.cancel();
                 isReading = true;
                 controlButtons.classList.remove('show');
                 startButton.style.display = 'block';
@@ -1926,6 +1927,7 @@
             });
 
             restartButton.addEventListener('click', async function() {
+                synth.cancel();
                 document.querySelectorAll('.list-mode tbody tr').forEach(row => {
                     row.classList.remove('read', 'reading');
                 });
