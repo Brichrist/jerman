@@ -53,6 +53,65 @@
                                 <div class="text-sm text-gray-500">
                                     Created: {{ $tema->created_at->toFormattedDateString() }}
                                 </div>
+                                <div class="text-sm text-gray-500">
+                                    @php
+                                        $date = $tema?->linkForum[0]?->created_at ?? null;
+                                        if (!$date) {
+                                            $lastInteraction = '-';
+                                        } else {
+                                            $date = new \DateTime($date);
+                                            $now = new \DateTime();
+
+                                            // Format waktu HH:mm
+                                            $timeStr = $date->format('H:i');
+
+                                            // Jika hari ini
+                                            if ($date->format('Y-m-d') === $now->format('Y-m-d')) {
+                                                $lastInteraction = $timeStr;
+                                            } else {
+                                                // Jika kemarin
+                                                $yesterday = new \DateTime('yesterday');
+                                                if ($date->format('Y-m-d') === $yesterday->format('Y-m-d')) {
+                                                    $lastInteraction = "Kemarin, {$timeStr}";
+                                                } else {
+                                                    // Hitung selisih hari
+                                                    $interval = $now->diff($date);
+                                                    $diffDays = $interval->days;
+
+                                                    // Jika dalam 7 hari terakhir
+                                                    if ($diffDays < 7) {
+                                                        $hari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                                                        $dayOfWeek = (int) $date->format('w');
+                                                        $lastInteraction = "{$hari[$dayOfWeek]}, {$timeStr}";
+                                                    } else {
+                                                        // Jika lebih dari 7 hari
+                                                        $bulan = [
+                                                            '01' => 'Januari',
+                                                            '02' => 'Februari',
+                                                            '03' => 'Maret',
+                                                            '04' => 'April',
+                                                            '05' => 'Mei',
+                                                            '06' => 'Juni',
+                                                            '07' => 'Juli',
+                                                            '08' => 'Agustus',
+                                                            '09' => 'September',
+                                                            '10' => 'Oktober',
+                                                            '11' => 'November',
+                                                            '12' => 'Desember',
+                                                        ];
+
+                                                        $day = $date->format('d');
+                                                        $month = $bulan[$date->format('m')];
+                                                        $year = $date->format('Y');
+
+                                                        $lastInteraction = "{$day} {$month} {$year}, {$timeStr}";
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    @endphp
+                                    Last Interaction: {{ $lastInteraction ?? null }}
+                                </div>
                             </div>
 
                             @if ($tema->status === 'active')

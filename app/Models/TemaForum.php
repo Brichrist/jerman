@@ -15,6 +15,6 @@ class TemaForum extends Model
     }
     public function linkForum()
     {
-        return $this->hasMany(Forum::class, 'id_tema_forum', 'id');
+        return $this->hasMany(Forum::class, 'id_tema_forum', 'id')->latest();
     }
 }

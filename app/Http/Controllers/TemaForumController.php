@@ -18,7 +18,7 @@ class TemaForumController extends Controller
             if (request('status') != 'all') {
                 $query->where('status', request('status'));
             }
-        })->orderBy('important', 'asc')->orderBy('created_at', 'desc')->with(['linkUser'])->withcount('linkForum')->paginate(10);
+        })->orderBy('important', 'asc')->orderBy('created_at', 'desc')->with(['linkUser','linkForum'])->withcount('linkForum')->paginate(10);
         return view('be.temaforum_index', compact('themes'));
     }
 

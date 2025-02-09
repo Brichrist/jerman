@@ -84,10 +84,45 @@
                 const isOwner = "{{ auth()->user()->role }}" === "owner";
 
                 function formatTime(dateString) {
-                    return new Date(dateString).toLocaleTimeString('id-ID', {
+                    const date = new Date(dateString);
+                    const now = new Date();
+
+                    // Format untuk waktu
+                    const timeOptions = {
                         hour: '2-digit',
                         minute: '2-digit'
-                    });
+                    };
+                    const timeStr = date.toLocaleTimeString('id-ID', timeOptions);
+
+                    // Hitung selisih hari
+                    const diffTime = Math.abs(now - date);
+                    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+                    // Jika hari ini
+                    if (date.toDateString() === now.toDateString()) {
+                        return timeStr;
+                    }
+
+                    // Jika kemarin
+                    const yesterday = new Date(now);
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    if (date.toDateString() === yesterday.toDateString()) {
+                        return `Kemarin ${timeStr}`;
+                    }
+
+                    // Jika dalam 7 hari terakhir
+                    if (diffDays < 7) {
+                        const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                        return `${days[date.getDay()]} ${timeStr}`;
+                    }
+
+                    // Jika lebih dari 7 hari
+                    const dateOptions = {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                    };
+                    return `${date.toLocaleDateString('id-ID', dateOptions)} ${timeStr}`;
                 }
 
                 function createMessageHTML(msg) {
@@ -102,11 +137,11 @@
                                 rounded-lg px-4 py-2">
                                 <div class="flex items-baseline gap-2 ${isCurrentUser ? 'justify-end' : ''}">
                                     ${!isCurrentUser ? `
-                                                        <span class="font-medium text-sm ${isOwner ? 'text-yellow-600' : 'text-blue-600'}">
-                                                            ${msg.link_user?.name || 'User'} 
-                                                            ${isOwner ? '<span class="ml-1 px-2 py-0.5 bg-yellow-200 text-yellow-700 text-xs rounded-full">Developer</span>' : ''}
-                                                        </span>
-                                                    ` : ''}
+                                                                        <span class="font-medium text-sm ${isOwner ? 'text-yellow-600' : 'text-blue-600'}">
+                                                                            ${msg.link_user?.name || 'User'} 
+                                                                            ${isOwner ? '<span class="ml-1 px-2 py-0.5 bg-yellow-200 text-yellow-700 text-xs rounded-full">Developer</span>' : ''}
+                                                                        </span>
+                                                                    ` : ''}
                                     <span class="text-xs text-gray-500">${formatTime(msg.created_at)}</span>
                                     ${isCurrentUser ? `<span class="font-medium text-sm text-blue-600">You</span>` : ''}
                                 </div>
