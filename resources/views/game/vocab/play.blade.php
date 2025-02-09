@@ -1828,7 +1828,7 @@
                     row.classList.add('read');
                 }
             }
-
+            let interactionCount = 0
             async function processRow(row, rate, pause) {
                 if (!isReading) return;
 
@@ -1838,6 +1838,7 @@
                 const germanText = row.cells[1].textContent.replace('❤', '').trim();
                 const indoText = row.cells[2].textContent.trim();
                 const exampleText = row.cells[3]?.textContent.trim();
+                console.log(germanText)
 
                 // Baca bahasa Indonesia jika opsi dipilih
                 if (document.querySelector('[data-option="indonesia"].active')) {
@@ -1874,12 +1875,15 @@
                     return;
                 }
                 document.getElementById('numberError').style.display = 'none';
-
+                const index = interactionCount
                 // Mulai dari nomor yang diinginkan (kurangi 1 karena array dimulai dari 0)
                 let startIndex = Math.max(startNumber - 1, fromPosition);
 
                 for (let i = startIndex; i < rows.length; i++) {
+                    // console.log(index, interactionCount)
+                    // console.log(interactionCount == index)
                     if (!isReading) break;
+                    if (interactionCount != index) break;
                     lastPosition = i;
                     await processRow(rows[i], rate, pause);
                 }
@@ -1915,21 +1919,23 @@
                 isReading = true;
                 this.textContent = 'Stop Reading ⏹';
                 controlButtons.classList.remove('show');
+                interactionCount++
                 await startReading(0); // Akan menggunakan nilai dari input startNumber
             });
             resumeButton.addEventListener('click', async function() {
                 synth.cancel();
-                await new Promise(resolve => setTimeout(resolve, 100));
+                await new Promise(resolve => setTimeout(resolve, 200));
                 isReading = true;
                 controlButtons.classList.remove('show');
                 startButton.style.display = 'block';
                 startButton.textContent = 'Stop Reading ⏹';
+                interactionCount++
                 await startReading(lastPosition);
             });
 
             restartButton.addEventListener('click', async function() {
                 synth.cancel();
-                await new Promise(resolve => setTimeout(resolve, 100));
+                await new Promise(resolve => setTimeout(resolve, 200));
                 document.querySelectorAll('.list-mode tbody tr').forEach(row => {
                     row.classList.remove('read', 'reading');
                 });
@@ -1938,6 +1944,7 @@
                 controlButtons.classList.remove('show');
                 startButton.style.display = 'block';
                 startButton.textContent = 'Stop Reading ⏹';
+                interactionCount++
                 await startReading(0);
             });
 
