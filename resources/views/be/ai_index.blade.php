@@ -69,6 +69,7 @@
             $(document).ready(function() {
                 $('.quick-input').click(function() {
                     const text = $(this).data('text');
+                    $('#question').focus();
                     $('#question').text(text).val(text);
                     $('#question').focus();
                     $('#question').trigger('input');

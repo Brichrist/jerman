@@ -40,6 +40,7 @@ class VocabController extends Controller
                 'german_word' => $vocab,
                 'word_type' => $wordTypes[$index] ?? null,
                 'meaning' => $meanings[$index] ?? null,
+                'id_user' => auth()->user()->id,
             ];
 
             $existingVocab = Vocab::where('german_word', $vocab)->first();
@@ -138,7 +139,8 @@ class VocabController extends Controller
                             'content' => [
                                 [
                                     'type' => 'text',
-                                    'text' => "buatkan obj yang berisi list bahasa Jerman dari file ini dalam format JSON beserta artinya dalam bahasa indonesia. Wajib pastikan ulang semua vocab sudah masuk dalam list. Dengan Format: {'bahasaJerman': {'kata1':{'meaning':'arti1,'word_type':'tipe_kata1(Nomen,Verb,Adjektiv,Präposition,Adverb,Konjunktion,Null)'}, 'kata2':{'meaning':'arti2,'word_type':'tipe_kata2(Nomen,Verb,Adjektiv,Präposition,Adverb,Konjunktion,Null)'}, ...}}:"
+                                    'text' => "buatkan obj yang berisi list bahasa Jerman dari file ini (hanya yang distabilo) dalam format JSON beserta artinya dalam bahasa indonesia. Wajib pastikan ulang semua vocab (hanya yang distabilo) sudah masuk dalam list. Dengan Format: {'bahasaJerman': {'kata1':{'meaning':'arti1,'word_type':'tipe_kata1(Nomen,Verb,Adjektiv,Präposition,Adverb,Konjunktion,Null)'}, 'kata2':{'meaning':'arti2,'word_type':'tipe_kata2(Nomen,Verb,Adjektiv,Präposition,Adverb,Konjunktion,Null)'}, ...}}:"
+                                    // 'text' => "buatkan obj yang berisi list bahasa Jerman dari file ini dalam format JSON beserta artinya dalam bahasa indonesia. Wajib pastikan ulang semua vocab sudah masuk dalam list. Dengan Format: {'bahasaJerman': {'kata1':{'meaning':'arti1,'word_type':'tipe_kata1(Nomen,Verb,Adjektiv,Präposition,Adverb,Konjunktion,Null)'}, 'kata2':{'meaning':'arti2,'word_type':'tipe_kata2(Nomen,Verb,Adjektiv,Präposition,Adverb,Konjunktion,Null)'}, ...}}:"
                                 ],
                                 [
                                     'type' => 'image_url',

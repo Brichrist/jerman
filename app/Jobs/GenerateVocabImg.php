@@ -55,6 +55,7 @@ class GenerateVocabImg implements ShouldQueue
                         [
                             'role' => 'user',
                             'content' => "buatkan obj yang berisi list bahasa Jerman dari teks berikut dalam format JSON beserta artinya dalam bahasa indonesia. Format: {'bahasaJerman': {'kata1':{'meaning':'arti1','word_type':'tipe_kata1'}, 'kata2':{'meaning':'arti2','word_type':'tipe_kata2'}, ...}}: \n\n" . $text
+                            // 'content' => "buatkan obj yang berisi list bahasa Jerman dari teks berikut (hanya yang distabilo) dalam format JSON beserta artinya dalam bahasa indonesia. Format: {'bahasaJerman': {'kata1':{'meaning':'arti1','word_type':'tipe_kata1'}, 'kata2':{'meaning':'arti2','word_type':'tipe_kata2'}, ...}}: \n\n" . $text
                         ]
                     ]
                 ]);
@@ -72,6 +73,7 @@ class GenerateVocabImg implements ShouldQueue
                                 [
                                     'type' => 'text',
                                     'text' => "buatkan obj yang berisi list bahasa Jerman dari file ini dalam format JSON beserta artinya dalam bahasa indonesia. Wajib pastikan ulang semua vocab sudah masuk dalam list. Dengan Format: {'bahasaJerman': {'kata1':{'meaning':'arti1,'word_type':'tipe_kata1(Nomen,Verb,Adjektiv,Präposition,Adverb,Konjunktion,Null)'}, 'kata2':{'meaning':'arti2,'word_type':'tipe_kata2(Nomen,Verb,Adjektiv,Präposition,Adverb,Konjunktion,Null)'}, ...}}:"
+                                    // 'text' => "buatkan obj yang berisi list bahasa Jerman dari file ini (hanya yang distabilo) dalam format JSON beserta artinya dalam bahasa indonesia. Wajib pastikan ulang semua vocab (hanya yang distabilo) sudah masuk dalam list. Dengan Format: {'bahasaJerman': {'kata1':{'meaning':'arti1,'word_type':'tipe_kata1(Nomen,Verb,Adjektiv,Präposition,Adverb,Konjunktion,Null)'}, 'kata2':{'meaning':'arti2,'word_type':'tipe_kata2(Nomen,Verb,Adjektiv,Präposition,Adverb,Konjunktion,Null)'}, ...}}:"
                                 ],
                                 [
                                     'type' => 'image_url',
@@ -86,6 +88,7 @@ class GenerateVocabImg implements ShouldQueue
             }
 
             $data = json_decode($response->choices[0]->message->content, true);
+            // dd($data);
 
             foreach ($data['bahasaJerman'] as $vocab => $details) {
                 $wordType = $details['word_type'] ?? null;
@@ -96,6 +99,7 @@ class GenerateVocabImg implements ShouldQueue
                     'german_word' => $vocab,
                     'word_type' => $wordType,
                     'meaning' => $meaning,
+                    // 'id_user' => 1,
                 ];
 
                 $existingVocab = Vocab::where('german_word', $vocab)->first();
