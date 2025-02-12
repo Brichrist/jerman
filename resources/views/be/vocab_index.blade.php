@@ -581,6 +581,7 @@
                         },
                         success: function(response) {
                             $('#loading').addClass('hidden');
+                            $('#pdfFile').val(''); 
                             if (response.success) {
                                 let data = JSON.parse(response.data);
                                 data = data.bahasaJerman;
