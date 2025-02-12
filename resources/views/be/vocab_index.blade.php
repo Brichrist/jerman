@@ -581,7 +581,6 @@
                         },
                         success: function(response) {
                             $('#loading').addClass('hidden');
-                            $('#pdfFile').val(''); 
                             if (response.success) {
                                 let data = JSON.parse(response.data);
                                 data = data.bahasaJerman;
@@ -605,8 +604,10 @@
                                 });
                                 outputHtml += '</div>';
                                 $('#output').prepend(outputHtml);
+                                $('#pdfFile').val('');
                             } else {
                                 $('#output').prepend('<div class="text-red-500 error">Error: ' + response.message + '</div>');
+                                $('#pdfFile').val('');
                             }
                         },
                         error: function(xhr, status, error) {
