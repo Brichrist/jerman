@@ -288,7 +288,7 @@
                                             @csrf
                                             <div>
                                                 <x-input-label for="document" :value="__('Upload PDF')" />
-                                                <x-file-input id="pdfFile" name="document" class="mt-1 block w-full" required />
+                                                <x-file-input id="pdfFile" name="document" class="mt-1 block w-full" />
                                                 <x-input-error class="mt-2" :messages="$errors->get('document')" />
                                             </div>
                                             <div id="loading" class="hidden flex items-center justify-center">
