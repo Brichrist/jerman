@@ -747,6 +747,7 @@
                                         <label for="${key}">${key} = ${data[key].meaning} (${data[key].word_type})</label>
                                         <input type="hidden" name="meaning[]" value="${data[key].meaning}">
                                         <input type="hidden" name="word_type[]" value="${data[key].word_type}">
+                                        <input type="hidden" name="example[]" value="${data[key].example}">
                                     </div>`;
                                 });
                                 outputHtml += '</div>';
