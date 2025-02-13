@@ -620,6 +620,27 @@
             margin-bottom: 1.5rem;
         }
 
+        .setting-favorite {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding-bottom: 24px;
+        }
+
+        .setting-favorite .fav-button {
+            flex: 1;
+            width: fit-content;
+            min-width: 100px;
+            padding: 0.8rem;
+            border: 2px solid #6c5ce7;
+            background: white;
+            color: #6c5ce7;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
         .setting-item:last-child {
             margin-bottom: 0;
         }
@@ -793,7 +814,8 @@
         }
 
         .resume-button,
-        .restart-button {
+        .restart-button,
+        .restart-from-button {
             flex: 1;
             padding: 1rem;
             border: none;
@@ -802,6 +824,11 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
+        }
+
+        .restart-from-button {
+            background: #f6c42c;
+            color: white;
         }
 
         .resume-button {
@@ -1022,6 +1049,12 @@
                         <span class="sample"></span>
                     </div>
                 </div>
+                <div class="setting-favorite">
+                    <button class="fav-button" id="favoriteAudioBtn">
+                        <span class="favorite-emote">❤</span>
+                    </button>
+                </div>
+
                 <div class="setting-item">
                     <label class="setting-label">Start from number</label>
                     <div class="setting-value">
@@ -1033,7 +1066,8 @@
                     Start Reading ▶
                 </button>
                 <div class="control-buttons-container" id="controlButtons">
-                    <button class="restart-button" id="restartButton">Restart 🔄</button>
+                    <button class="restart-button" id="restartButton">From 0</button>
+                    <button class="restart-from-button" id="restartFromNumber">Start from</button>
                     <button class="resume-button" id="resumeButton">Resume ▶</button>
                 </div>
             </div>
@@ -1124,8 +1158,8 @@
                 <tbody>
                     @foreach ($vocabularies as $vocabulary)
                         <tr>
-                            <td style="width: 50px">{{ $loop->iteration }}</td>
-                            <td class="german-column {{ $vocabulary->linkfavorite->count() > 0 ? 'favorite' : '' }}">
+                            <td style="width: 50px" data-id="{{ $vocabulary->id }}" class="favorite-list">{{ $loop->iteration }}</td>
+                            <td class="german-column {{ $vocabulary->linkfavorite->count() > 0 ? 'favorite' : '' }}" data-id="{{ $vocabulary->id }}">
                                 {{ $vocabulary->german_word }}
                                 @if ($vocabulary->linkfavorite->count() > 0)
                                     <span class="favorite-emote">❤</span>
@@ -1171,6 +1205,7 @@
             history.pushState(null, null, window.location.href);
             $('#playAudio').on('click', function() {
                 $('#audioModal').addClass('show');
+                $('.container').css('min-height', '200vh');
                 $('#audioRate').val(1);
                 $('#audioRate').attr('data-audio', 'A');
                 $('#audioRate').focus();
@@ -1202,14 +1237,14 @@
 
             if (isIndonesianMode) {
                 // Jika mode indo, text1 adalah bahasa Indonesia, text2 adalah bahasa Jerman
-                currentMeaning = $('.card:visible .german-word').text().trim().replace('❤', '');
+                currentMeaning = $('.card:visible .german-word').text().replace('❤', '').trim();
                 currentWord = $('.card:visible .indonesian-word').text().trim();
                 // Isi form sesuai bahasa
                 $('#editGerman').val(currentMeaning); // text2 jika indo mode
                 $('#editIndonesian').val(currentWord); // text1 jika indo mode
             } else {
                 // Jika mode german, text1 adalah bahasa Jerman, text2 adalah bahasa Indonesia
-                currentWord = $('.card:visible .german-word').text().trim().replace('❤', '');
+                currentWord = $('.card:visible .german-word').text().replace('❤', '').trim();
                 currentMeaning = $('.card:visible .indonesian-word').text().trim();
                 // Isi form sesuai bahasa
                 $('#editGerman').val(currentWord); // text2 jika indo mode
@@ -1383,10 +1418,67 @@
 
         // Handler untuk toggle individual cell
         $('.list-mode table td').on('click', function() {
-            if ($(this).hasClass('hidden-cell')) {
-                $(this).removeClass('hidden-cell');
+            if ($(this).hasClass('favorite-list')) {
+                let favId = $(this).data('id')
+                let favNo = $(this).text()
+                const currentWord = {
+                    id: favId,
+                    id_user: '{{ auth()->user()->id }}',
+                    _token: '{{ csrf_token() }}'
+                };
+
+                let target = $('.card[data-index="' + (parseInt(favNo) - 1) + '"] .german-word');
+                let germanWord = target.text().replace('❤', '').replace("\n", '').trim();
+                console.log(target.length, germanWord)
+
+                $.ajax({
+                    url: '/vocab/favorite',
+                    method: 'POST',
+                    data: JSON.stringify(currentWord),
+                    contentType: 'application/json',
+                    success: function(response) {
+                        $('#favoriteBtn').addClass('animate__animated animate__heartBeat');
+                        setTimeout(() => {
+                            $('#favoriteBtn').removeClass('animate__animated animate__heartBeat');
+                        }, 1000);
+                        if (response.action == 'add') {
+                            // Update di card mode
+                            target.append(`<span class="favorite-emote">❤</span>`);
+
+                            // Update di list mode
+                            let listCell = $(`.list-mode td[data-id="${favId}"].german-column`);
+                            if (!listCell.hasClass('german-column')) {
+                                listCell = listCell.siblings('.german-column');
+                            }
+                            listCell.addClass('favorite');
+                            listCell.append(`<span class="favorite-emote">❤</span>`);
+                        } else {
+                            // Update di card mode
+                            target.find('.favorite-emote').remove();
+
+                            // Update di list mode
+                            let listCell = $(`.list-mode td[data-id="${favId}"]`);
+                            if (!listCell.hasClass('german-column')) {
+                                listCell = listCell.siblings('.german-column');
+                            }
+                            listCell.removeClass('favorite');
+                            listCell.find('.favorite-emote').remove();
+                        }
+
+                        updateFavoritesList();
+                        if (showFavoritesOnly && favoriteCards.length === 0) {
+                            $('.card').hide();
+                            $('.list-mode tbody tr').hide();
+                            $('.score').text('0/0');
+                        }
+                    }
+                });
             } else {
-                $(this).addClass('hidden-cell');
+                if ($(this).hasClass('hidden-cell')) {
+                    $(this).removeClass('hidden-cell');
+                } else {
+                    $(this).addClass('hidden-cell');
+                }
             }
         });
 
@@ -1471,6 +1563,7 @@
                     $('.audio-modal-content').removeClass('show');
                     setTimeout(() => {
                         $('#audioModal').removeClass('show');
+                        $('.container').css('min-height', 'unset');
                     }, 300);
                 }
             });
@@ -1504,13 +1597,10 @@
 
             if (showFavoritesOnly) {
                 if (favoriteCards.length > 0) {
-                    // Update untuk card mode
                     showNextFavoriteCard();
-
-                    // Update untuk list mode
-                    $('.list-mode tbody tr').hide(); // Sembunyikan semua row
+                    $('.list-mode tbody tr').hide();
                     $('.list-mode td .favorite-emote').each(function() {
-                        $(this).closest('tr').show(); // Tampilkan row yang memiliki favorite
+                        $(this).closest('tr').show();
                     });
                 } else {
                     $('.card').hide();
@@ -1519,9 +1609,12 @@
                 }
             } else {
                 showCard(currentIndex);
-                $('.list-mode tbody tr').show(); // Tampilkan semua row
+                $('.list-mode tbody tr').show();
                 updateProgressBar('normal');
             }
+
+            // Update audio UI for favorites mode
+            updateAudioUIForFavorites();
         });
 
         function showNextFavoriteCard() {
@@ -1625,6 +1718,75 @@
             }
         });
 
+        $('#favoriteAudioBtn').on('touchstart click', function(e) {
+            e.preventDefault();
+
+            let favId = $('.audio-preview-group').find('.jerman').data('id')
+            let favNo = $('.audio-preview-group').find('.number').text()
+            const currentWord = {
+                id: favId,
+                id_user: '{{ auth()->user()->id }}',
+                _token: '{{ csrf_token() }}'
+            };
+
+            let target = $('.card[data-index="' + (parseInt(favNo) - 1) + '"] .german-word');
+            let germanWord = target.text().replace('❤', '').replace("\n", '').trim();
+            let th = $(this)
+            $.ajax({
+                url: '/vocab/favorite',
+                method: 'POST',
+                data: JSON.stringify(currentWord),
+                contentType: 'application/json',
+                success: function(response) {
+                    th.css('background-color', '#6c5ce7');
+                    setTimeout(() => {
+                        th.css('background-color', 'white');
+                        setTimeout(() => {
+                            th.css('background-color', '#6c5ce7');
+                            setTimeout(() => {
+                                th.css('background-color', 'white');
+                                setTimeout(() => {
+                                    th.css('background-color', '#6c5ce7');
+                                    setTimeout(() => {
+                                        th.css('background-color', 'white');
+                                    }, 200);
+                                }, 200);
+                            }, 200);
+                        }, 200);
+                    }, 200);
+                    if (response.action == 'add') {
+                        // Update di card mode
+                        target.append(`<span class="favorite-emote">❤</span>`);
+
+                        // Update di list mode
+                        let listCell = $(`.list-mode td[data-id="${favId}"].german-column`);
+                        if (!listCell.hasClass('german-column')) {
+                            listCell = listCell.siblings('.german-column');
+                        }
+                        listCell.addClass('favorite');
+                        listCell.append(`<span class="favorite-emote">❤</span>`);
+                    } else {
+                        // Update di card mode
+                        target.find('.favorite-emote').remove();
+
+                        // Update di list mode
+                        let listCell = $(`.list-mode td[data-id="${favId}"]`);
+                        if (!listCell.hasClass('german-column')) {
+                            listCell = listCell.siblings('.german-column');
+                        }
+                        listCell.removeClass('favorite');
+                        listCell.find('.favorite-emote').remove();
+                    }
+
+                    updateFavoritesList();
+                    if (showFavoritesOnly && favoriteCards.length === 0) {
+                        $('.card').hide();
+                        $('.list-mode tbody tr').hide();
+                        $('.score').text('0/0');
+                    }
+                }
+            });
+        });
         $('#favoriteBtn').on('touchstart click', function(e) {
             e.preventDefault();
             const currentWord = {
@@ -1633,7 +1795,8 @@
                 _token: '{{ csrf_token() }}'
             };
             let target = $('.card:visible .german-word');
-            let germanWord = target.text().trim().replace('❤', '');
+            let germanWord = target.text().replace('❤', '').replace("\n", '').trim();
+
 
             $.ajax({
                 url: '/vocab/favorite',
@@ -1662,6 +1825,7 @@
 
                         // Update di list mode
                         let listCell = $(`.list-mode td:contains('${germanWord}')`);
+                        console.log(listCell.length, germanWord)
                         if (!listCell.hasClass('german-column')) {
                             listCell = listCell.siblings('.german-column');
                         }
@@ -1750,6 +1914,7 @@
             let lastPosition = 0;
             const resumeButton = document.getElementById('resumeButton');
             const restartButton = document.getElementById('restartButton');
+            const restartFromNumber = document.getElementById('restartFromNumber');
             const controlButtons = document.getElementById('controlButtons');
             const startButton = document.getElementById('startAudio');
             const synth = window.speechSynthesis;
@@ -1808,12 +1973,15 @@
                     let germanText = row.cells[1].textContent.trim();
                     let indoText = row.cells[2].textContent.trim();
                     let exampleText = row.cells[3]?.textContent.trim();
+                    let dataId = row.cells[1].dataset.id;
                     setTimeout(
                         function() {
                             $('.audio-preview-group').find('.jerman').text(germanText + " = ")
                             $('.audio-preview-group').find('.indo').text(indoText)
                             $('.audio-preview-group').find('.sample').text(exampleText)
                             $('.audio-preview-group').find('.number').text(number)
+                            $('.audio-preview-group').find('.jerman').data('id', dataId)
+                            console.log($('.audio-preview-group').find('.jerman').data('id'))
                             let helper_number = parseInt(number) - 1
                             helper_number = helper_number < 1 ? 1 : helper_number
                             $('#startNumber').val(helper_number).trigger('change');
@@ -1838,7 +2006,12 @@
                 const germanText = row.cells[1].textContent.replace('❤', '').trim();
                 const indoText = row.cells[2].textContent.trim();
                 const exampleText = row.cells[3]?.textContent.trim();
-                console.log(germanText)
+                const hasFavorite = row.querySelector('.favorite-emote') !== null;
+
+                // Skip if we're in favorites mode and this row isn't a favorite
+                if (showFavoritesOnly && !hasFavorite) {
+                    return;
+                }
 
                 // Baca bahasa Indonesia jika opsi dipilih
                 if (document.querySelector('[data-option="indonesia"].active')) {
@@ -1847,43 +2020,54 @@
 
                 // Baca bahasa Jerman jika opsi dipilih
                 if (document.querySelector('[data-option="german"].active')) {
-                    await sleep(500); // Jeda 0.5 detik sebelum membaca bahasa jerman
+                    await sleep(500);
                     await speakText(germanText, 'de-DE', rate);
                 }
 
                 // Baca contoh jika opsi dipilih
                 if (document.querySelector('[data-option="example"].active') && exampleText) {
-                    await sleep(500); // Jeda 0.5 detik sebelum membaca contoh
+                    await sleep(500);
                     await speakText(exampleText, 'de-DE', rate);
                 }
 
                 if (isReading) {
                     updateRowState(row, 'read');
-                    await sleep(pause * 1000); // Jeda antar baris sesuai setting user
+                    await sleep(pause * 1000);
                 }
             }
 
-            async function startReading(fromPosition = 0) {
+            async function startReading(fromPosition = 0, force = false) {
                 const rate = parseFloat(document.getElementById('rateSlider').value);
                 const pause = parseFloat(document.getElementById('pauseSlider').value);
                 const startNumber = parseInt(document.getElementById('startNumber').value) || 1;
                 const rows = Array.from(document.querySelectorAll('.list-mode tbody tr'));
 
-                // Validasi nomor awal
+                // Validate start number
                 if (startNumber < 1 || startNumber > rows.length) {
                     document.getElementById('numberError').style.display = 'block';
                     return;
                 }
                 document.getElementById('numberError').style.display = 'none';
-                const index = interactionCount
-                // Mulai dari nomor yang diinginkan (kurangi 1 karena array dimulai dari 0)
+
+                const index = interactionCount;
                 let startIndex = Math.max(startNumber - 1, fromPosition);
+                if (force) {
+                    startIndex = 0;
+                }
 
                 for (let i = startIndex; i < rows.length; i++) {
                     // console.log(index, interactionCount)
                     // console.log(interactionCount == index)
                     if (!isReading) break;
                     if (interactionCount != index) break;
+                    const row = rows[i];
+                    const hasFavorite = row.querySelector('.favorite-emote') !== null;
+
+                    // Skip non-favorites in favorites mode
+                    if (showFavoritesOnly && !hasFavorite) {
+                        continue;
+                    }
+
                     lastPosition = i;
                     await processRow(rows[i], rate, pause);
                 }
@@ -1893,6 +2077,23 @@
                     startButton.textContent = 'Start Reading ▶';
                     startButton.style.display = 'block';
                     controlButtons.classList.remove('show');
+                }
+            }
+
+            // Add this function to update UI for favorites mode
+            function updateAudioUIForFavorites() {
+                const rows = document.querySelectorAll('.list-mode tbody tr');
+                const favoriteRows = Array.from(rows).filter(row => row.querySelector('.favorite-emote'));
+
+                if (showFavoritesOnly && favoriteRows.length === 0) {
+                    startButton.disabled = true;
+                    startButton.style.opacity = '0.5';
+                    document.getElementById('numberError').textContent = 'No favorites available to play';
+                    document.getElementById('numberError').style.display = 'block';
+                } else {
+                    startButton.disabled = false;
+                    startButton.style.opacity = '1';
+                    document.getElementById('numberError').style.display = 'none';
                 }
             }
 
@@ -1932,8 +2133,7 @@
                 interactionCount++
                 await startReading(lastPosition);
             });
-
-            restartButton.addEventListener('click', async function() {
+            restartFromNumber.addEventListener('click', async function() {
                 synth.cancel();
                 await new Promise(resolve => setTimeout(resolve, 200));
                 document.querySelectorAll('.list-mode tbody tr').forEach(row => {
@@ -1948,7 +2148,23 @@
                 await startReading(0);
             });
 
+            restartButton.addEventListener('click', async function() {
+                synth.cancel();
+                await new Promise(resolve => setTimeout(resolve, 200));
+                document.querySelectorAll('.list-mode tbody tr').forEach(row => {
+                    row.classList.remove('read', 'reading');
+                });
+                lastPosition = 0;
+                isReading = true;
+                controlButtons.classList.remove('show');
+                startButton.style.display = 'block';
+                startButton.textContent = 'Stop Reading ⏹';
+                interactionCount++
+                await startReading(0, true);
+            });
+
             document.getElementById('closeAudioModal').addEventListener('click', function() {
+                controlButtons.style.display = 'none';
                 isReading = false;
                 synth.cancel();
                 startButton.textContent = 'Start Reading ▶';

@@ -114,20 +114,29 @@ class helper extends Command
         // }
 
 
-         // add - di kapital
-        $vocabs = Vocab::where('word_type','Adj')->get();
-      
-        foreach ($vocabs as $vocab) {
-            $vocab->update([
-                'word_type' =>  'Adjektiv'
-            ]);
-        }
-        $vocabs = Vocab::where('word_type','Null')->get();
-      
-        foreach ($vocabs as $vocab) {
-            $vocab->update([
-                'word_type' =>  null
-            ]);
-        }
+        // add - di kapital
+        // $vocabs = Vocab::where('word_type','Adj')->get();
+
+        // foreach ($vocabs as $vocab) {
+        //     $vocab->update([
+        //         'word_type' =>  'Adjektiv'
+        //     ]);
+        // }
+        // $vocabs = Vocab::where('word_type','Null')->get();
+
+        // foreach ($vocabs as $vocab) {
+        //     $vocab->update([
+        //         'word_type' =>  null
+        //     ]);
+        // }
+
+        // $vocabs = Vocab::get();
+        // foreach ($vocabs as $vocab) {
+        //     if ($vocab->column_a == $vocab->column_b) {
+        //         $vocab->update([
+        //             'word_type' => 'Same'
+        //         ]);
+        //     }
+        // }
     }
 }

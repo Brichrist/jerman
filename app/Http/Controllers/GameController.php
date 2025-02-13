@@ -49,7 +49,7 @@ class GameController extends Controller
                 return $query->whereHas('linkFavorite');
             })
             ->when($kapital == '', function ($query) {
-                return $query->limit(100);
+                return $query->inRandomOrder()->limit(100);
             })
             ->with('linkFavorite')
             ->get();

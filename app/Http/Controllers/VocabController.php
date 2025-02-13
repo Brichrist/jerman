@@ -18,14 +18,62 @@ class VocabController extends Controller
         // dd(env('OPENAI_API_KEY'));
         $this->openai = OpenAI::client(env('OPENAI_API_KEY'));
     }
+    public function generateVocabComma(Request $request)
+    {
+        // Validasi input
+        $request->validate([
+            'words' => 'required|array'
+        ]);
+
+        $words = $request->words;
+
+        $promptData = [
+            'model' => 'gpt-4',
+            'messages' => [
+                [
+                    'role' => 'system',
+                    'content' => 'You are a German language expert. For each German word, provide the meaning in Indonesian and basic information. Return ONLY a valid JSON array.'
+                ],
+                [
+                    'role' => 'user',
+                    'content' => "For these German words, first check for any spelling mistakes and correct them. Then return a JSON array where each object has these fields:
+                    - german_word: the correct spelling of the word
+                    - original_word: the word as provided (only if different from german_word)
+                    - spelling_correction: explanation of correction (only if word was corrected)
+                    - meaning: Indonesian translation
+                    - word_type: type of word (Verben, Nomen, etc)
+                    - example: a simple German sentence using the word
+    
+                    Words to analyze: " . implode(', ', $words)
+                ]
+            ],
+            'temperature' => 0.7
+        ];
+
+        try {
+            $response = $this->openai->chat()->create($promptData);
+            $result = json_decode($response->choices[0]->message->content, true);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new \Exception('Invalid JSON response from OpenAI');
+            }
+
+            return response()->json($result);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error generating vocabulary: ' . $e->getMessage()
+            ], 500);
+        }
+    }
     public function multiple(Request $request)
     {
-
         $rules = [
             'kapital' => ['nullable', 'string'],
             'vocab.*' => ['required', 'string'],
             'word_type.*' => ['nullable'],
             'meaning.*' => ['required', 'string'],
+            'example.*' => ['nullable', 'string'],
         ];
 
         $request->validate($rules);
@@ -33,6 +81,8 @@ class VocabController extends Controller
         $vocabs = $request->input('vocab', []);
         $meanings = $request->input('meaning', []);
         $wordTypes = $request->input('word_type', []);
+        $examples = $request->input('example', []);
+        // dd($request->all(), $vocabs, $meanings, $wordTypes, $examples); 
 
         foreach ($vocabs as $index => $vocab) {
             $data = [
@@ -40,6 +90,7 @@ class VocabController extends Controller
                 'german_word' => $vocab,
                 'word_type' => $wordTypes[$index] ?? null,
                 'meaning' => $meanings[$index] ?? null,
+                'example' => $examples[$index] ?? null,
                 'id_user' => auth()->user()->id,
             ];
 

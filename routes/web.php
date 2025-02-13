@@ -21,6 +21,9 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+Route::get('/test', function () {
+    return view('test');
+});
 
 Route::get('/test-1', function () {
     return view('nanti_dilanjut_trenbare');
@@ -57,6 +60,7 @@ Route::middleware(['auth','expired'])->group(function () {
 
     Route::post('/extract-pdf', [VocabController::class, 'extract']);
     Route::post('/get-data-ai', [VocabController::class, 'dataAi']);
+    Route::post('/generate-vocab-comma', [VocabController::class, 'generateVocabComma']);
 
     Route::get('/game', [GameController::class, 'index'])->name('game.index');
     Route::get('/game/vocab/index', [GameController::class, 'vocabIndex'])->name('game.vocab.index');

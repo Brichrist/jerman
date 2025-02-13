@@ -272,6 +272,58 @@
                                 <button type="button" class="mb-5 bg-blue-500 text-white px-4 py-2 rounded" data-modal-target="addVocabModal">
                                     Add by Pdf
                                 </button>
+                                <button type="button" class="mb-5 bg-green-500 text-white px-4 py-2 rounded" data-modal-target="generateWordsModal">
+                                    Generate Words
+                                </button>
+                                <!-- Modal Generate Words -->
+                                <div id="generateWordsModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
+                                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-lg max-h-screen overflow-y-auto">
+                                        <form method="post" action="/multiple-vocab" id="pdfForm" enctype="multipart/form-data" class="max-w-xl">
+                                            @csrf
+                                            <header class="flex justify-between items-center">
+                                                <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                                                    Generate Words
+                                                </h2>
+                                                <button type="button" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" data-modal-close="generateWordsModal">
+                                                    &times;
+                                                </button>
+                                            </header>
+
+                                            <div>
+                                                <x-input-label for="words-input" value="Enter German Words" />
+                                                <textarea id="words-input" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-900 dark:text-gray-300" rows="3" placeholder="e.g., verbringen, verzichten, eilig"></textarea>
+                                            </div>
+
+                                            <div class="mt-5">
+                                                <x-input-label for="kapital-gen" value="Kapital" />
+                                                <x-text-input id="kapital-gen" type="text" name="kapital" class="mt-1 block w-full" />
+                                            </div>
+
+                                            <!-- Generate button moved here -->
+                                            <div class="flex justify-end mt-5">
+                                                <x-primary-button type="button" id="generateBtn">Generate</x-primary-button>
+                                            </div>
+
+                                            <div id="loadingIndicator" class="hidden">
+                                                <div class="flex items-center justify-center">
+                                                    <svg class="animate-spin h-5 w-5 text-gray-500 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                                                    </svg>
+                                                    <span>Generating...</span>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-center justify-end gap-4 mt-6">
+                                                <x-secondary-button type="button" data-modal-close="generateWordsModal">Cancel</x-secondary-button>
+                                                <x-primary-button type="submit">Save</x-primary-button>
+                                            </div>
+                                            <!-- Generated words will appear here -->
+                                            <div id="generatedContent" class="space-y-4 mt-5"></div>
+                                            <!-- Footer buttons -->
+                                        </form>
+                                    </div>
+                                </div>
 
                                 <!-- Modal -->
                                 <div id="addVocabModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden">
@@ -376,6 +428,101 @@
         </div>
     </div>
     @push('js')
+        <script type="module">
+            $(document).ready(function() {
+                // Tampilkan modal
+                $('[data-modal-target="generateWordsModal"]').click(function() {
+                    $('#generateWordsModal').removeClass('hidden');
+                });
+
+                // Tutup modal
+                $('[data-modal-close="generateWordsModal"]').click(function() {
+                    $('#generateWordsModal').addClass('hidden');
+                    // Reset form
+                    $('#words-input').val('');
+                    $('#kapital-gen').val('');
+                    $('#generatedContent').empty();
+                });
+
+                // Handle generate button
+                $('#generateBtn').click(function() {
+                    const words = $('#words-input').val().split(',').map(w => w.trim()).filter(w => w);
+                    const kapital = $('#kapital-gen').val();
+
+                    if (words.length === 0) {
+                        alert('Please enter at least one word');
+                        return;
+                    }
+
+                    // Show loading
+                    $('#loadingIndicator').removeClass('hidden');
+                    $(this).prop('disabled', true);
+
+                    // Simulate API call
+                    $.ajax({
+                        url: '/generate-vocab-comma',
+                        method: 'POST',
+                        contentType: 'application/json',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        data: JSON.stringify({
+                            words: words,
+                            kapital: kapital
+                        }),
+                        success: function(response) {
+                            // $('#generatedContent').empty();
+
+                            // Generate input fields for each word
+                            response.forEach((word, index) => {
+                                const wordHtml = `
+                                    <div class="border p-4 rounded-md space-y-2 relative word-item">
+                                        <button type="button" class="remove-word-btn absolute top-2 right-2 text-red-500 hover:text-red-700">
+                                            🗑️
+                                        </button>
+                                        <input type="hidden" name="vocab[${index}]" value="${word.german_word}">
+                                        <div>
+                                            <x-input-label>German Word</x-input-label>
+                                            <input type="text" readonly value="${word.german_word}" 
+                                                class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50">
+                                                ${word.original_word ? 
+                                                    `<p class="text-red-500 text-sm mt-1">${word.original_word} → ${word.german_word} (${word.spelling_correction})</p>` 
+                                                    : ''}
+                                        </div>
+                                        <div>
+                                            <x-input-label>Meaning</x-input-label>
+                                            <input type="text" name="meaning[${index}]" value="${word.meaning}"
+                                                class="mt-1 block w-full rounded-md border-gray-300">
+                                        </div>
+                                        <div>
+                                            <x-input-label>Word Type</x-input-label>
+                                            <input type="text" name="word_type[${index}]" value="${word.word_type}"
+                                                class="mt-1 block w-full rounded-md border-gray-300">
+                                        </div>
+                                        <div>
+                                            <x-input-label>Example</x-input-label>
+                                            <textarea name="example[${index}]" rows="2"
+                                                class="mt-1 block w-full rounded-md border-gray-300">${word.example || ''}</textarea>
+                                        </div>
+                                    </div>
+                                `;
+                                $('#generatedContent').prepend(wordHtml);
+                            });
+                        },
+                        error: function() {
+                            alert('Error generating vocabulary');
+                        },
+                        complete: function() {
+                            $('#loadingIndicator').addClass('hidden');
+                            $('#generateBtn').prop('disabled', false);
+                        }
+                    });
+                });
+                $(document).on('click', '.remove-word-btn', function() {
+                    $(this).closest('.word-item').remove();
+                });
+            });
+        </script>
         <script type="module">
             $(document).ready(function() {
                 $('.btn-add-user').on('click', function() {
