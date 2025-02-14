@@ -36,16 +36,19 @@ class VocabController extends Controller
                 ],
                 [
                     'role' => 'user',
-                    'content' => "For these German words, first check for any spelling mistakes and correct them. Then return a JSON array where each object has these fields:
-                    - german_word: the correct spelling of the word
-                    - original_word: the word as provided (only if different from german_word)
-                    - spelling_correction: explanation of correction (only if word was corrected)
-                    - meaning: Indonesian translation
-                    - word_type: type of word (Verben, Nomen, etc)
-                    - example: a simple German sentence using the word
-    
-                    Words to analyze: " . implode(', ', $words)
-                ]
+                    'content' => "Analyze these German words with these requirements:
+                        1. Check for spelling mistakes and correct them
+                        2. For verbs: ALWAYS convert to infinitive form (e.g., 'gegessen' → 'essen', 'schreibt' → 'schreiben')
+                        3. Return a JSON array where each object has:
+                            - german_word: correct spelling in infinitive form for verbs
+                            - original_word: word as provided (if different from german_word)
+                            - spelling_correction: explanation if corrected
+                            - meaning: Indonesian translation
+                            - word_type: type (Verben, Nomen, Adjektiv, etc.)
+                            - example: simple German sentence using the word
+                        
+                        Words to analyze: " . implode(', ', $words)
+                ],
             ],
             'temperature' => 0.7
         ];
@@ -179,7 +182,28 @@ class VocabController extends Controller
                     'messages' => [
                         [
                             'role' => 'user',
-                            'content' => "buatkan obj yang berisi list bahasa Jerman dari teks berikut dalam format JSON beserta artinya dalam bahasa indonesia. Format: {'bahasaJerman': {'kata1':{'meaning':'arti1','word_type':'tipe_kata1'}, 'kata2':{'meaning':'arti2','word_type':'tipe_kata2'}, ...}}: \n\n" . $text
+                            'content' => "Extract German vocabulary from the following text and create a JSON object with these requirements:
+                                1. Format: {
+                                    'bahasaJerman': {
+                                        'word1': {
+                                            'meaning': 'Indonesian translation',
+                                            'word_type': 'grammatical type',
+                                            'example': 'example sentence',
+                                            'notes': 'additional information'
+                                        },
+                                        ...
+                                    }
+                                }
+                                
+                                2. Special handling rules:
+                                - For verbs: ALWAYS convert to infinitive form
+                                - For nouns: Include article (der/die/das)
+                                - For separable verbs: Use pipe symbol (e.g., 'auf|stehen')
+                                - Mark reflexive verbs appropriately (e.g., 'sich waschen')
+                                
+                                3. word_type must be one of: Nomen, Verb, Adjektiv, Präposition, Adverb, Konjunktion, null
+                                
+                                Text to analyze:\n\n" . $text
                         ]
                     ]
                 ]);
@@ -195,8 +219,29 @@ class VocabController extends Controller
                             'content' => [
                                 [
                                     'type' => 'text',
-                                    'text' => "buatkan obj yang berisi list bahasa Jerman dari file ini (hanya yang distabilo) dalam format JSON beserta artinya dalam bahasa indonesia. Wajib pastikan ulang semua vocab (hanya yang distabilo) sudah masuk dalam list. dan jika kurang benar, benarkan secara mandiri, dan abaikan jika anda tidak menemukan perbaikannya. Dengan Format: {'bahasaJerman': {'kata1':{'meaning':'arti1,'example':'contoh1,'word_type':'tipe_kata1(Nomen,Verb,Adjektiv,Präposition,Adverb,Konjunktion,Null)'}, 'kata2':{'meaning':'arti2,'example':'contoh2,'word_type':'tipe_kata2(Nomen,Verb,Adjektiv,Präposition,Adverb,Konjunktion,Null)'}, ...}}:"
-                                    // 'text' => "buatkan obj yang berisi list bahasa Jerman dari file ini dalam format JSON beserta artinya dalam bahasa indonesia. Wajib pastikan ulang semua vocab sudah masuk dalam list. Dengan Format: {'bahasaJerman': {'kata1':{'meaning':'arti1,'word_type':'tipe_kata1(Nomen,Verb,Adjektiv,Präposition,Adverb,Konjunktion,Null)'}, 'kata2':{'meaning':'arti2,'word_type':'tipe_kata2(Nomen,Verb,Adjektiv,Präposition,Adverb,Konjunktion,Null)'}, ...}}:"
+                                    'text' => "Extract highlighted German vocabulary from this image and create a JSON object with these requirements:
+                                        1. Format: {
+                                            'bahasaJerman': {
+                                                'word1': {
+                                                    'meaning': 'Indonesian translation',
+                                                    'word_type': 'grammatical type',
+                                                    'example': 'example sentence',
+                                                    'notes': 'additional information'
+                                                },
+                                                ...
+                                            }
+                                        }
+                                        
+                                        2. Special handling rules:
+                                        - For verbs: ALWAYS convert to infinitive form
+                                        - For nouns: Include article (der/die/das)
+                                        - For separable verbs: Use pipe symbol (e.g., 'auf|stehen')
+                                        - Mark reflexive verbs appropriately (e.g., 'sich waschen')
+                                        
+                                        3. word_type must be one of: Nomen, Verb, Adjektiv, Präposition, Adverb, Konjunktion, null
+                                        4. Only process highlighted/marked words from the image
+                                        5. Verify all vocabulary and correct any obvious errors
+                                        6. Make sure all highlighted words are included"
                                 ],
                                 [
                                     'type' => 'image_url',
