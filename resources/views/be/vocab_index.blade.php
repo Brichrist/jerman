@@ -712,6 +712,10 @@
                     e.preventDefault();
                     $(this).closest('.parent').remove();
                 });
+                $(document).on('click', '.removeVocabRow', function(e) {
+                    e.preventDefault();
+                    $(this).closest('.vocab-row').remove();
+                });
                 $('#pdfFile').on('change', function(e) {
                     e.preventDefault();
                     $('#loading').removeClass('hidden');
@@ -747,12 +751,17 @@
                                     </div>`;
                                 outputHtml += `<p>Total Keys: ${Object.keys(data).length}</p>`;
                                 Object.keys(data).forEach(key => {
-                                    outputHtml += `<div>
-                                        <input type="checkbox" id="${key}" name="vocab[]" value="${key}" class="vocab" checked>
+                                    outputHtml += `<div class="vocab-row flex items-center gap-2 mb-2">
+                                        <button type="button" class="text-red-500 hover:text-red-700 removeVocabRow">
+                                            🗑️
+                                        </button>
+                                        <div class="flex-1">
                                         <label for="${key}">${key} = ${data[key].meaning} (${data[key].word_type})</label>
+                                        <input type="hidden" name="vocab[]" value="${key}">
                                         <input type="hidden" name="meaning[]" value="${data[key].meaning}">
                                         <input type="hidden" name="word_type[]" value="${data[key].word_type}">
                                         <input type="hidden" name="example[]" value="${data[key].example}">
+                                        </div>
                                     </div>`;
                                 });
                                 outputHtml += '</div>';

@@ -68,6 +68,7 @@ class VocabController extends Controller
     }
     public function multiple(Request $request)
     {
+        // dd($request->all());
         $rules = [
             'kapital' => ['nullable', 'string'],
             'vocab.*' => ['required', 'string'],
