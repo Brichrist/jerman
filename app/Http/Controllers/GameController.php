@@ -42,18 +42,38 @@ class GameController extends Controller
         $useFavorites = $data['use_favorites'];
         $language = $data['language'];
 
-        $vocabularies = Vocab::when($kapital !== null, function ($query) use ($kapital) {
-            return $query->where('kapital', $kapital);
-        })
-            ->when($useFavorites, function ($query) {
-                return $query->whereHas('linkFavorite');
+        if ($request->same == true) {
+            $vocabularies = session('vocabularies', []);
+            if (count($vocabularies) == 0) {
+                $vocabularies = Vocab::when($kapital !== null, function ($query) use ($kapital) {
+                    return $query->where('kapital', $kapital);
+                })
+                    ->when($useFavorites, function ($query) {
+                        return $query->whereHas('linkFavorite');
+                    })
+                    ->when($kapital == '', function ($query) {
+                        return $query->inRandomOrder()->limit(100);
+                    })
+                    ->with('linkFavorite')
+                    ->get();
+            }
+        } else {
+            # code...
+            $vocabularies = Vocab::when($kapital !== null, function ($query) use ($kapital) {
+                return $query->where('kapital', $kapital);
             })
-            ->when($kapital == '', function ($query) {
-                return $query->inRandomOrder()->limit(100);
-            })
-            ->with('linkFavorite')
-            ->get();
+                ->when($useFavorites, function ($query) {
+                    return $query->whereHas('linkFavorite');
+                })
+                ->when($kapital == '', function ($query) {
+                    return $query->inRandomOrder()->limit(100);
+                })
+                ->with('linkFavorite')
+                ->get();
+        }
         $vocabularies = $vocabularies->shuffle();
+        session(['vocabularies' => $vocabularies]);
+
         // $vocab = Vocab::get();
         // dd($vocab, $language, $request->all());
         return view('game.vocab.play', compact('vocabularies', 'language'));

@@ -93,7 +93,8 @@
             margin-top: 0.5rem;
         }
 
-        button {
+        button,
+        a {
             padding: 1rem;
             border: none;
             border-radius: 12px;
@@ -1217,9 +1218,15 @@
                 <span class="button-text">Next</span>
             </button>
         </div>
+        <div class="buttons" style="display:flex; justify-content: center; gap: 10px">
+            <a href="{{ url()->current() }}?kapital={{ request('kapital') }}&use_favorites={{ request('use_favorites') }}&language={{ request('language') }}&same=true">shuffle</a>
+        </div>
     </div>
     <script>
         $(document).ready(function() {
+            const url = new URL(window.location.href);
+            url.searchParams.delete('same');
+            window.history.replaceState({}, document.title, url.toString());
             // Untuk reload dan close tab
             window.onbeforeunload = function(e) {
                 e.preventDefault();
