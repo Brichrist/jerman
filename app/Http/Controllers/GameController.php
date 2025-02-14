@@ -51,8 +51,10 @@ class GameController extends Controller
                     ->when($useFavorites, function ($query) {
                         return $query->whereHas('linkFavorite');
                     })
-                    ->when($kapital == '', function ($query) {
-                        return $query->inRandomOrder()->limit(100);
+                    ->when($kapital == '', function ($query) use($useFavorites) {
+                        return $query->inRandomOrder()->when($useFavorites != null, function ($q) {
+                            return $q->limit(100);
+                        });
                     })
                     ->with('linkFavorite')
                     ->get();
@@ -65,8 +67,10 @@ class GameController extends Controller
                 ->when($useFavorites, function ($query) {
                     return $query->whereHas('linkFavorite');
                 })
-                ->when($kapital == '', function ($query) {
-                    return $query->inRandomOrder()->limit(100);
+                ->when($kapital == '', function ($query) use($useFavorites) {
+                    return $query->inRandomOrder()->when($useFavorites != null, function ($q) {
+                        return $q->limit(100);
+                    });
                 })
                 ->with('linkFavorite')
                 ->get();
