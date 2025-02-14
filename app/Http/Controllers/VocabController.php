@@ -41,7 +41,7 @@ class VocabController extends Controller
                         2. For verbs: ALWAYS convert to infinitive form (e.g., 'gegessen' → 'essen', 'schreibt' → 'schreiben')
                         3. Return a JSON array where each object has:
                             - german_word: correct spelling in infinitive form for verbs
-                            - original_word: word as provided (if different from german_word)
+                            - original_word: the word as provided (only if different from german_word)
                             - spelling_correction: explanation if corrected
                             - meaning: Indonesian translation
                             - word_type: type (Verben, Nomen, Adjektiv, etc.)
