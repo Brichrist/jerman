@@ -94,7 +94,7 @@ class VocabController extends Controller
                 'id_user' => auth()->user()->id,
             ];
 
-            $existingVocab = Vocab::where('german_word', $vocab)->first();
+            $existingVocab = Vocab::where('german_word', $vocab)->where('id_user', auth()->user()->id)->first();
             if ($existingVocab) {
                 $existingVocab->update($data);
             } else {
@@ -104,9 +104,9 @@ class VocabController extends Controller
 
         $request->session()->flash('notif', ["success" => 'Data Saved']);
         return redirect('/vocab?' . http_build_query([
-            'kapital' => $request->kapital??null,
-            'favorite' => $request->favorite??null,
-            'owner' => $request->owner??null
+            'kapital' => $request->kapital ?? null,
+            'favorite' => $request->favorite ?? null,
+            'owner' => $request->owner ?? null
         ]));
     }
     public function dataAi(Request $request)
