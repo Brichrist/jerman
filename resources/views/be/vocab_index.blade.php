@@ -119,7 +119,7 @@
                                             <input type="text" class="hidden" id="id" name="id">
                                             <div>
                                                 <x-input-label for="kapital" :value="__('Kapital')" />
-                                                <x-text-input id="kapital" name="kapital" type="text" class="mt-1 block w-full" :value="old('kapital')" autofocus autocomplete="kapital" />
+                                                <x-text-input id="kapital" name="kapital" type="text" class="mt-1 block w-full" :value="old('kapital', request('kapital', ''))" autofocus autocomplete="kapital" />
                                                 <x-input-error class="mt-2" :messages="$errors->get('kapital')" />
                                             </div>
                                             <div>
@@ -279,8 +279,8 @@
                                 <div id="generateWordsModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
                                     <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-lg max-h-screen overflow-y-auto">
                                         <form method="post" action="/multiple-vocab" id="pdfForm" enctype="multipart/form-data" class="max-w-xl">
-                                            <input type="hidden" name="favorite" value="{{ request('favorite','') }}">
-                                            <input type="hidden" name="owner" value="{{ request('owner','') }}">
+                                            <input type="hidden" name="favorite" value="{{ request('favorite', '') }}">
+                                            <input type="hidden" name="owner" value="{{ request('owner', '') }}">
                                             @csrf
                                             <header class="flex justify-between items-center">
                                                 <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
@@ -298,7 +298,7 @@
 
                                             <div class="mt-5">
                                                 <x-input-label for="kapital-gen" value="Kapital" />
-                                                <x-text-input id="kapital-gen" type="text" name="kapital" class="mt-1 block w-full" />
+                                                <x-text-input id="kapital-gen" type="text" name="kapital" value="{{ request('kapital', '') }}" class="mt-1 block w-full" />
                                             </div>
 
                                             <!-- Generate button moved here -->
@@ -340,8 +340,8 @@
                                         </header>
                                         <form method="post" action="/multiple-vocab" id="pdfForm" enctype="multipart/form-data" class="mt-6 space-y-6">
                                             @csrf
-                                            <input type="hidden" name="favorite" value="{{ request('favorite','') }}">
-                                            <input type="hidden" name="owner" value="{{ request('owner','') }}">
+                                            <input type="hidden" name="favorite" value="{{ request('favorite', '') }}">
+                                            <input type="hidden" name="owner" value="{{ request('owner', '') }}">
                                             <div>
                                                 <x-input-label for="document" :value="__('Upload PDF')" />
                                                 <x-file-input id="pdfFile" name="document" class="mt-1 block w-full" />
@@ -356,7 +356,7 @@
                                             </div>
                                             <div>
                                                 <x-input-label for="kapital-multiple" :value="__('Kapital')" />
-                                                <x-text-input id="kapital-multiple" name="kapital" type="text" class="mt-1 block w-full" :value="old('kapital')" autofocus autocomplete="kapital" />
+                                                <x-text-input id="kapital-multiple" name="kapital" type="text" class="mt-1 block w-full" :value="old('kapital', request('kapital', ''))" autofocus autocomplete="kapital" />
                                                 <x-input-error class="mt-2" :messages="$errors->get('kapital')" />
                                             </div>
                                             <div class="flex items-center justify-end gap-4">
@@ -386,7 +386,7 @@
                                     <input type="text" class="hidden" id="id" name="id">
                                     <div>
                                         <x-input-label for="kapital" :value="__('Kapital')" />
-                                        <x-text-input id="kapital" name="kapital" type="text" class="mt-1 block w-full" :value="old('kapital')" autofocus autocomplete="kapital" />
+                                        <x-text-input id="kapital" name="kapital" type="text" class="mt-1 block w-full" :value="old('kapital', request('kapital', ''))" autofocus autocomplete="kapital" />
                                         <x-input-error class="mt-2" :messages="$errors->get('kapital')" />
                                     </div>
                                     <div>
@@ -475,6 +475,7 @@
                             kapital: kapital
                         }),
                         success: function(response) {
+                            $('#words-input').val('')
                             // $('#generatedContent').empty();
 
                             // Generate input fields for each word
