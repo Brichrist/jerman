@@ -974,6 +974,36 @@
             transform: rotate(90deg);
         }
     </style>
+    <style>
+        .option-button {
+            position: relative;
+            padding-right: 2rem !important;
+            /* Make room for the number */
+        }
+
+        .order-number {
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(108, 92, 231, 0.2);
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #6c5ce7;
+            transition: all 0.3s ease;
+        }
+
+        .option-button.active .order-number {
+            background: white;
+            color: #6c5ce7;
+        }
+    </style>
 </head>
 
 <body>
@@ -1936,12 +1966,50 @@
             });
 
             // Option buttons dengan multiple selection
+            let selectedOrder = ['german'];
+            let orderCounter = 1;
+            // Add click handlers for option buttons
+            // Add click handlers for option buttons
             const optionButtons = document.querySelectorAll('.option-button');
             optionButtons.forEach(button => {
+                // Add span for order number
+                const orderSpan = document.createElement('span');
+                orderSpan.className = 'order-number';
+                button.appendChild(orderSpan);
+
                 button.addEventListener('click', function() {
-                    this.classList.toggle('active');
+                    const option = this.getAttribute('data-option');
+                    const orderSpan = this.querySelector('.order-number');
+
+                    if (this.classList.contains('active')) {
+                        // Remove from order when deactivated
+                        this.classList.remove('active');
+                        orderSpan.textContent = '';
+                        selectedOrder = selectedOrder.filter(item => item !== option);
+
+                        // Reorder remaining numbers
+                        updateOrderNumbers();
+                        orderCounter = selectedOrder.length + 1;
+                    } else {
+                        // Add to order when activated
+                        this.classList.add('active');
+                        orderSpan.textContent = orderCounter++;
+                        selectedOrder.push(option);
+                    }
                 });
             });
+            updateOrderNumbers()
+            orderCounter = selectedOrder.length + 1;
+
+
+
+            function updateOrderNumbers() {
+                const activeButtons = document.querySelectorAll('.option-button.active');
+                activeButtons.forEach((button, index) => {
+                    const orderSpan = button.querySelector('.order-number');
+                    orderSpan.textContent = index + 1;
+                });
+            }
 
             function sleep(ms) {
                 return new Promise(resolve => setTimeout(resolve, ms));
@@ -2013,21 +2081,30 @@
                     return;
                 }
 
-                // Baca bahasa Indonesia jika opsi dipilih
-                if (document.querySelector('[data-option="indonesia"].active')) {
-                    await speakText(indoText, 'id-ID', rate);
-                }
+                // Process audio in the selected order
+                for (const option of selectedOrder) {
+                    if (!isReading) break;
 
-                // Baca bahasa Jerman jika opsi dipilih
-                if (document.querySelector('[data-option="german"].active')) {
-                    await sleep(500);
-                    await speakText(germanText, 'de-DE', rate);
-                }
-
-                // Baca contoh jika opsi dipilih
-                if (document.querySelector('[data-option="example"].active') && exampleText) {
-                    await sleep(500);
-                    await speakText(exampleText, 'de-DE', rate);
+                    switch (option) {
+                        case 'indonesia':
+                            if (document.querySelector('[data-option="indonesia"].active')) {
+                                await speakText(indoText, 'id-ID', rate);
+                                await sleep(500);
+                            }
+                            break;
+                        case 'german':
+                            if (document.querySelector('[data-option="german"].active')) {
+                                await speakText(germanText, 'de-DE', rate);
+                                await sleep(500);
+                            }
+                            break;
+                        case 'example':
+                            if (document.querySelector('[data-option="example"].active') && exampleText) {
+                                await speakText(exampleText, 'de-DE', rate);
+                                await sleep(500);
+                            }
+                            break;
+                    }
                 }
 
                 if (isReading) {
@@ -2111,8 +2188,7 @@
                 }
 
                 // Check if at least one option is selected
-                const hasSelectedOption = document.querySelector('.option-button.active');
-                if (!hasSelectedOption) {
+                if (selectedOrder.length === 0) {
                     alert('Please select at least one language option');
                     return;
                 }
@@ -2120,10 +2196,14 @@
                 isReading = true;
                 this.textContent = 'Stop Reading ⏹';
                 controlButtons.classList.remove('show');
-                interactionCount++
-                await startReading(0); // Akan menggunakan nilai dari input startNumber
+                interactionCount++;
+                await startReading(0);
             });
             resumeButton.addEventListener('click', async function() {
+                if (selectedOrder.length === 0) {
+                    alert('Please select at least one language option');
+                    return;
+                }
                 synth.cancel();
                 await new Promise(resolve => setTimeout(resolve, 200));
                 isReading = true;
@@ -2134,6 +2214,10 @@
                 await startReading(lastPosition);
             });
             restartFromNumber.addEventListener('click', async function() {
+                if (selectedOrder.length === 0) {
+                    alert('Please select at least one language option');
+                    return;
+                }
                 synth.cancel();
                 await new Promise(resolve => setTimeout(resolve, 200));
                 document.querySelectorAll('.list-mode tbody tr').forEach(row => {
@@ -2149,6 +2233,10 @@
             });
 
             restartButton.addEventListener('click', async function() {
+                if (selectedOrder.length === 0) {
+                    alert('Please select at least one language option');
+                    return;
+                }
                 synth.cancel();
                 await new Promise(resolve => setTimeout(resolve, 200));
                 document.querySelectorAll('.list-mode tbody tr').forEach(row => {
