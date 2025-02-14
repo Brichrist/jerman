@@ -103,7 +103,11 @@ class VocabController extends Controller
         }
 
         $request->session()->flash('notif', ["success" => 'Data Saved']);
-        return redirect('/vocab');
+        return redirect('/vocab?' . http_build_query([
+            'kapital' => $request->kapital??null,
+            'favorite' => $request->favorite??null,
+            'owner' => $request->owner??null
+        ]));
     }
     public function dataAi(Request $request)
     {

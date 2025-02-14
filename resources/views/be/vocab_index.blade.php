@@ -279,6 +279,8 @@
                                 <div id="generateWordsModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
                                     <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-lg max-h-screen overflow-y-auto">
                                         <form method="post" action="/multiple-vocab" id="pdfForm" enctype="multipart/form-data" class="max-w-xl">
+                                            <input type="hidden" name="favorite" value="{{ request('favorite','') }}">
+                                            <input type="hidden" name="owner" value="{{ request('owner','') }}">
                                             @csrf
                                             <header class="flex justify-between items-center">
                                                 <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
@@ -338,6 +340,8 @@
                                         </header>
                                         <form method="post" action="/multiple-vocab" id="pdfForm" enctype="multipart/form-data" class="mt-6 space-y-6">
                                             @csrf
+                                            <input type="hidden" name="favorite" value="{{ request('favorite','') }}">
+                                            <input type="hidden" name="owner" value="{{ request('owner','') }}">
                                             <div>
                                                 <x-input-label for="document" :value="__('Upload PDF')" />
                                                 <x-file-input id="pdfFile" name="document" class="mt-1 block w-full" />
