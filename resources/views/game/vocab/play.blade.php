@@ -2089,26 +2089,34 @@
                 }
 
                 // Process audio in the selected order
+                let ci=0;
                 for (const option of selectedOrder) {
+                    ci++
                     if (!isReading) break;
 
                     switch (option) {
                         case 'indonesia':
                             if (document.querySelector('[data-option="indonesia"].active')) {
+                                if (ci!=1) {
+                                    await sleep(2000);
+                                }
                                 await speakText(indoText, 'id-ID', rate);
-                                await sleep(1000);
                             }
                             break;
                         case 'german':
                             if (document.querySelector('[data-option="german"].active')) {
+                                if (ci!=1) {
+                                    await sleep(2000);
+                                }
                                 await speakText(germanText, 'de-DE', rate);
-                                await sleep(1000);
                             }
                             break;
                         case 'example':
                             if (document.querySelector('[data-option="example"].active') && exampleText) {
+                                if (ci!=1) {
+                                    await sleep(2000);
+                                }
                                 await speakText(exampleText, 'de-DE', rate);
-                                await sleep(1000);
                             }
                             break;
                     }
