@@ -51,9 +51,15 @@ class GameController extends Controller
                     ->when($useFavorites, function ($query) {
                         return $query->whereHas('linkFavorite');
                     })
-                    ->when($kapital == '', function ($query) use($useFavorites) {
+                    ->when($kapital == '', function ($query) use ($useFavorites) {
                         return $query->inRandomOrder()->when($useFavorites != null, function ($q) {
                             return $q->limit(100);
+                        });
+                    })
+                    ->when(auth()->user()->role !== 'owner', function ($query) {
+                        return $query->where(function ($q) {
+                            $q->whereNull('id_user')
+                                ->orWhere('id_user', auth()->id());
                         });
                     })
                     ->with('linkFavorite')
@@ -67,9 +73,15 @@ class GameController extends Controller
                 ->when($useFavorites, function ($query) {
                     return $query->whereHas('linkFavorite');
                 })
-                ->when($kapital == '', function ($query) use($useFavorites) {
+                ->when($kapital == '', function ($query) use ($useFavorites) {
                     return $query->inRandomOrder()->when($useFavorites != null, function ($q) {
                         return $q->limit(100);
+                    });
+                })
+                ->when(auth()->user()->role !== 'owner', function ($query) {
+                    return $query->where(function ($q) {
+                        $q->whereNull('id_user')
+                            ->orWhere('id_user', auth()->id());
                     });
                 })
                 ->with('linkFavorite')
