@@ -239,7 +239,7 @@ class VocabController extends Controller
                                         - Mark reflexive verbs appropriately (e.g., 'sich waschen')
                                         
                                         3. word_type must be one of: Nomen, Verb, Adjektiv, Präposition, Adverb, Konjunktion, null
-                                        4. Only process highlighted/marked words from the image
+                                        4. Only process orange highlighted/marked words from the image
                                         5. Verify all vocabulary and correct any obvious errors
                                         6. Make sure all highlighted words are included"
                                 ],
