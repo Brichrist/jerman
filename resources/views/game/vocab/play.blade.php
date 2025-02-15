@@ -1233,13 +1233,13 @@
                 return "Apakah Anda yakin ingin meninggalkan halaman ini?";
             };
             // Untuk tombol back
-            window.onpopstate = function(e) {
-                if (!confirm("Apakah Anda yakin ingin kembali?")) {
-                    history.pushState(null, null, window.location.href);
-                }
-            };
+            // window.onpopstate = function(e) {
+            //     if (!confirm("Apakah Anda yakin ingin kembali?")) {
+            //         history.pushState(null, null, window.location.href);
+            //     }
+            // };
             // Initial state
-            history.pushState(null, null, window.location.href);
+            // history.pushState(null, null, window.location.href);
             $('#playAudio').on('click', function() {
                 $('#audioModal').addClass('show');
                 $('.container').css('min-height', '200vh');
