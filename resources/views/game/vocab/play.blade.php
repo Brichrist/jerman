@@ -2098,7 +2098,7 @@
                         case 'indonesia':
                             if (document.querySelector('[data-option="indonesia"].active')) {
                                 if (ci!=1) {
-                                    await sleep(2000);
+                                    await sleep(1500);
                                 }
                                 await speakText(indoText, 'id-ID', rate);
                             }
@@ -2106,7 +2106,7 @@
                         case 'german':
                             if (document.querySelector('[data-option="german"].active')) {
                                 if (ci!=1) {
-                                    await sleep(2000);
+                                    await sleep(1500);
                                 }
                                 await speakText(germanText, 'de-DE', rate);
                             }
@@ -2114,7 +2114,7 @@
                         case 'example':
                             if (document.querySelector('[data-option="example"].active') && exampleText) {
                                 if (ci!=1) {
-                                    await sleep(2000);
+                                    await sleep(1500);
                                 }
                                 await speakText(exampleText, 'de-DE', rate);
                             }
