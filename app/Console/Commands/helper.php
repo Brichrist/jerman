@@ -3,140 +3,110 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Models\Gramatik;
 use App\Models\Vocab;
-use App\Models\Redemittel;
-
+use OpenAI;
+use Illuminate\Support\Facades\Log;
 
 class helper extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = 'app:helper';
+    protected $description = 'Process vocabulary using OpenAI for B2S1';
+    
+    protected $openai;
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Command description';
+    public function __construct()
+    {
+        parent::__construct();
+        $this->openai = OpenAI::client(env('OPENAI_API_KEY'));
+    }
 
-    /**
-     * Execute the console command.
-     */
     public function handle()
     {
-        // // add - di kapital
-        // $gramatiks = Gramatik::get();
-        // $redemittels = Redemittel::get();
-        // $vocabs = Vocab::get();
-        // foreach ($gramatiks as $gramatik) {
-        //     $gramatik->update([
-        //         'kapital' => str_replace('-.', '.', $gramatik->kapital)
-        //     ]);
-        // }
-        // foreach ($redemittels as $redemittel) {
-        //     $redemittel->update([
-        //         'kapital' =>  str_replace('-.', '.', $redemittel->kapital)
-        //     ]);
-        // }
-        // foreach ($vocabs as $vocab) {
-        //     $vocab->update([
-        //         'kapital' =>  str_replace('-.', '.', $vocab->kapital)
-        //     ]);
-        // }
+        $this->info("Starting vocabulary processing for kapital containing 'B2S1'");
+        
+        // Process vocabularies in chunks of 25
+        Vocab::where('kapital', 'like', '%B2S1%')
+            ->where('id_user', 1)
+            ->chunk(25, function($vocabs) {
+                try {
+                    // Menyiapkan data untuk OpenAI
+                    $vocabData = [];
+                    foreach ($vocabs as $vocab) {
+                        // Kita masukkan ID sebagai key utama
+                        $vocabData[$vocab->id] = [
+                            'german_word' => $vocab->german_word,
+                            'current_meaning' => $vocab->meaning,
+                            'current_type' => $vocab->word_type,
+                            'current_example' => $vocab->example,
+                        ];
+                    }
 
+                    $response = $this->openai->chat()->create([
+                        'model' => 'gpt-4',
+                        'messages' => [
+                            [
+                                'role' => 'system',
+                                'content' => 'You are a German language expert. Format and verify German vocabulary with proper grammatical information.'
+                            ],
+                            [
+                                'role' => 'user',
+                                'content' => "Process these German words according to these requirements and maintain the ID structure:
+                                    1. Format: Return a JSON where each key is the ID from input, containing:
+                                    {
+                                        'ID': {
+                                            'german_word': 'corrected German word',
+                                            'meaning': 'Indonesian translation',
+                                            'word_type': 'grammatical type',
+                                            'example': 'example sentence',
+                                        }
+                                    }
+                                    
+                                    2. Special handling rules:
+                                    - For verbs: ALWAYS convert to infinitive form
+                                    - For nouns: Include article (der/die/das)
+                                    - For separable verbs: Use pipe symbol (e.g., 'auf|stehen')
+                                    - Mark reflexive verbs appropriately (e.g., 'sich waschen')
+                                    
+                                    3. word_type must be one of: Nomen, Verb, Adjektiv, Präposition, Adverb, Konjunktion, null
+                                    4. Verify all vocabulary and correct any obvious errors
+                                    5. IMPORTANT: Keep the ID structure and return data for each ID
+                                    
+                                    Words to process: " . json_encode($vocabData, JSON_PRETTY_PRINT)
+                            ]
+                        ],
+                        'temperature' => 0.7
+                    ]);
 
+                    $result = json_decode($response->choices[0]->message->content, true);
 
-        //ordering
-        // $gramatiks = Gramatik::get();
-        // $order = [];
-        // foreach ($gramatiks as $gramatik) {
-        //     $kapital = rtrim($gramatik->kapital, '.');
-        //     $parts = explode('-', $kapital);
-        //     $lastPart = end($parts);
-        //     $startValue = reset($parts);
-        //     // dd($startValue, $lastPart);
+                    if (empty($result)) {
+                        throw new \Exception('Empty response from OpenAI');
+                    }
 
-        //     if (!in_array($startValue, $order)) {
-        //         $order[$startValue] = [];
-        //     }
+                    // Update berdasarkan ID
+                    foreach ($result as $id => $data) {
+                        $vocab = Vocab::find($id);
+                        if ($vocab) {
+                            $vocab->update([
+                                'german_word' => $data['german_word'],
+                                'meaning' => $data['meaning'],
+                                'word_type' => $data['word_type'],
+                                'example' => $data['example'] ?? null,
+                            ]);
+                        }
+                    }
 
-        //     if (!in_array($lastPart, $order[$startValue])) {
-        //         $order[$startValue][$lastPart] = 1;
-        //     } else {
-        //         $order[$startValue][$lastPart]++;
-        //     }
+                    $processedIds = array_keys($vocabData);
+                    $this->info("Successfully processed vocabulary batch with IDs: " . implode(', ', $processedIds));
+                    Log::info("Successfully processed vocabulary batch with IDs: " . implode(', ', $processedIds));
+                    
+                } catch (\Exception $e) {
+                    $this->error("Error processing vocabularies: " . $e->getMessage());
+                    Log::error("Error processing vocabularies: " . $e->getMessage());
+                }
+            });
 
-        //     switch ($startValue) {
-        //         case 'A1':
-        //             $add1 = 1000;
-        //             break;
-        //         case 'A2':
-        //             $add1 = 2000;
-        //             break;
-        //         case 'B1':
-        //             $add1 = 3000;
-        //             break;
-        //         case 'B2':
-        //             $add1 = 4000;
-        //             break;
-        //         case 'C1':
-        //             $add1 = 5000;
-        //             break;
-        //         case 'C2':
-        //             $add1 = 6000;
-        //             break;
-        //         default:
-        //             $add1 = 0;
-        //             break;
-        //     }
-        //     if ($add1 != 0) {
-        //         $add1 = $add1 + ((int)$lastPart * 10);
-        //     }
-
-        //     $order[] = $kapital;
-        //     $gramatik->update([
-        //         'order' =>  $add1 + $order[$startValue][$lastPart]
-        //     ]);
-        // }
-        // $gramatiks = Gramatik::orderBy('order')->get();
-
-        // $c = 0;
-        // foreach ($gramatiks as $gramatik) {
-        //     $c++;
-        //     $gramatik->update([
-        //         'order' =>  $c
-        //     ]);
-        // }
-
-
-        // add - di kapital
-        // $vocabs = Vocab::where('word_type','Adj')->get();
-
-        // foreach ($vocabs as $vocab) {
-        //     $vocab->update([
-        //         'word_type' =>  'Adjektiv'
-        //     ]);
-        // }
-        // $vocabs = Vocab::where('word_type','Null')->get();
-
-        // foreach ($vocabs as $vocab) {
-        //     $vocab->update([
-        //         'word_type' =>  null
-        //     ]);
-        // }
-
-        // $vocabs = Vocab::get();
-        // foreach ($vocabs as $vocab) {
-        //     if ($vocab->column_a == $vocab->column_b) {
-        //         $vocab->update([
-        //             'word_type' => 'Same'
-        //         ]);
-        //     }
-        // }
+        $this->info("Processing completed!");
+        return 0;
     }
 }
