@@ -46,7 +46,7 @@ class helper extends Command
 
         $this->info("Found $count vocabularies to translate");
 
-        $query->chunk(25, function ($vocabs) {
+        $query->chunk(25, function ($vocabs) use($c,$count) {
             try {
                 // Menyiapkan data untuk OpenAI
                 $vocabData = [];
