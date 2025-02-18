@@ -40,7 +40,7 @@ class GameController extends Controller
         $data = $request->all();
         $kapital = $data['kapital'];
         $useFavorites = $data['use_favorites'];
-        $germanWord = $data['german_word'];
+        $germanWord = $data['german_word']??null;
         $language = $data['language'];
 
         if ($request->same == true) {
