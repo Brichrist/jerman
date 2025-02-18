@@ -2128,7 +2128,7 @@
                                 if (ci != 1) {
                                     await sleep(1000);
                                 }
-                                await speakText(indoText, 'id-ID', rate);
+                                await speakText(indoText, 'id-ID', 1.1);
                             }
                             break;
                         case 'german':
@@ -2152,7 +2152,7 @@
                                 if (ci != 1) {
                                     await sleep(1000);
                                 }
-                                await speakText(example_bahasa, 'id-ID', rate);
+                                await speakText(example_bahasa, 'id-ID', 1.1);
                             }
                             break;
                     }
