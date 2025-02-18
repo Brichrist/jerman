@@ -151,6 +151,11 @@
                                                 <x-textarea id="example" name="example" class="mt-1 block w-full" :value="old('example')" autofocus autocomplete="example" />
                                                 <x-input-error class="mt-2" :messages="$errors->get('example')" />
                                             </div>
+                                            <div>
+                                                <x-input-label for="translated_example" :value="__('Example Meaning')" />
+                                                <x-textarea id="translated_example" name="translated_example" class="mt-1 block w-full" :value="old('translated_example')" autofocus autocomplete="translated_example" />
+                                                <x-input-error class="mt-2" :messages="$errors->get('translated_example')" />
+                                            </div>
 
                                             <div class="flex items-center justify-end gap-4">
                                                 <x-secondary-button type="button" data-modal-close="addVocabModal">{{ __('Cancel') }}</x-secondary-button>
@@ -204,6 +209,8 @@
                                                             🔊
                                                         </button>
                                                     @endif
+                                                    <br>
+                                                    Meaning: {!! $word->translated_example !!}
                                                     <br>
                                                     Note: {{ $word->additional_notes }}
                                                 </td>
@@ -418,6 +425,11 @@
                                         <x-textarea id="example" name="example" class="mt-1 block w-full" :value="old('example')" autofocus autocomplete="example" />
                                         <x-input-error class="mt-2" :messages="$errors->get('example')" />
                                     </div>
+                                    <div>
+                                        <x-input-label for="translated_example" :value="__('Example Meaning')" />
+                                        <x-textarea id="translated_example" name="translated_example" class="mt-1 block w-full" :value="old('translated_example')" autofocus autocomplete="translated_example" />
+                                        <x-input-error class="mt-2" :messages="$errors->get('translated_example')" />
+                                    </div>
 
                                     <div class="flex items-between justify-between gap-4">
                                         <x-primary-button>{{ __('Save') }}</x-primary-button>
@@ -508,6 +520,11 @@
                                             <x-input-label>Example</x-input-label>
                                             <textarea name="example[${index}]" rows="2"
                                                 class="mt-1 block w-full rounded-md border-gray-300">${word.example || ''}</textarea>
+                                        </div>
+                                          <div>
+                                            <x-input-label>Example Meaning</x-input-label>
+                                            <textarea name="translated_example[${index}]" rows="2"
+                                                class="mt-1 block w-full rounded-md border-gray-300">${word.translated_example || ''}</textarea>
                                         </div>
                                     </div>
                                 `;
@@ -761,6 +778,7 @@
                                         <input type="hidden" name="meaning[]" value="${data[key].meaning}">
                                         <input type="hidden" name="word_type[]" value="${data[key].word_type}">
                                         <input type="hidden" name="example[]" value="${data[key].example}">
+                                        <input type="hidden" name="translated_example[]" value="${data[key].translated_example}">
                                         </div>
                                     </div>`;
                                 });

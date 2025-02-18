@@ -1053,7 +1053,7 @@
                     <div class="setting-item">
                         <label class="setting-label">Pause</label>
                         <div class="setting-value">
-                            <input type="range" id="pauseSlider" class="range-slider" min="1" max="4" step="0.1" value="2">
+                            <input type="range" id="pauseSlider" class="range-slider" min="1" max="8" step="0.1" value="2">
                             <span class="range-value" id="pauseValue">2x</span>
                         </div>
                     </div>
@@ -1065,6 +1065,7 @@
                         <button class="option-button active" data-option="german">German</button>
                         <button class="option-button" data-option="indonesia">Bahasa</button>
                         <button class="option-button" data-option="example">Example</button>
+                        <button class="option-button" data-option="example_bahasa">Example (Bahasa)</button>
                     </div>
                 </div>
 
@@ -1078,6 +1079,9 @@
                     </div>
                     <div class="preview-item">
                         <span class="sample"></span>
+                    </div>
+                    <div class="preview-item">
+                        <span class="sample-indo"></span>
                     </div>
                 </div>
                 <div class="setting-favorite">
@@ -1112,6 +1116,7 @@
                         <ul>
                             <li><strong class="word"></strong></li>
                             <li class="example"></li>
+                            <li class="example_bahasa"></li>
                         </ul>
                     </div>
                     <div class="example-speaker">🔊</div>
@@ -1163,6 +1168,7 @@
                     <div class="indonesian-word">{{ $text2 }}</div>
                     <div style="display: none" class="id-vocab">{{ $vocabulary->id }}</div>
                     <div style="display: none" class="example-vocab">{{ $vocabulary->example }}</div>
+                    <div style="display: none" class="example_bahasa-vocab">{{ $vocabulary->translated_example }}</div>
                     <div style="display: none" class="german-vocab">{{ $vocabulary->german_word }}</div>
                 </div>
             @endforeach
@@ -1184,6 +1190,7 @@
                         <th>German</th>
                         <th>Indonesian</th>
                         <th style="display: none">example</th>
+                        <th style="display: none">example_bahasa</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -1198,6 +1205,7 @@
                             </td>
                             <td class="meaning">{{ $vocabulary->meaning }}</td>
                             <td style="display: none">{!! $vocabulary->example !!}</td>
+                            <td style="display: none">{!! $vocabulary->translated_example !!}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -1536,9 +1544,11 @@
                 $('#exampleModal').addClass('show');
                 const germanWord = $('.card:visible .german-vocab').text();
                 const exampleText = $('.card:visible .example-vocab').text();
+                const example_bahasa = $('.card:visible .example_bahasa-vocab').text();
 
                 $('.example-content .word').html(germanWord);
                 $('.example-content .example').html(exampleText);
+                $('.example-content .example_bahasa').html(example_bahasa);
 
                 // Add speaker icon to example text
 
@@ -2048,12 +2058,14 @@
                     let germanText = row.cells[1].textContent.trim();
                     let indoText = row.cells[2].textContent.trim();
                     let exampleText = row.cells[3]?.textContent.trim();
+                    let example_bahasa = row.cells[4]?.textContent.trim();
                     let dataId = row.cells[1].dataset.id;
                     setTimeout(
                         function() {
                             $('.audio-preview-group').find('.jerman').text(germanText + " = ")
                             $('.audio-preview-group').find('.indo').text(indoText)
                             $('.audio-preview-group').find('.sample').text(exampleText)
+                            $('.audio-preview-group').find('.sample-indo').text(example_bahasa)
                             $('.audio-preview-group').find('.number').text(number)
                             $('.audio-preview-group').find('.jerman').data('id', dataId)
                             console.log($('.audio-preview-group').find('.jerman').data('id'))
@@ -2081,6 +2093,7 @@
                 const germanText = row.cells[1].textContent.replace('❤', '').trim();
                 const indoText = row.cells[2].textContent.trim();
                 const exampleText = row.cells[3]?.textContent.trim();
+                const example_bahasa = row.cells[4]?.textContent.trim();
                 const hasFavorite = row.querySelector('.favorite-emote') !== null;
 
                 // Skip if we're in favorites mode and this row isn't a favorite
@@ -2117,6 +2130,14 @@
                                     await sleep(1000);
                                 }
                                 await speakText(exampleText, 'de-DE', rate);
+                            }
+                            break;
+                        case 'example_bahasa':
+                            if (document.querySelector('[data-option="example_bahasa"].active') && example_bahasa) {
+                                if (ci!=1) {
+                                    await sleep(1000);
+                                }
+                                await speakText(example_bahasa, 'id-ID', rate);
                             }
                             break;
                     }
