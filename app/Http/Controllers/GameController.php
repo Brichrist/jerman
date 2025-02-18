@@ -40,6 +40,7 @@ class GameController extends Controller
         $data = $request->all();
         $kapital = $data['kapital'];
         $useFavorites = $data['use_favorites'];
+        $germanWord = $data['german_word'];
         $language = $data['language'];
 
         if ($request->same == true) {
@@ -66,26 +67,34 @@ class GameController extends Controller
                     ->get();
             }
         } else {
-            # code...
-            $vocabularies = Vocab::when($kapital !== null, function ($query) use ($kapital) {
-                return $query->where('kapital', $kapital);
-            })
-                ->when($useFavorites, function ($query) {
-                    return $query->whereHas('linkFavorite');
-                })
-                ->when($kapital == '', function ($query) use ($useFavorites) {
-                    return $query->inRandomOrder()->when($useFavorites != null, function ($q) {
-                        return $q->limit(100);
-                    });
-                })
-                ->when(auth()->user()->role !== 'owner', function ($query) {
+            if ($germanWord) {
+                $vocabularies = Vocab::where('german_word', 'like', '%' . $germanWord . '%')->when(auth()->user()->role !== 'owner', function ($query) {
                     return $query->where(function ($q) {
                         $q->whereNull('id_user')
                             ->orWhere('id_user', auth()->id());
                     });
+                })->get();
+            } else {
+                $vocabularies = Vocab::when($kapital !== null, function ($query) use ($kapital) {
+                    return $query->where('kapital', $kapital);
                 })
-                ->with('linkFavorite')
-                ->get();
+                    ->when($useFavorites, function ($query) {
+                        return $query->whereHas('linkFavorite');
+                    })
+                    ->when($kapital == '', function ($query) use ($useFavorites) {
+                        return $query->inRandomOrder()->when($useFavorites != null, function ($q) {
+                            return $q->limit(100);
+                        });
+                    })
+                    ->when(auth()->user()->role !== 'owner', function ($query) {
+                        return $query->where(function ($q) {
+                            $q->whereNull('id_user')
+                                ->orWhere('id_user', auth()->id());
+                        });
+                    })
+                    ->with('linkFavorite')
+                    ->get();
+            }
         }
         $vocabularies = $vocabularies->shuffle();
         session(['vocabularies' => $vocabularies]);
