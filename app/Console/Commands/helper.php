@@ -19,7 +19,7 @@ class helper extends Command
         parent::__construct();
         $this->openai = OpenAI::client(env('OPENAI_API_KEY'));
     }
-    public function handle()
+    public function handle3()
     {
         $kapital = $this->argument('kapital');
 
