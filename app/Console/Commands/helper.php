@@ -36,7 +36,7 @@ class helper extends Command
             ->whereNotNull('example')
             ->whereNull('translated_example');
 
-        // $count = $query->count();
+        $count = $query->count();
         // $c = 0;
         // dd( $count);
         if ($count === 0) {
