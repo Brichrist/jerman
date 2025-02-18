@@ -616,6 +616,14 @@
         .preview-item {
             margin-bottom: 1.5rem;
         }
+        .preview-item hr {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+        .preview-item span.lg {
+            font-weight: 600;
+            font-size: 24px; 
+        }
 
         .setting-item {
             margin-bottom: 1.5rem;
@@ -1074,9 +1082,11 @@
                         <span class="number"></span>
                     </div>
                     <div class="preview-item">
-                        <span class="jerman"></span>
-                        <span class="indo"></span>
+                        <span class="jerman lg"></span>
+                        <hr>
+                        <span class="indo lg"></span>
                     </div>
+                    <br>
                     <div class="preview-item">
                         <span class="sample"></span>
                     </div>
@@ -2062,7 +2072,7 @@
                     let dataId = row.cells[1].dataset.id;
                     setTimeout(
                         function() {
-                            $('.audio-preview-group').find('.jerman').text(germanText + " = ")
+                            $('.audio-preview-group').find('.jerman').text(germanText)
                             $('.audio-preview-group').find('.indo').text(indoText)
                             $('.audio-preview-group').find('.sample').text(exampleText)
                             $('.audio-preview-group').find('.sample-indo').text(example_bahasa)
