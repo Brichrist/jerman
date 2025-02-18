@@ -19,8 +19,101 @@ class helper extends Command
         parent::__construct();
         $this->openai = OpenAI::client(env('OPENAI_API_KEY'));
     }
-
     public function handle()
+    {
+        $kapital = $this->argument('kapital');
+
+        if (empty($kapital)) {
+            $this->error("Kapital parameter is required!");
+            return 1;
+        }
+
+        $this->info("Starting meaning verification for kapital containing '$kapital'");
+
+        // Process vocabularies in chunks of 50
+        $query = Vocab::where('kapital', 'like', "%$kapital%")
+            ->where('id_user', 1);
+
+        $count = $query->count();
+
+        if ($count === 0) {
+            $this->warn("No vocabularies found for kapital: $kapital");
+            return 1;
+        }
+
+        $this->info("Found $count vocabularies to verify");
+
+        $query->chunk(50, function ($vocabs) {
+            try {
+                // Prepare data for OpenAI
+                $vocabData = [];
+                foreach ($vocabs as $vocab) {
+                    $vocabData[$vocab->id] = [
+                        'german_word' => $vocab->german_word,
+                        'current_meaning' => $vocab->meaning,
+                    ];
+                }
+
+                $response = $this->openai->chat()->create([
+                    'model' => 'gpt-4',
+                    'messages' => [
+                        [
+                            'role' => 'system',
+                            'content' => 'You are a German-Indonesian translation expert. Verify and correct Indonesian translations of German words.'
+                        ],
+                        [
+                            'role' => 'user',
+                            'content' => "Verify and correct these German word translations. Return a JSON where each key is the ID from input:
+                                Format:
+                                {
+                                    'ID': {
+                                        'meaning': 'correct Indonesian translation'
+                                    }
+                                }
+                                
+                                Requirements:
+                                1. Only change meanings that are incorrect
+                                2. Keep correct translations as they are
+                                3. Ensure natural and accurate Indonesian translations
+                                4. Return data for all IDs, even if no correction needed
+                                5. For unchanged translations, return the current_meaning
+                                
+                                Words to verify: " . json_encode($vocabData, JSON_PRETTY_PRINT)
+                        ]
+                    ],
+                    'temperature' => 0.7
+                ]);
+
+                $result = json_decode($response->choices[0]->message->content, true);
+
+                if (empty($result)) {
+                    throw new \Exception('Empty response from OpenAI');
+                }
+
+                // Update based on ID
+                foreach ($result as $id => $data) {
+                    $vocab = Vocab::find($id);
+                    if ($vocab && isset($data['meaning'])) {
+                        $vocab->update([
+                            'meaning' => $data['meaning']
+                        ]);
+                    }
+                }
+
+                $processedIds = array_keys($vocabData);
+                $this->info("Successfully verified meanings for IDs: " . implode(', ', $processedIds));
+                Log::info("Successfully verified meanings for IDs: " . implode(', ', $processedIds));
+            } catch (\Exception $e) {
+                $this->error("Error verifying meanings: " . $e->getMessage());
+                Log::error("Error verifying meanings: " . $e->getMessage());
+            }
+        });
+
+        $this->info("Meaning verification completed!");
+        return 0;
+    }
+
+    public function handle2()
     {
         $kapital = $this->argument('kapital');
 
