@@ -37,7 +37,7 @@ class helper extends Command
             ->whereNull('translated_example');
 
         $count = $query->count();
-        
+        dd( $count);
         if ($count === 0) {
             $this->warn("No vocabularies found for translation with kapital: $kapital");
             return 1;
