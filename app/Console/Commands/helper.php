@@ -37,7 +37,7 @@ class helper extends Command
             ->whereNull('translated_example');
 
         $count = $query->count();
-        // $c = 0;
+        $c = 0;
         // dd( $count);
         if ($count === 0) {
             $this->warn("No vocabularies found for translation with kapital: $kapital");
@@ -46,7 +46,7 @@ class helper extends Command
 
         $this->info("Found $count vocabularies to translate");
 
-        $query->chunk(25, function ($vocabs) {
+        $query->chunk(25, function ($vocabs) use (&$c, $count) {
             try {
                 // Menyiapkan data untuk OpenAI
                 $vocabData = [];
@@ -106,9 +106,9 @@ class helper extends Command
 
                 $this->info("Successfully translated examples for IDs: " . implode(', ', $processedIds));
                 Log::info("Successfully translated examples for IDs: " . implode(', ', $processedIds));
-                // $c += 25;
-                // $this->info("Total: " . $c . "/" . $count);
-                // Log::info("Total: " . $c . "/" . $count);
+                $c += 25;
+                $this->info("Total: " . $c . "/" . $count);
+                Log::info("Total: " . $c . "/" . $count);
             } catch (\Exception $e) {
                 $this->error("Error translating examples: " . $e->getMessage());
                 Log::error("Error translating examples: " . $e->getMessage());
