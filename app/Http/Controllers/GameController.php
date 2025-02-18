@@ -47,7 +47,7 @@ class GameController extends Controller
             $vocabularies = session('vocabularies', []);
             if (count($vocabularies) == 0) {
                 $vocabularies = Vocab::when($kapital !== null, function ($query) use ($kapital) {
-                    return $query->where('kapital', $kapital);
+                    return $query->where('kapital', 'like', '%' . $kapital . '%');
                 })
                     ->when($useFavorites, function ($query) {
                         return $query->whereHas('linkFavorite');
@@ -76,7 +76,7 @@ class GameController extends Controller
                 })->get();
             } else {
                 $vocabularies = Vocab::when($kapital !== null, function ($query) use ($kapital) {
-                    return $query->where('kapital', $kapital);
+                    return $query->where('kapital', 'like', '%' . $kapital . '%');
                 })
                     ->when($useFavorites, function ($query) {
                         return $query->whereHas('linkFavorite');
