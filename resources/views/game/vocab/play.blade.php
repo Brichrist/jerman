@@ -1972,6 +1972,72 @@
     <script>
         // Script untuk audio functionality
         document.addEventListener('DOMContentLoaded', function() {
+            // Add these variables at the top of your script
+            let wakeLock = null;
+            let audioContext = null;
+
+            // Function to request wake lock
+            async function requestWakeLock() {
+                try {
+                    // Check if page is visible
+                    if ('wakeLock' in navigator && !document.hidden) {
+                        wakeLock = await navigator.wakeLock.request('screen');
+                        console.log('Wake Lock is active');
+
+                        wakeLock.addEventListener('release', () => {
+                            console.log('Wake Lock was released');
+                        });
+                    }
+
+                    // Initialize audio context for background processing
+                    if (!audioContext) {
+                        // Create audio context on user interaction
+                        audioContext = new(window.AudioContext || window.webkitAudioContext)();
+
+                        // Create a silent audio buffer
+                        const buffer = audioContext.createBuffer(1, 44100, 44100);
+                        const source = audioContext.createBufferSource();
+                        source.buffer = buffer;
+
+                        // Create gain node and set volume to 0
+                        const gainNode = audioContext.createGain();
+                        gainNode.gain.value = 0;
+
+                        // Connect nodes
+                        source.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+
+                        // Start playing silent audio
+                        source.loop = true;
+                        source.start();
+                    }
+
+                    // Resume audio context if suspended
+                    if (audioContext.state === 'suspended') {
+                        await audioContext.resume();
+                    }
+                } catch (err) {
+                    console.warn(`Wake Lock request failed: ${err.message}`);
+                    // Continue with audio context even if wake lock fails
+                }
+            }
+
+            // Function to release wake lock
+            async function releaseWakeLock() {
+                try {
+                    if (wakeLock) {
+                        await wakeLock.release();
+                        wakeLock = null;
+                    }
+                    if (audioContext) {
+                        await audioContext.close();
+                        audioContext = null;
+                    }
+                } catch (err) {
+                    console.error(`Wake Lock release error: ${err.name}, ${err.message}`);
+                }
+            }
+
             // State variables
             let lastPosition = 0;
             const resumeButton = document.getElementById('resumeButton');
@@ -2164,17 +2230,22 @@
                 }
             }
 
+            // Modify your startReading function
             async function startReading(fromPosition = 0, force = false) {
+                // Request wake lock when starting
+                await requestWakeLock();
+
                 const rate = parseFloat(document.getElementById('rateSlider').value);
                 const pause = parseFloat(document.getElementById('pauseSlider').value);
                 const startNumber = parseInt(document.getElementById('startNumber').value) || 1;
                 const rows = Array.from(document.querySelectorAll('.list-mode tbody tr'));
 
-                // Validate start number
                 if (startNumber < 1 || startNumber > rows.length) {
                     document.getElementById('numberError').style.display = 'block';
+                    releaseWakeLock(); // Release if there's an error
                     return;
                 }
+
                 document.getElementById('numberError').style.display = 'none';
 
                 const index = interactionCount;
@@ -2183,30 +2254,49 @@
                     startIndex = 0;
                 }
 
-                for (let i = startIndex; i < rows.length; i++) {
-                    // console.log(index, interactionCount)
-                    // console.log(interactionCount == index)
-                    if (!isReading) break;
-                    if (interactionCount != index) break;
-                    const row = rows[i];
-                    const hasFavorite = row.querySelector('.favorite-emote') !== null;
+                try {
+                    for (let i = startIndex; i < rows.length; i++) {
+                        if (!isReading) break;
+                        if (interactionCount != index) break;
 
-                    // Skip non-favorites in favorites mode
-                    if (showFavoritesOnly && !hasFavorite) {
-                        continue;
+                        const row = rows[i];
+                        const hasFavorite = row.querySelector('.favorite-emote') !== null;
+
+                        if (showFavoritesOnly && !hasFavorite) {
+                            continue;
+                        }
+
+                        lastPosition = i;
+                        await processRow(rows[i], rate, pause);
+
+                        // Reacquire wake lock periodically
+                        if (wakeLock === null) {
+                            await requestWakeLock();
+                        }
+                    }
+                } finally {
+                    if (isReading) {
+                        isReading = false;
+                        startButton.textContent = 'Start Reading ▶';
+                        startButton.style.display = 'block';
+                        controlButtons.classList.remove('show');
                     }
 
-                    lastPosition = i;
-                    await processRow(rows[i], rate, pause);
-                }
-
-                if (isReading) {
-                    isReading = false;
-                    startButton.textContent = 'Start Reading ▶';
-                    startButton.style.display = 'block';
-                    controlButtons.classList.remove('show');
+                    // Release wake lock when done
+                    await releaseWakeLock();
                 }
             }
+            document.addEventListener('visibilitychange', async () => {
+                if (!document.hidden && isReading) {
+                    // Try to reacquire wake lock when page becomes visible
+                    await requestWakeLock();
+                }
+            });
+
+            // Add page unload handler
+            window.addEventListener('beforeunload', async () => {
+                await releaseWakeLock();
+            });
 
             // Add this function to update UI for favorites mode
             function updateAudioUIForFavorites() {
@@ -2238,7 +2328,9 @@
                     return;
                 }
 
-                // Check if at least one option is selected
+                // Request wake lock when user starts reading
+                await requestWakeLock();
+
                 if (selectedOrder.length === 0) {
                     alert('Please select at least one language option');
                     return;
@@ -2255,6 +2347,7 @@
                     alert('Please select at least one language option');
                     return;
                 }
+                await requestWakeLock();
                 synth.cancel();
                 await new Promise(resolve => setTimeout(resolve, 200));
                 isReading = true;
@@ -2269,6 +2362,7 @@
                     alert('Please select at least one language option');
                     return;
                 }
+                await requestWakeLock();
                 synth.cancel();
                 await new Promise(resolve => setTimeout(resolve, 200));
                 document.querySelectorAll('.list-mode tbody tr').forEach(row => {
@@ -2288,6 +2382,7 @@
                     alert('Please select at least one language option');
                     return;
                 }
+                await requestWakeLock();
                 synth.cancel();
                 await new Promise(resolve => setTimeout(resolve, 200));
                 document.querySelectorAll('.list-mode tbody tr').forEach(row => {
