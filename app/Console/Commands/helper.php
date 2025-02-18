@@ -55,6 +55,9 @@ class helper extends Command
                         'example' => $vocab->example,
                     ];
                 }
+                $processedIds = array_keys($vocabData);
+                $this->info("Start for IDs: " . implode(', ', $processedIds));
+                Log::info("Start for IDs: " . implode(', ', $processedIds));   
 
                 $response = $this->openai->chat()->create([
                     'model' => 'gpt-4',
@@ -100,7 +103,6 @@ class helper extends Command
                     }
                 }
 
-                $processedIds = array_keys($vocabData);
                 $this->info("Successfully translated examples for IDs: " . implode(', ', $processedIds));
                 Log::info("Successfully translated examples for IDs: " . implode(', ', $processedIds));      
             } catch (\Exception $e) {
