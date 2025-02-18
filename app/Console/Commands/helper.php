@@ -106,7 +106,7 @@ class helper extends Command
 
                 $this->info("Successfully translated examples for IDs: " . implode(', ', $processedIds));
                 Log::info("Successfully translated examples for IDs: " . implode(', ', $processedIds));
-                $c += 25;
+                $c += count($vocabData);
                 $this->info("Total: " . $c . "/" . $count);
                 Log::info("Total: " . $c . "/" . $count);
             } catch (\Exception $e) {
