@@ -212,7 +212,7 @@
 
         .list-mode th,
         .list-mode td {
-            padding: 0.8rem;
+            padding: 0.5rem;
             border: 1px solid #ddd;
             text-align: left;
         }
@@ -389,52 +389,53 @@
             background: #6c5ce7;
             width: 0;
             transition: width 0.3s ease;
+        }
 
-            .list-mode th,
-            .list-mode td {
-                padding: 0.8rem;
-                border: 1px solid #ddd;
-                text-align: left;
-                word-wrap: break-word;
-                /* Memungkinkan word wrap */
-                overflow-wrap: break-word;
-                max-width: 0;
-                /* Diperlukan untuk word wrap bekerja dengan table-layout: fixed */
-            }
+        .list-mode th,
+        .list-mode td {
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            text-align: left;
+            word-wrap: break-word;
+            /* Memungkinkan word wrap */
+            overflow-wrap: break-word;
+            /* max-width: 0; */
+            /* Diperlukan untuk word wrap bekerja dengan table-layout: fixed */
+        }
 
-            /* Atur lebar kolom */
-            .list-mode .german-column {
-                width: 50%;
-                /* Atau sesuaikan dengan kebutuhan */
-            }
+        /* Atur lebar kolom */
+        .list-mode .german-column {
+            width: 50%;
+            /* Atau sesuaikan dengan kebutuhan */
+        }
 
-            .list-mode .indonesian-column {
-                width: 50%;
-                /* Atau sesuaikan dengan kebutuhan */
-            }
+        .list-mode .indonesian-column {
+            width: 50%;
+            /* Atau sesuaikan dengan kebutuhan */
+        }
 
-            /* Pastikan emoji hati tidak wrap */
-            .favorite-emote {
-                display: inline-block;
-                white-space: nowrap;
-            }
+        /* Pastikan emoji hati tidak wrap */
+        .favorite-emote {
+            display: inline-block;
+            white-space: nowrap;
+        }
 
-            /* Optional: tambahkan hover state untuk meningkatkan UX */
-            .list-mode tr:hover {
-                background-color: rgba(108, 92, 231, 0.05);
-            }
+        /* Optional: tambahkan hover state untuk meningkatkan UX */
+        .list-mode tr:hover {
+            background-color: rgba(108, 92, 231, 0.05);
+        }
 
-            .example-speaker {
-                cursor: pointer;
-                margin-left: 0.5rem;
-                transition: transform 0.2s ease;
-            }
+        .example-speaker {
+            cursor: pointer;
+            margin-left: 0.5rem;
+            transition: transform 0.2s ease;
+        }
 
-            .example-speaker:hover {
-                transform: scale(1.2);
-            }
+        .example-speaker:hover {
+            transform: scale(1.2);
+        }
 
-            /* .example-content .example {
+        /* .example-content .example {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -616,13 +617,15 @@
         .preview-item {
             margin-bottom: 1.5rem;
         }
+
         .preview-item hr {
             margin-top: 1rem;
             margin-bottom: 1rem;
         }
+
         .preview-item span.lg {
             font-weight: 600;
-            font-size: 24px; 
+            font-size: 24px;
         }
 
         .setting-item {
@@ -1196,7 +1199,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th style="width: 50px">no</th>
+                        <th style="width: 70px; text-align: center;padding: 0.8rem 0.3rem">no</th>
                         <th>German</th>
                         <th>Indonesian</th>
                         <th style="display: none">example</th>
@@ -1206,14 +1209,16 @@
                 <tbody>
                     @foreach ($vocabularies as $vocabulary)
                         <tr>
-                            <td style="width: 50px" data-id="{{ $vocabulary->id }}" class="favorite-list">{{ $loop->iteration }}</td>
-                            <td class="german-column {{ $vocabulary->linkfavorite->count() > 0 ? 'favorite' : '' }}" data-id="{{ $vocabulary->id }}">
+                            <td style="width: 70px; text-align: center; padding: 0.8rem 0.3rem" data-id="{{ $vocabulary->id }}" class="favorite-list">{{ $loop->iteration }} <br>
+                                <span style="font-size: 10px">({{ $vocabulary->kapital }})</span>
+                            </td>
+                            <td style="word-wrap: break-word" class="german-column {{ $vocabulary->linkfavorite->count() > 0 ? 'favorite' : '' }}" data-id="{{ $vocabulary->id }}">
                                 {{ $vocabulary->german_word }}
                                 @if ($vocabulary->linkfavorite->count() > 0)
                                     <span class="favorite-emote">❤</span>
                                 @endif
                             </td>
-                            <td class="meaning">{{ $vocabulary->meaning }}</td>
+                            <td style="word-wrap: break-word" class="meaning">{{ $vocabulary->meaning }}</td>
                             <td style="display: none">{!! $vocabulary->example !!}</td>
                             <td style="display: none">{!! $vocabulary->translated_example !!}</td>
                         </tr>
@@ -2112,7 +2117,7 @@
                 }
 
                 // Process audio in the selected order
-                let ci=0;
+                let ci = 0;
                 for (const option of selectedOrder) {
                     ci++
                     if (!isReading) break;
@@ -2120,7 +2125,7 @@
                     switch (option) {
                         case 'indonesia':
                             if (document.querySelector('[data-option="indonesia"].active')) {
-                                if (ci!=1) {
+                                if (ci != 1) {
                                     await sleep(1000);
                                 }
                                 await speakText(indoText, 'id-ID', rate);
@@ -2128,7 +2133,7 @@
                             break;
                         case 'german':
                             if (document.querySelector('[data-option="german"].active')) {
-                                if (ci!=1) {
+                                if (ci != 1) {
                                     await sleep(1000);
                                 }
                                 await speakText(germanText, 'de-DE', rate);
@@ -2136,7 +2141,7 @@
                             break;
                         case 'example':
                             if (document.querySelector('[data-option="example"].active') && exampleText) {
-                                if (ci!=1) {
+                                if (ci != 1) {
                                     await sleep(1000);
                                 }
                                 await speakText(exampleText, 'de-DE', rate);
@@ -2144,7 +2149,7 @@
                             break;
                         case 'example_bahasa':
                             if (document.querySelector('[data-option="example_bahasa"].active') && example_bahasa) {
-                                if (ci!=1) {
+                                if (ci != 1) {
                                     await sleep(1000);
                                 }
                                 await speakText(example_bahasa, 'id-ID', rate);
