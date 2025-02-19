@@ -3,7 +3,7 @@
 
 <head>
     <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>German Vocabulary Game</title>
@@ -620,6 +620,33 @@
             margin-bottom: 1.5rem;
         }
 
+        .indo-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .eye-toggle {
+            cursor: pointer;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .eye-toggle:hover {
+            opacity: 1;
+        }
+
+        .eye-toggle.hidden {
+            opacity: 0.3;
+        }
+
+        .indo.lg.hidden {
+            visibility: hidden;
+        }
+
         .preview-item hr {
             margin-top: 1rem;
             margin-bottom: 1rem;
@@ -1089,7 +1116,11 @@
                     <div class="preview-item">
                         <span class="jerman lg"></span>
                         <hr>
-                        <span class="indo lg"></span>
+                        <div class="indo-container">
+                            <span class="eye-toggle">👁️</span>
+                            <span class="indo lg"></span>
+                        </div>
+                        {{-- <span class="indo lg"></span> --}}
                     </div>
                     <br>
                     <div class="preview-item">
@@ -1249,6 +1280,10 @@
     </div>
     <script>
         $(document).ready(function() {
+            $(document).on('click', '.eye-toggle', function() {
+                $(this).toggleClass('hidden');
+                $(this).siblings('.indo.lg').toggleClass('hidden');
+            });
             const url = new URL(window.location.href);
             url.searchParams.delete('same');
             window.history.replaceState({}, document.title, url.toString());
