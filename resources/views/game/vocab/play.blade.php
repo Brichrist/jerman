@@ -457,10 +457,11 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.7);
             display: none;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
+            padding-top: 50px;
             z-index: 1000;
             opacity: 0;
             transition: opacity 0.3s ease;
@@ -1529,12 +1530,33 @@
         // });
 
         // Handler untuk toggle individual cell
+        let exampleTime = false;
         $('.list-mode table td').on('click', function() {
+            if (exampleTime) {
+                var scrollPosition = $(document).scrollTop();
+                console.log(scrollPosition)
+                $('#exampleModal').addClass('show').css('padding-top', (scrollPosition + 100)+'px');
+                let germanWord = $(this).parents('tr').find('td').eq(1).html()
+                let exampleText = $(this).parents('tr').find('td').eq(3).html()
+                let example_bahasa = $(this).parents('tr').find('td').eq(4).html()
+
+                $('.example-content .word').html(germanWord);
+                $('.example-content .example').html(exampleText);
+                $('.example-content .example_bahasa').html(example_bahasa);
+
+                setTimeout(() => {
+                    $('.example-modal-content').addClass('show');
+                }, 50);
+            }
+            exampleTime = true
             if ($(this).hasClass('hidden-cell')) {
                 $(this).removeClass('hidden-cell');
             } else {
                 $(this).addClass('hidden-cell');
             }
+            setTimeout(() => {
+                exampleTime = false
+            }, 200);
         });
         let pressTimerList;
         let isPressingList = false;
@@ -1690,7 +1712,7 @@
             const synth = window.speechSynthesis;
             // Example Modal Open
             $('#exampleBtn').on('click', function() {
-                $('#exampleModal').addClass('show');
+                $('#exampleModal').addClass('show').removeAttr('style');
                 const germanWord = $('.card:visible .german-vocab').text();
                 const exampleText = $('.card:visible .example-vocab').text();
                 const example_bahasa = $('.card:visible .example_bahasa-vocab').text();
