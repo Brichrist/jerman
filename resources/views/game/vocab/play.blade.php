@@ -1148,6 +1148,9 @@
 
                 <div class="audio-preview-group">
                     <div class="preview-item">
+                        <span class="pause-hold" style="font-size: 24px ">⏸️</span>
+                    </div>
+                    <div class="preview-item">
                         <span class="number"></span>
                     </div>
                     <div class="preview-item">
@@ -1481,19 +1484,19 @@
                 const messageHTML = `
                     <div class="flex items-start ${sender === 'bot' ? '' : 'justify-end'} message opacity-0">
                         ${sender === 'bot' ? `
-                            <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
-                                <img src="{{ asset('img/' . $name . '.jpg') }}" alt="AI Assistant" class="w-full h-full object-cover">
-                            </div>
-                        ` : ''}
+                                                    <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
+                                                        <img src="{{ asset('img/' . $name . '.jpg') }}" alt="AI Assistant" class="w-full h-full object-cover">
+                                                    </div>
+                                                ` : ''}
                         <div class="mx-3 ${sender === 'bot' ? 'bg-white text-gray-700' : 'gradient-bg text-white'} rounded-2xl p-4 max-w-[80%] shadow-sm">
                             ${text}
                             ${hint ? `<hr class="my-2"><p class="text-sm text-gray-500">${hint}</p>` : ''}
                         </div>
                         ${sender === 'user' ? `
-                        <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                            <i class="fas fa-user text-gray-500 text-sm"></i>
-                        </div>
-                    ` : ''}
+                                                <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                                    <i class="fas fa-user text-gray-500 text-sm"></i>
+                                                </div>
+                                            ` : ''}
                     </div>
                 `;
 
@@ -2857,6 +2860,56 @@
                 }
             }
             let interactionCount = 0
+            let pauseHold = false
+            // Pindahkan event binding ke level tertinggi
+            const pauseHoldElement = document.querySelector('.pause-hold');
+
+            // Tambahkan event listener untuk touch events
+            pauseHoldElement.addEventListener('touchstart', function(e) {
+                e.preventDefault(); // Prevent default touch behavior
+                pauseHold = true;
+                console.log('Button pressed (touch):', pauseHold);
+            }, {
+                passive: false
+            });
+
+            pauseHoldElement.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                pauseHold = false;
+                console.log('Button released (touch):', pauseHold);
+            }, {
+                passive: false
+            });
+
+            // Tambahkan juga mouse events
+            pauseHoldElement.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                pauseHold = true;
+                console.log('Button pressed (mouse):', pauseHold);
+            });
+
+            pauseHoldElement.addEventListener('mouseup', function(e) {
+                e.preventDefault();
+                pauseHold = false;
+                console.log('Button released (mouse):', pauseHold);
+            });
+
+            // Handle mouse leave case
+            pauseHoldElement.addEventListener('mouseleave', function(e) {
+                if (pauseHold) {
+                    pauseHold = false;
+                    console.log('Button left while pressed:', pauseHold);
+                }
+            });
+            async function checkPauseHold() {
+                if (pauseHold) {
+                    // Jika pauseHold true, tunggu 300ms dan cek lagi
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                    await checkPauseHold(); // Panggil rekursif
+                }
+                // Jika pauseHold false, fungsi akan selesai dan flow akan lanjut
+                return;
+            }
             async function processRow(row) {
                 const rate = parseFloat(document.getElementById('rateSlider').value);
                 const pause = parseFloat(document.getElementById('pauseSlider').value);
@@ -2882,6 +2935,7 @@
                 for (const option of selectedOrder) {
                     ci++
                     if (!isReading) break;
+                    await checkPauseHold();
 
                     switch (option) {
                         case 'indonesia':
