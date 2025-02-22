@@ -1346,7 +1346,7 @@
                 </div>
             </div>
 
-            <div id="chat-messages" class="flex-1 p-6 space-y-6 overflow-y-auto bg-gray-50" style="max-height: 65vh;">
+            <div id="chat-messages" class="flex-1 p-6 space-y-6 overflow-y-auto bg-gray-50" style="max-height: 55vh;">
                 <div class="flex items-start bot-message opacity-0">
                     <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
 
