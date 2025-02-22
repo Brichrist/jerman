@@ -422,6 +422,10 @@
             white-space: nowrap;
         }
 
+        .favorite-emote.black {
+            color: unset !important
+        }
+
         /* Optional: tambahkan hover state untuk meningkatkan UX */
         .list-mode tr:hover {
             background-color: rgba(108, 92, 231, 0.05);
@@ -1208,7 +1212,7 @@
                     <div class="german-word floating">
                         {{ $text1 }}
                         @if ($vocabulary->linkfavorite->count() > 0)
-                            <span class="favorite-emote">❤</span>
+                            <span class="favorite-emote  @if (($vocabulary->linkfavorite[0]->level ?? null) == 2) black @endif ">❤</span>
                         @endif
                     </div>
                     <div class="indonesian-word">{{ $text2 }}</div>
@@ -1248,7 +1252,7 @@
                             <td style="word-wrap: break-word" class="german-column {{ $vocabulary->linkfavorite->count() > 0 ? 'favorite' : '' }}" data-id="{{ $vocabulary->id }}">
                                 {{ $vocabulary->german_word }}
                                 @if ($vocabulary->linkfavorite->count() > 0)
-                                    <span class="favorite-emote">❤</span>
+                                    <span class="favorite-emote @if (($vocabulary->linkfavorite[0]->level ?? null) == 2) black @endif ">❤</span>
                                 @endif
                             </td>
                             <td style="word-wrap: break-word" class="meaning">{{ $vocabulary->meaning }}</td>
@@ -1385,7 +1389,7 @@
                 success: function(response) {
                     if (response.success) {
                         let targetCard = $('.card:visible');
-                        let isFavorite = targetCard.find('.favorite-emote').length ? '<span class="favorite-emote">❤</span>' : '';
+                        let isFavorite = targetCard.find('.favorite-emote').length ? (targetCard.find('.favorite-emote.black').length ? '<span class="favorite-emote black">❤</span>' : '<span class="favorite-emote">❤</span>') : '';
 
                         // Update UI berdasarkan mode bahasa
                         if (isIndonesianMode) {
@@ -1514,70 +1518,219 @@
         // });
 
         // Handler untuk toggle individual cell
-        $('.list-mode table td').on('click', function() {
-            if ($(this).hasClass('favorite-list')) {
-                let favId = $(this).data('id')
-                let favNo = $(this).text()
-                const currentWord = {
-                    id: favId,
-                    id_user: '{{ auth()->user()->id }}',
-                    _token: '{{ csrf_token() }}'
-                };
+        // $('.list-mode table td').on('click', function() {
+        //     if ($(this).hasClass('favorite-list')) {
+        //         let favId = $(this).data('id')
+        //         let favNo = $(this).text()
+        //         const currentWord = {
+        //             id: favId,
+        //             id_user: '{{ auth()->user()->id }}',
+        //             _token: '{{ csrf_token() }}'
+        //         };
 
-                let target = $('.card[data-index="' + (parseInt(favNo) - 1) + '"] .german-word');
-                let germanWord = target.text().replace('❤', '').replace("\n", '').trim();
-                console.log(target.length, germanWord)
+        //         let target = $('.card[data-index="' + (parseInt(favNo) - 1) + '"] .german-word');
+        //         let germanWord = target.text().replace('❤', '').replace("\n", '').trim();
+        //         console.log(target.length, germanWord)
 
-                $.ajax({
-                    url: '/vocab/favorite',
-                    method: 'POST',
-                    data: JSON.stringify(currentWord),
-                    contentType: 'application/json',
-                    success: function(response) {
-                        $('#favoriteBtn').addClass('animate__animated animate__heartBeat');
-                        setTimeout(() => {
-                            $('#favoriteBtn').removeClass('animate__animated animate__heartBeat');
-                        }, 1000);
-                        if (response.action == 'add') {
-                            // Update di card mode
-                            target.append(`<span class="favorite-emote">❤</span>`);
+        //         $.ajax({
+        //             url: '/vocab/favorite',
+        //             method: 'POST',
+        //             data: JSON.stringify(currentWord),
+        //             contentType: 'application/json',
+        //             success: function(response) {
+        //                 $('#favoriteBtn').addClass('animate__animated animate__heartBeat');
+        //                 setTimeout(() => {
+        //                     $('#favoriteBtn').removeClass('animate__animated animate__heartBeat');
+        //                 }, 1000);
+        //                 if (response.action == 'add') {
+        //                     // Update di card mode
+        //                     target.append(`<span class="favorite-emote">❤</span>`);
 
-                            // Update di list mode
-                            let listCell = $(`.list-mode td[data-id="${favId}"].german-column`);
-                            if (!listCell.hasClass('german-column')) {
-                                listCell = listCell.siblings('.german-column');
-                            }
-                            listCell.addClass('favorite');
-                            listCell.append(`<span class="favorite-emote">❤</span>`);
-                        } else {
-                            // Update di card mode
-                            target.find('.favorite-emote').remove();
+        //                     // Update di list mode
+        //                     let listCell = $(`.list-mode td[data-id="${favId}"].german-column`);
+        //                     if (!listCell.hasClass('german-column')) {
+        //                         listCell = listCell.siblings('.german-column');
+        //                     }
+        //                     listCell.addClass('favorite');
+        //                     listCell.append(`<span class="favorite-emote">❤</span>`);
+        //                 } else {
+        //                     // Update di card mode
+        //                     target.find('.favorite-emote').remove();
 
-                            // Update di list mode
-                            let listCell = $(`.list-mode td[data-id="${favId}"]`);
-                            if (!listCell.hasClass('german-column')) {
-                                listCell = listCell.siblings('.german-column');
-                            }
-                            listCell.removeClass('favorite');
-                            listCell.find('.favorite-emote').remove();
-                        }
+        //                     // Update di list mode
+        //                     let listCell = $(`.list-mode td[data-id="${favId}"]`);
+        //                     if (!listCell.hasClass('german-column')) {
+        //                         listCell = listCell.siblings('.german-column');
+        //                     }
+        //                     listCell.removeClass('favorite');
+        //                     listCell.find('.favorite-emote').remove();
+        //                 }
 
-                        updateFavoritesList();
-                        if (showFavoritesOnly && favoriteCards.length === 0) {
-                            $('.card').hide();
-                            $('.list-mode tbody tr').hide();
-                            $('.score').text('0/0');
-                        }
-                    }
-                });
-            } else {
+        //                 updateFavoritesList();
+        //                 if (showFavoritesOnly && favoriteCards.length === 0) {
+        //                     $('.card').hide();
+        //                     $('.list-mode tbody tr').hide();
+        //                     $('.score').text('0/0');
+        //                 }
+        //             }
+        //         });
+        //     } else {
+        //         if ($(this).hasClass('hidden-cell')) {
+        //             $(this).removeClass('hidden-cell');
+        //         } else {
+        //             $(this).addClass('hidden-cell');
+        //         }
+        //     }
+        // });
+        let pressTimerList;
+        let isPressingList = false;
+        let originalRowColor;
+
+        $('.list-mode table td').on('touchstart mousedown', function(e) {
+            if (!$(this).hasClass('favorite-list')) {
+                // Jika bukan favorite-list cell, handle seperti biasa
                 if ($(this).hasClass('hidden-cell')) {
                     $(this).removeClass('hidden-cell');
                 } else {
                     $(this).addClass('hidden-cell');
                 }
+                return;
             }
+
+            e.preventDefault();
+            let favId = $(this).data('id');
+            let favNo = $(this).text();
+            let target = $('.card[data-index="' + (parseInt(favNo) - 1) + '"] .german-word');
+
+            // Cek apakah sudah ada favorite-emote
+            if (target.find('.favorite-emote').length > 0) {
+                // Jika sudah ada favorite, gunakan handler normal
+                const currentWord = {
+                    id: favId,
+                    id_user: '{{ auth()->user()->id }}',
+                    _token: '{{ csrf_token() }}'
+                };
+                sendFavoriteRequestList(currentWord, target, $(this));
+                return;
+            }
+
+            isPressingList = true;
+            let currentCell = $(this);
+
+            // Simpan warna original
+            originalRowColor = currentCell.css('background-color');
+
+            // Start the timer
+            pressTimerList = setTimeout(() => {
+                if (isPressingList) {
+                    // Ubah warna jadi hitam ketika hold 1 detik
+                    currentCell.css('background-color', 'black');
+                    currentCell.css('color', 'white');
+
+                    // Long press detected - send level 2 request
+                    const currentWord = {
+                        id: favId,
+                        id_user: '{{ auth()->user()->id }}',
+                        level: 2,
+                        _token: '{{ csrf_token() }}'
+                    };
+                    sendFavoriteRequestList(currentWord, target, currentCell);
+                }
+            }, 500);
         });
+
+        $('.list-mode table td').on('touchend mouseup mouseleave', function(e) {
+            if (!$(this).hasClass('favorite-list')) return;
+
+            e.preventDefault();
+            clearTimeout(pressTimerList);
+
+            let favId = $(this).data('id');
+            let favNo = $(this).text();
+            let target = $('.card[data-index="' + (parseInt(favNo) - 1) + '"] .german-word');
+
+            // If it was a short press and no favorite-emote exists
+            if (isPressingList && e.type !== 'mouseleave' && !target.find('.favorite-emote').length) {
+                const currentWord = {
+                    id: favId,
+                    id_user: '{{ auth()->user()->id }}',
+                    _token: '{{ csrf_token() }}'
+                };
+                sendFavoriteRequestList(currentWord, target, $(this));
+            }
+
+            isPressingList = false;
+        });
+
+        function sendFavoriteRequestList(data, target, cell) {
+            let germanWord = target.text().replace('❤', '').replace("\n", '').trim();
+
+            $.ajax({
+                url: '/vocab/favorite',
+                method: 'POST',
+                data: JSON.stringify(data),
+                contentType: 'application/json',
+                success: function(response) {
+                    // Kembalikan warna original setelah ajax selesai
+                    if (data.level === 2) {
+                        cell.css({
+                            'background-color': originalRowColor,
+                            'color': ''
+                        });
+                    }
+
+                    if (response.action == 'add') {
+                        // Update card mode
+                        target.append(`<span class="favorite-emote">❤</span>`);
+
+                        // Jika response level = 2, set color: unset
+                        if (response.level === 2) {
+                            target.find('.favorite-emote').addClass('black');
+                        }
+
+                        // Update list mode
+                        let listCell = $(`.list-mode td[data-id="${data.id}"].german-column`);
+                        if (!listCell.hasClass('german-column')) {
+                            listCell = listCell.siblings('.german-column');
+                        }
+                        listCell.addClass('favorite');
+                        listCell.append(`<span class="favorite-emote">❤</span>`);
+
+                        // Set color: unset juga di list mode
+                        if (response.level === 2) {
+                            listCell.find('.favorite-emote').addClass('black');
+                        }
+                    } else {
+                        // Update card mode
+                        target.find('.favorite-emote').remove();
+
+                        // Update list mode
+                        let listCell = $(`.list-mode td[data-id="${data.id}"]`);
+                        if (!listCell.hasClass('german-column')) {
+                            listCell = listCell.siblings('.german-column');
+                        }
+                        listCell.removeClass('favorite');
+                        listCell.find('.favorite-emote').remove();
+                    }
+
+                    updateFavoritesList();
+                    if (showFavoritesOnly && favoriteCards.length === 0) {
+                        $('.card').hide();
+                        $('.list-mode tbody tr').hide();
+                        $('.score').text('0/0');
+                    }
+                },
+                error: function() {
+                    // Kembalikan warna original jika terjadi error
+                    if (data.level === 2) {
+                        cell.css({
+                            'background-color': originalRowColor,
+                            'color': ''
+                        });
+                    }
+                }
+            });
+        }
 
         // Modifikasi fungsi showCard
         function showCard(index) {
@@ -1686,35 +1839,149 @@
             ).map(card => parseInt(card.dataset.index));
         }
 
-        $('#toggleFavoriteBtn').on('touchstart click', function(e) {
+        // $('#toggleFavoriteBtn').on('touchstart click', function(e) {
+        //     e.preventDefault();
+        //     showFavoritesOnly = !showFavoritesOnly;
+        //     $(this).toggleClass('active');
+
+        //     updateFavoritesList();
+        //     currentIndex = 0;
+
+        //     if (showFavoritesOnly) {
+        //         if (favoriteCards.length > 0) {
+        //             showNextFavoriteCard();
+        //             $('.list-mode tbody tr').hide();
+        //             $('.list-mode td .favorite-emote').each(function() {
+        //                 $(this).closest('tr').show();
+        //             });
+        //         } else {
+        //             $('.card').hide();
+        //             $('.list-mode tbody tr').hide();
+        //             $('.score').text('0/0');
+        //         }
+        //     } else {
+        //         showCard(currentIndex);
+        //         $('.list-mode tbody tr').show();
+        //         updateProgressBar('normal');
+        //     }
+
+        //     // Update audio UI for favorites mode
+        //     updateAudioUIForFavorites();
+        // });
+        let pressTimerToggle;
+        let isPressingToggle = false;
+        let isLongPressToggle = false; // Tambah flag untuk track long press state
+
+        $('#toggleFavoriteBtn').on('touchstart mousedown', function(e) {
             e.preventDefault();
-            showFavoritesOnly = !showFavoritesOnly;
-            $(this).toggleClass('active');
+            isPressingToggle = true;
+            let btn = $(this);
+            btn.removeAttr('style');
+            btn.removeClass('isLongPressToggle');
 
-            updateFavoritesList();
-            currentIndex = 0;
-
-            if (showFavoritesOnly) {
-                if (favoriteCards.length > 0) {
-                    showNextFavoriteCard();
-                    $('.list-mode tbody tr').hide();
-                    $('.list-mode td .favorite-emote').each(function() {
-                        $(this).closest('tr').show();
+            // Start the timer
+            pressTimerToggle = setTimeout(() => {
+                if (isPressingToggle) {
+                    isLongPressToggle = true; // Set flag bahwa ini long press
+                    // Ubah warna jadi hitam ketika hold 1 detik
+                    btn.css({
+                        'background-color': 'black',
+                        'color': 'white',
+                        'border-color': 'black'
                     });
-                } else {
-                    $('.card').hide();
-                    $('.list-mode tbody tr').hide();
-                    $('.score').text('0/0');
+
+                    // Show only black heart favorites
+                    showFavoritesOnly = true;
+                    btn.addClass('active');
+                    btn.addClass('isLongPressToggle');
+
+                    updateFavoritesListBlack(); // New function for black hearts only
+                    currentIndex = 0;
+
+                    if (favoriteCards.length > 0) {
+                        showNextFavoriteCard();
+                        $('.list-mode tbody tr').hide();
+                        $('.list-mode td .favorite-emote.black').each(function() {
+                            $(this).closest('tr').show();
+                        });
+                    } else {
+                        $('.card').hide();
+                        $('.list-mode tbody tr').hide();
+                        $('.score').text('0/0');
+                    }
+
+                    updateAudioUIForFavorites();
                 }
-            } else {
-                showCard(currentIndex);
-                $('.list-mode tbody tr').show();
-                updateProgressBar('normal');
+            }, 500);
+        });
+
+        $('#toggleFavoriteBtn').on('touchend mouseup mouseleave', function(e) {
+            e.preventDefault();
+            clearTimeout(pressTimerToggle);
+
+            // Hanya proses short press jika bukan long press dan bukan mouseleave
+            if (isPressingToggle && !isLongPressToggle && e.type !== 'mouseleave') {
+                let btn = $(this);
+
+                // Original toggle behavior for all favorites
+                showFavoritesOnly = !showFavoritesOnly;
+                btn.toggleClass('active');
+
+                updateFavoritesList(); // Original function for all hearts
+                currentIndex = 0;
+
+                if (showFavoritesOnly) {
+                    if (favoriteCards.length > 0) {
+                        showNextFavoriteCard();
+                        $('.list-mode tbody tr').hide();
+                        $('.list-mode td .favorite-emote').each(function() {
+                            $(this).closest('tr').show();
+                        });
+                    } else {
+                        $('.card').hide();
+                        $('.list-mode tbody tr').hide();
+                        $('.score').text('0/0');
+                    }
+                } else {
+                    showCard(currentIndex);
+                    $('.list-mode tbody tr').show();
+                    updateProgressBar('normal');
+                }
+
+                updateAudioUIForFavorites();
             }
 
-            // Update audio UI for favorites mode
-            updateAudioUIForFavorites();
+            isPressingToggle = false;
+
+            // Reset long press flag hanya jika ini bukan mouseleave
+            if (e.type !== 'mouseleave') {
+                isLongPressToggle = false;
+            }
         });
+
+        // Add new function to update favorites list for black hearts only
+        function updateFavoritesListBlack() {
+            favoriteCards = Array.from(document.querySelectorAll('.card')).filter(card =>
+                card.querySelector('.favorite-emote.black') !== null
+            ).map(card => parseInt(card.dataset.index));
+        }
+
+        function updateAudioUIForFavorites() {
+            const rows = document.querySelectorAll('.list-mode tbody tr');
+            const favoriteRows = Array.from(rows).filter(row => row.querySelector('.favorite-emote'));
+            const startButton = document.getElementById('startAudio');
+
+            if (showFavoritesOnly && favoriteRows.length === 0) {
+                startButton.disabled = true;
+                startButton.style.opacity = '0.5';
+                document.getElementById('numberError').textContent = 'No favorites available to play';
+                document.getElementById('numberError').style.display = 'block';
+            } else {
+                startButton.disabled = false;
+                startButton.style.opacity = '1';
+                document.getElementById('numberError').style.display = 'none';
+            }
+        }
 
         function showNextFavoriteCard() {
             if (favoriteCards.length === 0) return;
@@ -1817,59 +2084,131 @@
             }
         });
 
-        $('#favoriteAudioBtn').on('touchstart click', function(e) {
+        let pressTimerAudio;
+        let isPressingAudio = false;
+        let originalAudioButtonColor;
+
+        $('#favoriteAudioBtn').on('touchstart mousedown', function(e) {
             e.preventDefault();
-
-            let favId = $('.audio-preview-group').find('.jerman').data('id')
-            let favNo = $('.audio-preview-group').find('.number').text()
-            const currentWord = {
-                id: favId,
-                id_user: '{{ auth()->user()->id }}',
-                _token: '{{ csrf_token() }}'
-            };
-
+            let favId = $('.audio-preview-group').find('.jerman').data('id');
+            let favNo = $('.audio-preview-group').find('.number').text();
             let target = $('.card[data-index="' + (parseInt(favNo) - 1) + '"] .german-word');
+
+            // Cek apakah sudah ada favorite-emote
+            if (target.find('.favorite-emote').length > 0) {
+                // Jika sudah ada favorite, gunakan handler normal
+                const currentWord = {
+                    id: favId,
+                    id_user: '{{ auth()->user()->id }}',
+                    _token: '{{ csrf_token() }}'
+                };
+                sendFavoriteRequestAudio(currentWord, target, $(this));
+                return;
+            }
+
+            isPressingAudio = true;
+            let th = $(this);
+
+            // Simpan warna original
+            originalAudioButtonColor = th.css('background-color');
+
+            // Start the timer
+            pressTimerAudio = setTimeout(() => {
+                if (isPressingAudio) {
+                    // Ubah warna jadi hitam ketika hold 1 detik
+                    th.css('background-color', 'black');
+
+                    // Long press detected - send level 2 request
+                    const currentWord = {
+                        id: favId,
+                        id_user: '{{ auth()->user()->id }}',
+                        level: 2,
+                        _token: '{{ csrf_token() }}'
+                    };
+                    sendFavoriteRequestAudio(currentWord, target, th);
+                }
+            }, 500);
+        });
+
+        $('#favoriteAudioBtn').on('touchend mouseup mouseleave', function(e) {
+            e.preventDefault();
+            clearTimeout(pressTimerAudio);
+
+            let favId = $('.audio-preview-group').find('.jerman').data('id');
+            let favNo = $('.audio-preview-group').find('.number').text();
+            let target = $('.card[data-index="' + (parseInt(favNo) - 1) + '"] .german-word');
+
+            // If it was a short press and no favorite-emote exists
+            if (isPressingAudio && e.type !== 'mouseleave' && !target.find('.favorite-emote').length) {
+                const currentWord = {
+                    id: favId,
+                    id_user: '{{ auth()->user()->id }}',
+                    _token: '{{ csrf_token() }}'
+                };
+                sendFavoriteRequestAudio(currentWord, target, $(this));
+            }
+
+            isPressingAudio = false;
+        });
+
+        function sendFavoriteRequestAudio(data, target, button) {
             let germanWord = target.text().replace('❤', '').replace("\n", '').trim();
-            let th = $(this)
+
             $.ajax({
                 url: '/vocab/favorite',
                 method: 'POST',
-                data: JSON.stringify(currentWord),
+                data: JSON.stringify(data),
                 contentType: 'application/json',
                 success: function(response) {
-                    th.css('background-color', '#6c5ce7');
+                    // Kembalikan warna original setelah ajax selesai
+                    if (data.level === 2) {
+                        button.css('background-color', originalAudioButtonColor);
+                    }
+
+                    button.css('background-color', '#6c5ce7');
                     setTimeout(() => {
-                        th.css('background-color', 'white');
+                        button.css('background-color', 'white');
                         setTimeout(() => {
-                            th.css('background-color', '#6c5ce7');
+                            button.css('background-color', '#6c5ce7');
                             setTimeout(() => {
-                                th.css('background-color', 'white');
+                                button.css('background-color', 'white');
                                 setTimeout(() => {
-                                    th.css('background-color', '#6c5ce7');
+                                    button.css('background-color', '#6c5ce7');
                                     setTimeout(() => {
-                                        th.css('background-color', 'white');
+                                        button.css('background-color', 'white');
                                     }, 200);
                                 }, 200);
                             }, 200);
                         }, 200);
                     }, 200);
+
                     if (response.action == 'add') {
-                        // Update di card mode
+                        // Update card mode
                         target.append(`<span class="favorite-emote">❤</span>`);
 
-                        // Update di list mode
-                        let listCell = $(`.list-mode td[data-id="${favId}"].german-column`);
+                        // Jika response level = 2, set color: unset
+                        if (response.level === 2) {
+                            target.find('.favorite-emote').addClass('black');
+                        }
+
+                        // Update list mode
+                        let listCell = $(`.list-mode td[data-id="${data.id}"].german-column`);
                         if (!listCell.hasClass('german-column')) {
                             listCell = listCell.siblings('.german-column');
                         }
                         listCell.addClass('favorite');
                         listCell.append(`<span class="favorite-emote">❤</span>`);
+
+                        // Set color: unset juga di list mode
+                        if (response.level === 2) {
+                            listCell.find('.favorite-emote').addClass('black');
+                        }
                     } else {
-                        // Update di card mode
+                        // Update card mode
                         target.find('.favorite-emote').remove();
 
-                        // Update di list mode
-                        let listCell = $(`.list-mode td[data-id="${favId}"]`);
+                        // Update list mode
+                        let listCell = $(`.list-mode td[data-id="${data.id}"]`);
                         if (!listCell.hasClass('german-column')) {
                             listCell = listCell.siblings('.german-column');
                         }
@@ -1883,48 +2222,179 @@
                         $('.list-mode tbody tr').hide();
                         $('.score').text('0/0');
                     }
+                },
+                error: function() {
+                    // Kembalikan warna original jika terjadi error
+                    if (data.level === 2) {
+                        button.css('background-color', originalAudioButtonColor);
+                    }
                 }
             });
-        });
-        $('#favoriteBtn').on('touchstart click', function(e) {
+        }
+        // $('#favoriteBtn').on('touchstart click', function(e) {
+        //     e.preventDefault();
+        //     const currentWord = {
+        //         id: $('.card:visible .id-vocab').text(),
+        //         id_user: '{{ auth()->user()->id }}',
+        //         _token: '{{ csrf_token() }}'
+        //     };
+        //     let target = $('.card:visible .german-word');
+        //     let germanWord = target.text().replace('❤', '').replace("\n", '').trim();
+
+
+        //     $.ajax({
+        //         url: '/vocab/favorite',
+        //         method: 'POST',
+        //         data: JSON.stringify(currentWord),
+        //         contentType: 'application/json',
+        //         success: function(response) {
+        //             $('#favoriteBtn').addClass('animate__animated animate__heartBeat');
+        //             setTimeout(() => {
+        //                 $('#favoriteBtn').removeClass('animate__animated animate__heartBeat');
+        //             }, 1000);
+        //             if (response.action == 'add') {
+        //                 // Update di card mode
+        //                 target.append(`<span class="favorite-emote">❤</span>`);
+
+        //                 // Update di list mode
+        //                 let listCell = $(`.list-mode td:contains('${germanWord}')`);
+        //                 if (!listCell.hasClass('german-column')) {
+        //                     listCell = listCell.siblings('.german-column');
+        //                 }
+        //                 listCell.addClass('favorite');
+        //                 listCell.append(`<span class="favorite-emote">❤</span>`);
+        //             } else {
+        //                 // Update di card mode
+        //                 target.find('.favorite-emote').remove();
+
+        //                 // Update di list mode
+        //                 let listCell = $(`.list-mode td:contains('${germanWord}')`);
+        //                 console.log(listCell.length, germanWord)
+        //                 if (!listCell.hasClass('german-column')) {
+        //                     listCell = listCell.siblings('.german-column');
+        //                 }
+        //                 listCell.removeClass('favorite');
+        //                 listCell.find('.favorite-emote').remove();
+        //             }
+
+        //             updateFavoritesList();
+        //             if (showFavoritesOnly && favoriteCards.length === 0) {
+        //                 $('.card').hide();
+        //                 $('.list-mode tbody tr').hide();
+        //                 $('.score').text('0/0');
+        //             }
+        //         }
+        //     });
+        // });
+        // Long press timer variable
+        let pressTimer;
+        let isPressing = false;
+        let originalButtonColor;
+
+        $('#favoriteBtn').on('touchstart mousedown', function(e) {
             e.preventDefault();
-            const currentWord = {
-                id: $('.card:visible .id-vocab').text(),
-                id_user: '{{ auth()->user()->id }}',
-                _token: '{{ csrf_token() }}'
-            };
+
+            // Cek apakah sudah ada favorite-emote
+            if ($('.card:visible .german-word .favorite-emote').length > 0) {
+                // Jika sudah ada favorite, gunakan handler normal
+                const currentWord = {
+                    id: $('.card:visible .id-vocab').text(),
+                    id_user: '{{ auth()->user()->id }}',
+                    _token: '{{ csrf_token() }}'
+                };
+                sendFavoriteRequest(currentWord);
+                return;
+            }
+
+            isPressing = true;
+
+            // Simpan warna original
+            originalButtonColor = $('#favoriteBtn').css('background-color');
+
+            // Start the timer
+            pressTimer = setTimeout(() => {
+                if (isPressing) {
+                    // Ubah warna jadi hitam ketika hold 1 detik
+                    $('#favoriteBtn').css('background-color', 'black');
+
+                    // Long press detected - send level 2 request
+                    const currentWord = {
+                        id: $('.card:visible .id-vocab').text(),
+                        id_user: '{{ auth()->user()->id }}',
+                        level: 2,
+                        _token: '{{ csrf_token() }}'
+                    };
+                    sendFavoriteRequest(currentWord);
+                }
+            }, 500); // 1 second threshold
+        });
+
+        $('#favoriteBtn').on('touchend mouseup mouseleave', function(e) {
+            e.preventDefault();
+
+            // Clear the timer
+            clearTimeout(pressTimer);
+
+            // If it was a short press and no favorite-emote exists
+            if (isPressing && e.type !== 'mouseleave' && $('.card:visible .german-word .favorite-emote').length === 0) {
+                const currentWord = {
+                    id: $('.card:visible .id-vocab').text(),
+                    id_user: '{{ auth()->user()->id }}',
+                    _token: '{{ csrf_token() }}'
+                };
+                sendFavoriteRequest(currentWord);
+            }
+
+            isPressing = false;
+        });
+
+        function sendFavoriteRequest(data) {
             let target = $('.card:visible .german-word');
             let germanWord = target.text().replace('❤', '').replace("\n", '').trim();
-
 
             $.ajax({
                 url: '/vocab/favorite',
                 method: 'POST',
-                data: JSON.stringify(currentWord),
+                data: JSON.stringify(data),
                 contentType: 'application/json',
                 success: function(response) {
+                    // Kembalikan warna original setelah ajax selesai
+                    if (data.level === 2) {
+                        $('#favoriteBtn').css('background-color', originalButtonColor);
+                    }
+
                     $('#favoriteBtn').addClass('animate__animated animate__heartBeat');
                     setTimeout(() => {
                         $('#favoriteBtn').removeClass('animate__animated animate__heartBeat');
                     }, 1000);
+
                     if (response.action == 'add') {
-                        // Update di card mode
+                        // Update card mode
                         target.append(`<span class="favorite-emote">❤</span>`);
 
-                        // Update di list mode
+                        // Jika response level = 2, set color: unset
+                        if (response.level === 2) {
+                            target.find('.favorite-emote').addClass('black');
+                        }
+
+                        // Update list mode
                         let listCell = $(`.list-mode td:contains('${germanWord}')`);
                         if (!listCell.hasClass('german-column')) {
                             listCell = listCell.siblings('.german-column');
                         }
                         listCell.addClass('favorite');
                         listCell.append(`<span class="favorite-emote">❤</span>`);
+
+                        // Set color: unset juga di list mode
+                        if (response.level === 2) {
+                            listCell.find('.favorite-emote').addClass('black');
+                        }
                     } else {
-                        // Update di card mode
+                        // Update card mode
                         target.find('.favorite-emote').remove();
 
-                        // Update di list mode
+                        // Update list mode
                         let listCell = $(`.list-mode td:contains('${germanWord}')`);
-                        console.log(listCell.length, germanWord)
                         if (!listCell.hasClass('german-column')) {
                             listCell = listCell.siblings('.german-column');
                         }
@@ -1938,9 +2408,15 @@
                         $('.list-mode tbody tr').hide();
                         $('.score').text('0/0');
                     }
+                },
+                error: function() {
+                    // Kembalikan warna original jika terjadi error
+                    if (data.level === 2) {
+                        $('#favoriteBtn').css('background-color', originalButtonColor);
+                    }
                 }
             });
-        });
+        }
 
         // Initialize
         updateFavoritesList();
@@ -2173,14 +2649,14 @@
                 if (state === 'reading') {
                     row.classList.add('reading');
                     let number = row.cells[0].textContent.trim();
-                    let germanText = row.cells[1].textContent.trim();
+                    let germanText = row.cells[1].innerHTML.replace(/\s+/g, ' ').trim();
                     let indoText = row.cells[2].textContent.trim();
                     let exampleText = row.cells[3]?.textContent.trim();
                     let example_bahasa = row.cells[4]?.textContent.trim();
                     let dataId = row.cells[1].dataset.id;
                     setTimeout(
                         function() {
-                            $('.audio-preview-group').find('.jerman').text(germanText)
+                            $('.audio-preview-group').find('.jerman').html(germanText)
                             $('.audio-preview-group').find('.indo').text(indoText)
                             $('.audio-preview-group').find('.sample').text(exampleText)
                             $('.audio-preview-group').find('.sample-indo').text(example_bahasa)
@@ -2298,9 +2774,19 @@
 
                         const row = rows[i];
                         const hasFavorite = row.querySelector('.favorite-emote') !== null;
+                        const hasBlackFavorite = row.querySelector('.favorite-emote.black') !== null;
+                        const isLongPressToggle = $('#toggleFavoriteBtn').hasClass('isLongPressToggle');
 
-                        if (showFavoritesOnly && !hasFavorite) {
-                            continue;
+                        // Cek jika dalam mode favorit
+                        if (showFavoritesOnly) {
+                            // Jika dalam mode long-press (black favorite), hanya proses yang black
+                            if (isLongPressToggle && !hasBlackFavorite) {
+                                continue;
+                            }
+                            // Jika dalam mode normal favorite, proses semua favorite
+                            else if (!isLongPressToggle && !hasFavorite) {
+                                continue;
+                            }
                         }
 
                         lastPosition = i;
@@ -2336,21 +2822,6 @@
             });
 
             // Add this function to update UI for favorites mode
-            function updateAudioUIForFavorites() {
-                const rows = document.querySelectorAll('.list-mode tbody tr');
-                const favoriteRows = Array.from(rows).filter(row => row.querySelector('.favorite-emote'));
-
-                if (showFavoritesOnly && favoriteRows.length === 0) {
-                    startButton.disabled = true;
-                    startButton.style.opacity = '0.5';
-                    document.getElementById('numberError').textContent = 'No favorites available to play';
-                    document.getElementById('numberError').style.display = 'block';
-                } else {
-                    startButton.disabled = false;
-                    startButton.style.opacity = '1';
-                    document.getElementById('numberError').style.display = 'none';
-                }
-            }
 
             startButton.addEventListener('click', async function() {
                 if (isReading) {

@@ -194,7 +194,7 @@
                                                     {{ $word->kapital }}
                                                 </th>
                                                 <td class="px-6 py-4">
-                                                    {{ $word->german_word }} {{ $word->linkFavorite[0] ?? null ? '❤' : '' }}
+                                                    {{ $word->german_word }} <span class="">{{ $word->linkFavorite[0] ?? null ? '❤' : '' }} {{ ($word->linkFavorite[0]->level ?? null) == 2 ? '❤' : '' }}</span>
                                                     <button type="button" class="speak-btn text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 transition-colors" data-text="{{ $word->german_word }}" title="Click to hear pronunciation">
                                                         🔊
                                                     </button>
@@ -443,6 +443,13 @@
             </div>
         </div>
     </div>
+    @push('css')
+        <style>
+            .favorite-emote.black {
+                color: unset !important;
+            }
+        </style>
+    @endpush
     @push('js')
         <script type="module">
             $(document).ready(function() {
@@ -565,7 +572,7 @@
                     let data = $(this).data('data');
 
                     $.each(data, function(i, v) {
-                        console.log(i, v)
+                        // console.log(i, v)
                         $('#' + i).val(v);
                     });
 
@@ -574,30 +581,111 @@
             });
         </script>
         <script type="module">
-            $('.favorite-btn').click(function(e) {
-                let id = $(this).data('id');
-                let model = $(this).data('model');
+            let pressTimerFav;
+            let isPressingFav = false;
+            let originalFavColor;
+            let hasExecutedFav = false; // Flag untuk mencegah eksekusi ganda
 
+            $('.favorite-btn').on('touchstart mousedown', function(e) {
+                e.preventDefault();
+                let btn = $(this);
+                let id = btn.data('id');
+                let model = btn.data('model');
+
+                isPressingFav = true;
+                hasExecutedFav = false; // Reset flag saat mulai press
+
+                // Simpan warna original
+                originalFavColor = btn.css('background-color');
+
+                // Start the timer
+                pressTimerFav = setTimeout(() => {
+                    if (isPressingFav && !hasExecutedFav) {
+                        hasExecutedFav = true; // Set flag bahwa sudah dieksekusi
+                        // Ubah warna jadi hitam ketika hold 1 detik
+                        btn.css('background-color', 'black');
+
+                        // Long press detected - send level 2 request
+                        const data = {
+                            _token: '{{ csrf_token() }}',
+                            id: id,
+                            id_user: '{{ auth()->user()->id }}',
+                            model: model,
+                            level: 2
+                        };
+                        sendFavoriteRequestTable(data, btn);
+                    }
+                }, 500);
+            });
+
+            $('.favorite-btn').on('touchend mouseup mouseleave', function(e) {
+                e.preventDefault();
+                clearTimeout(pressTimerFav);
+
+                let btn = $(this);
+                let id = btn.data('id');
+                let model = btn.data('model');
+
+                // Jika short press dan belum ada eksekusi
+                if (isPressingFav && e.type !== 'mouseleave' && !hasExecutedFav) {
+                    hasExecutedFav = true; // Set flag bahwa sudah dieksekusi
+                    // Cek apakah sudah ada favorite-emote di row ini
+                    if (btn.parent().parent().parent().find('.favorite-emote').length > 0) {
+                        // Jika sudah ada favorite, gunakan handler normal
+                        const data = {
+                            _token: '{{ csrf_token() }}',
+                            id: id,
+                            id_user: '{{ auth()->user()->id }}',
+                            model: model
+                        };
+                        sendFavoriteRequestTable(data, btn);
+                    } else {
+                        // Jika belum ada favorite
+                        const data = {
+                            _token: '{{ csrf_token() }}',
+                            id: id,
+                            id_user: '{{ auth()->user()->id }}',
+                            model: model
+                        };
+                        sendFavoriteRequestTable(data, btn);
+                    }
+                }
+
+                isPressingFav = false;
+                // hasExecutedFav akan di-reset saat press berikutnya
+            });
+
+            function sendFavoriteRequestTable(data, button) {
+                console.log('ohoho')
                 $.ajax({
-                    url: "/" + model + "/" + 'favorite',
+                    url: "/" + data.model + "/" + 'favorite',
                     method: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        id: id,
-                        id_user: '{{ auth()->user()->id }}',
-                        model: model
-                    },
+                    data: data,
                     success: function(response) {
+                        // Kembalikan warna original setelah ajax selesai
+                        if (data.level === 2) {
+                            button.css('background-color', originalFavColor);
+                        }
+
                         if (response.success == true) {
-                            location.reload();
+                            if (response.level === 2) {
+                                // Tambahkan class black ke favorite-emote
+                                location.reload();
+                            } else {
+                                location.reload();
+                            }
                         }
                     },
                     error: function(xhr) {
+                        // Kembalikan warna original jika terjadi error
+                        if (data.level === 2) {
+                            button.css('background-color', originalFavColor);
+                        }
                         alert('An error occurred while processing your request.');
                         console.error(xhr.responseText);
                     }
                 });
-            });
+            }
             $(document).ready(function() {
                 // Initialize speech synthesis
                 const synth = window.speechSynthesis;
@@ -614,8 +702,8 @@
                     ) || voices[0];
 
                     // Log available voices for debugging
-                    console.log('Available voices:', voices);
-                    console.log('Selected voice:', germanVoice);
+                    // console.log('Available voices:', voices);
+                    // console.log('Selected voice:', germanVoice);
                 }
 
                 // Load voices when they're ready
@@ -688,7 +776,7 @@
                 let data = $(this).data('data');
 
                 $.each(data, function(i, v) {
-                    console.log(i, v);
+                    // console.log(i, v);
                     $('#' + i).val(v);
                 });
 
@@ -757,7 +845,7 @@
                             if (response.success) {
                                 let data = JSON.parse(response.data);
                                 data = data.bahasaJerman;
-                                console.log(data)
+                                // console.log(data)
                                 let outputHtml = '<div class="parent border border-gray-200 dark:border-gray-700 p-4 rounded-lg mb-4">';
                                 let fileName = $('#pdfFile')[0].files[0].name;
                                 outputHtml += `<div class="flex justify-between items-center mb-4">

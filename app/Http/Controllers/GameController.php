@@ -40,7 +40,8 @@ class GameController extends Controller
         $data = $request->all();
         $kapital = $data['kapital'];
         $useFavorites = $data['use_favorites'];
-        $germanWord = $data['german_word']??null;
+        $useLimit = $data['use_limit'];
+        $germanWord = $data['german_word'] ?? null;
         $language = $data['language'];
 
         if ($request->same == true) {
@@ -49,11 +50,17 @@ class GameController extends Controller
                 $vocabularies = Vocab::when($kapital !== null, function ($query) use ($kapital) {
                     return $query->where('kapital', 'like', '%' . $kapital . '%');
                 })
-                    ->when($useFavorites, function ($query) {
-                        return $query->whereHas('linkFavorite');
+                    ->when($useFavorites, function ($query) use ($useFavorites) {
+                        return $query->whereHas('linkFavorite', function ($subQuery) use ($useFavorites) {
+                            if ($useFavorites == 1) {
+                                return $subQuery;
+                            } else {
+                                return $subQuery->where('level', 2);
+                            }
+                        });
                     })
-                    ->when($kapital == '', function ($query) use ($useFavorites) {
-                        return $query->inRandomOrder()->when($useFavorites != null, function ($q) {
+                    ->when($kapital == '', function ($query) use ($useFavorites, $useLimit) {
+                        return $query->inRandomOrder()->when(!$useFavorites || $useLimit == 'default', function ($q) {
                             return $q->limit(100);
                         });
                     })
@@ -78,11 +85,17 @@ class GameController extends Controller
                 $vocabularies = Vocab::when($kapital !== null, function ($query) use ($kapital) {
                     return $query->where('kapital', 'like', '%' . $kapital . '%');
                 })
-                    ->when($useFavorites, function ($query) {
-                        return $query->whereHas('linkFavorite');
+                    ->when($useFavorites, function ($query) use ($useFavorites) {
+                        return $query->whereHas('linkFavorite', function ($subQuery) use ($useFavorites) {
+                            if ($useFavorites == 1) {
+                                return $subQuery;
+                            } else {
+                                return $subQuery->where('level', 2);
+                            }
+                        });
                     })
-                    ->when($kapital == '', function ($query) use ($useFavorites) {
-                        return $query->inRandomOrder()->when($useFavorites != null, function ($q) {
+                    ->when($kapital == '', function ($query) use ($useFavorites, $useLimit) {
+                        return $query->inRandomOrder()->when(!$useFavorites || $useLimit == 'default', function ($q) {
                             return $q->limit(100);
                         });
                     })
@@ -126,12 +139,13 @@ class GameController extends Controller
                 Favorite::create([
                     'model' => $model,
                     'id_user' => $request->id_user,
+                    'level' => $request->level ?? 1,
                     'id_model' => $request->id,
                 ]);
             }
         }
 
         // Add your logic for toggling favorite vocab here
-        return response()->json(['success' => true, 'action' => $favorite ? 'delete' : 'add']);
+        return response()->json(['success' => true, 'level' => ($request->level ?? 1), 'action' => $favorite ? 'delete' : 'add']);
     }
 }

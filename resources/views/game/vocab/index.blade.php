@@ -20,6 +20,7 @@
                                         <div class="form-group mb-3">
                                             <x-input-label for="use_favorites" :value="__('Gunakan Favorit')" />
                                             <x-select id="use_favorites" class="block w-full" name="use_favorites" required>
+                                                <option value="2">Ya (Hitam)</option>
                                                 <option value="1">Ya</option>
                                                 <option value="0" selected>Tidak</option>
                                             </x-select>
@@ -47,6 +48,14 @@
                                                 <label for="filterGermanWord" class="block text-sm font-medium text-gray-700 dark:text-gray-400">Filter by German Word</label>
                                                 <input type="text" id="filterGermanWord" name="german_word" value="{{ request('german_word') }}" class="mt-1 block w-full border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-900 dark:text-gray-300" placeholder="Enter German Word">
                                             </div>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <x-input-label for="use_limit" :value="__('Limit Favorit')" />
+                                            <x-select id="use_limit" class="block w-full" name="use_limit" required>
+                                                <option value="default" selected>default</option>
+                                                <option value="semua">All</option>
+                                            </x-select>
+                                            <x-input-error class="mt-2" :messages="$errors->get('use_favorites')" />
                                         </div>
                                         <div class="form-group mb-3">
                                             <x-input-label for="language" :value="__('Bahasa')" />
