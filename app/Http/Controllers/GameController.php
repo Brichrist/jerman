@@ -40,7 +40,7 @@ class GameController extends Controller
         $data = $request->all();
         $kapital = $data['kapital'];
         $useFavorites = $data['use_favorites'];
-        $useLimit = $data['use_limit'];
+        $useLimit = $data['use_limit'] ?? 'default';
         $germanWord = $data['german_word'] ?? null;
         $language = $data['language'];
 
@@ -72,6 +72,9 @@ class GameController extends Controller
                     })
                     ->with('linkFavorite')
                     ->get();
+            } else {
+                $vocabularies = $vocabularies->pluck('id')->toArray();
+                $vocabularies = Vocab::whereIn('id', $vocabularies)->with('linkFavorite')->get();
             }
         } else {
             if ($germanWord) {

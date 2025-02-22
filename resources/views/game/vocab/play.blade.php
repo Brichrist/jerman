@@ -423,23 +423,10 @@
         }
 
         .favorite-emote.black {
-            color: unset !important
-        }
-
-        .favorite-emote.black::before {
-            content: '▲';
-            /* Unicode untuk panah segitiga ke atas */
-            position: absolute;
-            top: -20px;
-            /* Sesuaikan jarak dari elemen utama */
-            left: 50%;
-            /* Posisi di tengah */
-            transform: translateX(-50%);
-            /* Menggeser ke tengah */
-            color: black;
-            /* Warna panah */
-            font-size: 16px;
-            /* Ukuran panah */
+            color: unset !important;
+            position: relative;
+            box-shadow: 0 0 5px rgb(99, 0, 152);
+            border-radius: 10px;
         }
 
         /* Optional: tambahkan hover state untuk meningkatkan UX */
