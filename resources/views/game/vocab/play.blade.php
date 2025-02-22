@@ -1069,7 +1069,7 @@
         .ask-btn {
             position: fixed;
             left: 20px;
-            z-index: 5;
+            z-index: 1;
             top: 20px;
             padding: 10px;
             background-color: rgb(53, 0, 128);
@@ -1090,6 +1090,119 @@
 </head>
 
 <body>
+    <div class="score-modal" id="scoreModal">
+        <div class="score-modal-content">
+            <button class="score-modal-close" id="closeScoreModal">✕</button>
+            <div class="audio-modal-header">
+                <h2 class="audio-modal-title">Go to Number</h2>
+            </div>
+            <input type="number" class="score-input" id="scoreInput" min="1" placeholder="Enter number">
+            <button class="score-btn" id="goToScore">Go</button>
+        </div>
+    </div>
+    <div class="audio-modal" id="audioModal">
+        <div class="audio-modal-content">
+            <button class="audio-modal-close" id="closeAudioModal">✕</button>
+            <div class="audio-modal-header">
+                <h2 class="audio-modal-title">Audio Settings</h2>
+                <p class="audio-modal-subtitle">jika suara yang di hasilkan jelek (khususnya HP). coba lihat petunjuk penggunaan <a href="https://jerman.suralaya.web.id/forum-chat/1" target="_blank">di link ini</a> no 11</p>
+            </div>
+
+            <div class="audio-settings-group">
+                <div class="setting-item">
+                    <label class="setting-label">Speech Rate</label>
+                    <div class="setting-value">
+                        <input type="range" id="rateSlider" class="range-slider" min="0.5" max="1.5" step="0.1" value="1">
+                        <span class="range-value" id="rateValue">1.0x</span>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <label class="setting-label">Pause</label>
+                    <div class="setting-value">
+                        <input type="range" id="pauseSlider" class="range-slider" min="1" max="8" step="0.1" value="2">
+                        <span class="range-value" id="pauseValue">2x</span>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label class="setting-label">Conversation Distance</label>
+                    <div class="setting-value">
+                        <input type="range" id="distanceSlider" class="range-slider" min="1" max="4" step="0.1" value="1">
+                        <span class="range-value" id="distanceValue">1x</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <label class="setting-label">What to read?</label>
+                <div class="option-group">
+                    <button class="option-button active" data-option="german">German</button>
+                    <button class="option-button" data-option="indonesia">Bahasa</button>
+                    <button class="option-button" data-option="example">Example</button>
+                    <button class="option-button" data-option="example_bahasa">Example (Bahasa)</button>
+                </div>
+            </div>
+
+            <div class="audio-preview-group">
+                <div class="preview-item">
+                    <span class="number"></span>
+                </div>
+                <div class="preview-item">
+                    <span class="jerman lg"></span>
+                    <hr>
+                    <div class="indo-container">
+                        <span class="eye-toggle">👁️</span>
+                        <span class="indo lg"></span>
+                    </div>
+                    {{-- <span class="indo lg"></span> --}}
+                </div>
+                <br>
+                <div class="preview-item">
+                    <span class="sample"></span>
+                </div>
+                <div class="preview-item">
+                    <span class="sample-indo"></span>
+                </div>
+            </div>
+            <div class="setting-favorite">
+                <button class="fav-button" id="favoriteAudioBtn">
+                    <span class="favorite-emote">❤</span>
+                </button>
+            </div>
+
+            <div class="setting-item">
+                <label class="setting-label">Start from number</label>
+                <div class="setting-value">
+                    <input type="number" id="startNumber" class="start-number-input" min="1" placeholder="Enter start number">
+                </div>
+                <div class="setting-error" id="numberError">Please enter a valid number between 1 and total words</div>
+            </div>
+            <button class="start-button" id="startAudio">
+                Start Reading ▶
+            </button>
+            <div class="control-buttons-container" id="controlButtons">
+                <button class="restart-button" id="restartButton">From 0</button>
+                <button class="restart-from-button" id="restartFromNumber">Start from</button>
+                <button class="resume-button" id="resumeButton">Resume ▶</button>
+            </div>
+        </div>
+    </div>
+    <div class="example-modal" id="exampleModal">
+        <div class="example-modal-content">
+            <button class="example-modal-close" id="closeExampleModal">✕</button>
+            <div class="example-content">
+                <h2>Example</h2>
+                <div class="example-list">
+                    <ul>
+                        <li><strong class="word"></strong></li>
+                        <li class="example"></li>
+                        <li class="example_bahasa"></li>
+                    </ul>
+                </div>
+                <div class="example-speaker">🔊</div>
+            </div>
+        </div>
+    </div>
     <div class="container" data-aos="fade-up">
         <div class="progress-bar"></div>
         <div>
@@ -1105,119 +1218,7 @@
             <button id="listModeBtn">List Mode</button>
             <button id="playAudio" style="display: none">Play Audio</button>
         </div>
-        <div class="score-modal" id="scoreModal">
-            <div class="score-modal-content">
-                <button class="score-modal-close" id="closeScoreModal">✕</button>
-                <div class="audio-modal-header">
-                    <h2 class="audio-modal-title">Go to Number</h2>
-                </div>
-                <input type="number" class="score-input" id="scoreInput" min="1" placeholder="Enter number">
-                <button class="score-btn" id="goToScore">Go</button>
-            </div>
-        </div>
-        <div class="audio-modal" id="audioModal">
-            <div class="audio-modal-content">
-                <button class="audio-modal-close" id="closeAudioModal">✕</button>
-                <div class="audio-modal-header">
-                    <h2 class="audio-modal-title">Audio Settings</h2>
-                    <p class="audio-modal-subtitle">jika suara yang di hasilkan jelek (khususnya HP). coba lihat petunjuk penggunaan <a href="https://jerman.suralaya.web.id/forum-chat/1" target="_blank">di link ini</a> no 11</p>
-                </div>
-
-                <div class="audio-settings-group">
-                    <div class="setting-item">
-                        <label class="setting-label">Speech Rate</label>
-                        <div class="setting-value">
-                            <input type="range" id="rateSlider" class="range-slider" min="0.5" max="1.5" step="0.1" value="1">
-                            <span class="range-value" id="rateValue">1.0x</span>
-                        </div>
-                    </div>
-
-                    <div class="setting-item">
-                        <label class="setting-label">Pause</label>
-                        <div class="setting-value">
-                            <input type="range" id="pauseSlider" class="range-slider" min="1" max="8" step="0.1" value="2">
-                            <span class="range-value" id="pauseValue">2x</span>
-                        </div>
-                    </div>
-                    <div class="setting-item">
-                        <label class="setting-label">Conversation Distance</label>
-                        <div class="setting-value">
-                            <input type="range" id="distanceSlider" class="range-slider" min="1" max="4" step="0.1" value="1">
-                            <span class="range-value" id="distanceValue">1x</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="setting-item">
-                    <label class="setting-label">What to read?</label>
-                    <div class="option-group">
-                        <button class="option-button active" data-option="german">German</button>
-                        <button class="option-button" data-option="indonesia">Bahasa</button>
-                        <button class="option-button" data-option="example">Example</button>
-                        <button class="option-button" data-option="example_bahasa">Example (Bahasa)</button>
-                    </div>
-                </div>
-
-                <div class="audio-preview-group">
-                    <div class="preview-item">
-                        <span class="number"></span>
-                    </div>
-                    <div class="preview-item">
-                        <span class="jerman lg"></span>
-                        <hr>
-                        <div class="indo-container">
-                            <span class="eye-toggle">👁️</span>
-                            <span class="indo lg"></span>
-                        </div>
-                        {{-- <span class="indo lg"></span> --}}
-                    </div>
-                    <br>
-                    <div class="preview-item">
-                        <span class="sample"></span>
-                    </div>
-                    <div class="preview-item">
-                        <span class="sample-indo"></span>
-                    </div>
-                </div>
-                <div class="setting-favorite">
-                    <button class="fav-button" id="favoriteAudioBtn">
-                        <span class="favorite-emote">❤</span>
-                    </button>
-                </div>
-
-                <div class="setting-item">
-                    <label class="setting-label">Start from number</label>
-                    <div class="setting-value">
-                        <input type="number" id="startNumber" class="start-number-input" min="1" placeholder="Enter start number">
-                    </div>
-                    <div class="setting-error" id="numberError">Please enter a valid number between 1 and total words</div>
-                </div>
-                <button class="start-button" id="startAudio">
-                    Start Reading ▶
-                </button>
-                <div class="control-buttons-container" id="controlButtons">
-                    <button class="restart-button" id="restartButton">From 0</button>
-                    <button class="restart-from-button" id="restartFromNumber">Start from</button>
-                    <button class="resume-button" id="resumeButton">Resume ▶</button>
-                </div>
-            </div>
-        </div>
-        <div class="example-modal" id="exampleModal">
-            <div class="example-modal-content">
-                <button class="example-modal-close" id="closeExampleModal">✕</button>
-                <div class="example-content">
-                    <h2>Example</h2>
-                    <div class="example-list">
-                        <ul>
-                            <li><strong class="word"></strong></li>
-                            <li class="example"></li>
-                            <li class="example_bahasa"></li>
-                        </ul>
-                    </div>
-                    <div class="example-speaker">🔊</div>
-                </div>
-            </div>
-        </div>
+      
         <div class="edit-form" style="display: none;">
             <div class="edit-overlay">
                 <form id="editForm">
@@ -1331,7 +1332,7 @@
         <button class="ask-btn">AI</button>
     @endif
     <div id="ask-popup" style="z-index:1; display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); justify-content:center; align-items:center;">
-        <div class="flex-1 max-w-2xl mx-auto w-full bg-white rounded-2xl shadow-xl flex flex-col my-4 overflow-hidden">
+        <div class="modal flex-1 max-w-xs md:max-w-2xl mx-auto w-full bg-white rounded-2xl shadow-xl flex flex-col my-4 overflow-hidden">
             <div class="gradient-bg p-6 flex items-center">
                 <div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
                     <i class="fas fa-message-smile text-white text-xl"></i>
@@ -2200,6 +2201,11 @@
                 $('.score-modal-content').addClass('show');
                 $('#scoreInput').focus();
             }, 50);
+        });
+        $('#ask-popup').on('click', function(e) {
+            if (e.target === this || $(e.target).hasClass('modal')) {
+                $('.ask-btn').trigger('click');
+            }
         });
 
         // Tutup modal
