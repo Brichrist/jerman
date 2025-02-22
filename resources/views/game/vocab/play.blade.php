@@ -1521,25 +1521,26 @@
                     return content.replace(/\n/g, '<br>');
                 }
             }
+
             function addMessage(text, hint, sender) {
 
                 const formattedContent = formatJSONContent(text);
                 const messageHTML = `
                     <div class="flex items-start ${sender === 'bot' ? '' : 'justify-end'} message opacity-0">
                         ${sender === 'bot' ? `
-                                                        <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
-                                                            <img src="{{ asset('img/' . $name . '.jpg') }}" alt="AI Assistant" class="w-full h-full object-cover">
-                                                        </div>
-                                                    ` : ''}
+                                                            <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
+                                                                <img src="{{ asset('img/' . $name . '.jpg') }}" alt="AI Assistant" class="w-full h-full object-cover">
+                                                            </div>
+                                                        ` : ''}
                         <div class="mx-3 ${sender === 'bot' ? 'bg-white text-gray-700' : 'gradient-bg text-white'} rounded-2xl p-4 max-w-[80%] shadow-sm">
                                 ${formattedContent}
                             ${hint ? `<hr class="my-2"><p class="text-sm text-gray-500">${hint}</p>` : ''}
                         </div>
                         ${sender === 'user' ? `
-                                                    <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                                                        <i class="fas fa-user text-gray-500 text-sm"></i>
-                                                    </div>
-                                                ` : ''}
+                                                        <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                                            <i class="fas fa-user text-gray-500 text-sm"></i>
+                                                        </div>
+                                                    ` : ''}
                     </div>
                 `;
 
@@ -2908,40 +2909,25 @@
             const pauseHoldElement = document.querySelector('.pause-hold');
 
             // Tambahkan event listener untuk touch events
+            pauseHoldElement.addEventListener('click', function(e) {
+                e.preventDefault();
+                pauseHold = !pauseHold; // Toggle the state
+                // Update the icon based on state
+                this.textContent = pauseHold ? '▶️' : '⏸️';
+                console.log('Pause state toggled:', pauseHold);
+            });
+
+            // For touch devices, prevent default behavior
             pauseHoldElement.addEventListener('touchstart', function(e) {
-                e.preventDefault(); // Prevent default touch behavior
-                pauseHold = true;
-                console.log('Button pressed (touch):', pauseHold);
+                e.preventDefault();
             }, {
                 passive: false
             });
 
-            pauseHoldElement.addEventListener('touchend', function(e) {
-                e.preventDefault();
-                pauseHold = false;
-                console.log('Button released (touch):', pauseHold);
-            }, {
-                passive: false
-            });
-
-            // Tambahkan juga mouse events
-            pauseHoldElement.addEventListener('mousedown', function(e) {
-                e.preventDefault();
-                pauseHold = true;
-                console.log('Button pressed (mouse):', pauseHold);
-            });
-
-            pauseHoldElement.addEventListener('mouseup', function(e) {
-                e.preventDefault();
-                pauseHold = false;
-                console.log('Button released (mouse):', pauseHold);
-            });
-
-            // Handle mouse leave case
+            // Reset state when mouse leaves during hold
             pauseHoldElement.addEventListener('mouseleave', function(e) {
                 if (pauseHold) {
-                    pauseHold = false;
-                    console.log('Button left while pressed:', pauseHold);
+                    console.log('Mouse left while paused');
                 }
             });
             async function checkPauseHold() {
