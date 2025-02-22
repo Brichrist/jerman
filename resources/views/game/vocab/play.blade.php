@@ -1518,84 +1518,18 @@
         // });
 
         // Handler untuk toggle individual cell
-        // $('.list-mode table td').on('click', function() {
-        //     if ($(this).hasClass('favorite-list')) {
-        //         let favId = $(this).data('id')
-        //         let favNo = $(this).text()
-        //         const currentWord = {
-        //             id: favId,
-        //             id_user: '{{ auth()->user()->id }}',
-        //             _token: '{{ csrf_token() }}'
-        //         };
-
-        //         let target = $('.card[data-index="' + (parseInt(favNo) - 1) + '"] .german-word');
-        //         let germanWord = target.text().replace('❤', '').replace("\n", '').trim();
-        //         console.log(target.length, germanWord)
-
-        //         $.ajax({
-        //             url: '/vocab/favorite',
-        //             method: 'POST',
-        //             data: JSON.stringify(currentWord),
-        //             contentType: 'application/json',
-        //             success: function(response) {
-        //                 $('#favoriteBtn').addClass('animate__animated animate__heartBeat');
-        //                 setTimeout(() => {
-        //                     $('#favoriteBtn').removeClass('animate__animated animate__heartBeat');
-        //                 }, 1000);
-        //                 if (response.action == 'add') {
-        //                     // Update di card mode
-        //                     target.append(`<span class="favorite-emote">❤</span>`);
-
-        //                     // Update di list mode
-        //                     let listCell = $(`.list-mode td[data-id="${favId}"].german-column`);
-        //                     if (!listCell.hasClass('german-column')) {
-        //                         listCell = listCell.siblings('.german-column');
-        //                     }
-        //                     listCell.addClass('favorite');
-        //                     listCell.append(`<span class="favorite-emote">❤</span>`);
-        //                 } else {
-        //                     // Update di card mode
-        //                     target.find('.favorite-emote').remove();
-
-        //                     // Update di list mode
-        //                     let listCell = $(`.list-mode td[data-id="${favId}"]`);
-        //                     if (!listCell.hasClass('german-column')) {
-        //                         listCell = listCell.siblings('.german-column');
-        //                     }
-        //                     listCell.removeClass('favorite');
-        //                     listCell.find('.favorite-emote').remove();
-        //                 }
-
-        //                 updateFavoritesList();
-        //                 if (showFavoritesOnly && favoriteCards.length === 0) {
-        //                     $('.card').hide();
-        //                     $('.list-mode tbody tr').hide();
-        //                     $('.score').text('0/0');
-        //                 }
-        //             }
-        //         });
-        //     } else {
-        //         if ($(this).hasClass('hidden-cell')) {
-        //             $(this).removeClass('hidden-cell');
-        //         } else {
-        //             $(this).addClass('hidden-cell');
-        //         }
-        //     }
-        // });
+        $('.list-mode table td').on('click', function() {
+            if ($(this).hasClass('hidden-cell')) {
+                $(this).removeClass('hidden-cell');
+            } else {
+                $(this).addClass('hidden-cell');
+            }
+        });
         let pressTimerList;
         let isPressingList = false;
         let originalRowColor;
 
-        $('.list-mode table td').on('touchstart mousedown', function(e) {
-            if (!$(this).hasClass('favorite-list')) {
-                // Jika bukan favorite-list cell, handle seperti biasa
-                if ($(this).hasClass('hidden-cell')) {
-                    $(this).removeClass('hidden-cell');
-                } else {
-                    $(this).addClass('hidden-cell');
-                }
-                return;
-            }
+        $('.list-mode table td.favorite-list').on('touchstart mousedown', function(e) {
 
             e.preventDefault();
             let favId = $(this).data('id');
@@ -1639,8 +1573,7 @@
             }, 500);
         });
 
-        $('.list-mode table td').on('touchend mouseup mouseleave', function(e) {
-            if (!$(this).hasClass('favorite-list')) return;
+        $('.list-mode table td.favorite-list').on('touchend mouseup mouseleave', function(e) {
 
             e.preventDefault();
             clearTimeout(pressTimerList);
