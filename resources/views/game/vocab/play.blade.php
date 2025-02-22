@@ -2918,18 +2918,18 @@
             });
 
             // For touch devices, prevent default behavior
-            pauseHoldElement.addEventListener('touchstart', function(e) {
-                e.preventDefault();
-            }, {
-                passive: false
-            });
+            // pauseHoldElement.addEventListener('touchstart', function(e) {
+            //     e.preventDefault();
+            // }, {
+            //     passive: false
+            // });
 
-            // Reset state when mouse leaves during hold
-            pauseHoldElement.addEventListener('mouseleave', function(e) {
-                if (pauseHold) {
-                    console.log('Mouse left while paused');
-                }
-            });
+            // // Reset state when mouse leaves during hold
+            // pauseHoldElement.addEventListener('mouseleave', function(e) {
+            //     if (pauseHold) {
+            //         console.log('Mouse left while paused');
+            //     }
+            // });
             async function checkPauseHold() {
                 if (pauseHold) {
                     // Jika pauseHold true, tunggu 300ms dan cek lagi
