@@ -5,12 +5,14 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>German Vocabulary Game</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         * {
             margin: 0;
@@ -1054,6 +1056,37 @@
             color: #6c5ce7;
         }
     </style>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .message-input {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .ask-btn {
+            position: fixed;
+            left: 20px;
+            z-index: 5;
+            top: 20px;
+            padding: 10px;
+            background-color: rgb(53, 0, 128);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .ask-btn:hover {
+            background-color: #260a8a;
+            transform: scale(1.05);
+        }
+    </style>
 </head>
 
 <body>
@@ -1294,7 +1327,166 @@
             <a href="{{ url()->current() }}?kapital={{ request('kapital') }}&use_favorites={{ request('use_favorites') }}&language={{ request('language') }}&same=true">shuffle</a>
         </div>
     </div>
-    <script>
+    <button class="ask-btn">AI</button>
+    <div id="ask-popup" style="z-index:1; display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); justify-content:center; align-items:center;">
+        <div class="flex-1 max-w-2xl mx-auto w-full bg-white rounded-2xl shadow-xl flex flex-col my-4 overflow-hidden">
+            <div class="gradient-bg p-6 flex items-center">
+                <div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                    <i class="fas fa-message-smile text-white text-xl"></i>
+                </div>
+                @php
+                    $name = auth()->user()->gender == 'male' ? 'Silvi' : 'David';
+                @endphp
+                <div class="ml-4">
+                    <h1 class="text-2xl text-white font-light">Ask {{ $name }}</h1>
+                    <div class="text-purple-100 text-sm">Your German language assistant ✨</div>
+                </div>
+            </div>
+
+            <div id="chat-messages" class="flex-1 p-6 space-y-6 overflow-y-auto bg-gray-50" style="max-height: 65vh;">
+                <div class="flex items-start bot-message opacity-0">
+                    <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
+
+                        <img src="{{ asset('img/' . $name . '.jpg') }}" alt="Robot" class="w-full h-full object-cover">
+                    </div>
+                    <div class="ml-3 bg-white rounded-2xl p-4 max-w-[80%] shadow-sm">
+                        <p class="text-gray-700">Halo! Saya {{ $name }}, seorang guru bahasa Jerman berumur 28 tahun. Saya siap membantu Anda belajar bahasa Jerman. 😊</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 bg-gray-50 border-t border-gray-100">
+                <form id="chat-form" action="{{ route('ai.askAi') }}" method="POST" class="flex gap-3">
+                    <textarea id="question" name="question" class="flex-1 p-4 rounded-xl border border-purple-200 text-gray-700 focus:outline-none focus:border-purple-400 placeholder-gray-400" placeholder="Type your question..." rows="1"></textarea>
+                    <div class="flex flex-col items-center justify-center space-y-2">
+                        <button type="button" class="gradient-bg btn-submit text-white rounded-xl w-12 h-12 flex items-center justify-center hover:opacity-90 transition-all transform hover:scale-105">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script type="module">
+        $(document).ready(function() {
+            $('.ask-btn').click(function() {
+                if ($('#ask-popup').css('display') === 'flex') {
+                    $('#ask-popup').hide();
+                } else {
+                    $('#ask-popup').css('display', 'flex');
+                }
+            });
+
+            // Textarea handling
+            $('#question').on('keydown', function(e) {
+                if (e.key === 'Enter' && e.shiftKey) {
+                    e.preventDefault();
+                    const cursorPos = this.selectionStart;
+                    const value = this.value;
+                    this.value = value.substring(0, cursorPos) + '\n' + value.substring(cursorPos);
+                    this.selectionStart = cursorPos + 1;
+                    this.selectionEnd = cursorPos + 1;
+                }
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    $('#chat-form .btn-submit').trigger('click');
+                }
+            });
+
+            $('#question').on('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight > 100 ? 100 : (this.scrollHeight + 5)) + 'px';
+            });
+
+            // Initial animation
+            anime({
+                targets: '.bot-message',
+                opacity: [0, 1],
+                translateY: [20, 0],
+                duration: 1200,
+                easing: 'spring(1, 80, 10, 0)'
+            });
+
+            // Form submission
+            $('#chat-form .btn-submit').on('click', function(e) {
+                e.preventDefault();
+                const formData = new FormData($('#chat-form')[0]);
+                const question = $('#question').val().trim();
+                if (!question) return;
+
+                addMessage(question, null, 'user');
+                $('#question').val('');
+
+                $.ajax({
+                    url: $('#chat-form').attr('action'),
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'Accept': 'application/json',
+                    },
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        if (response.success) {
+                            setTimeout(() => {
+                                let data = JSON.parse(response.data);
+                                addMessage(data.answer, data.hint, 'bot');
+                            }, 1000);
+                            $('#conversation').val(response.conversation);
+                            if (response.remaining_dollar !== null) {
+                                if ((response.remaining_dollar * 100) > 0) {
+                                    $('.remaining').text(response.remaining_dollar * 100);
+                                }
+                            }
+                        } else {
+                            alert('Terjadi kesalahan, silakan coba lagi.');
+                        }
+                    },
+                    error: function(error) {
+                        console.error('Error:', error);
+                        alert('Terjadi kesalahan, silakan coba lagi.');
+                    }
+                });
+            });
+
+            function addMessage(text, hint, sender) {
+                const messageHTML = `
+                    <div class="flex items-start ${sender === 'bot' ? '' : 'justify-end'} message opacity-0">
+                        ${sender === 'bot' ? `
+                                                <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
+                                                    <img src="{{ asset('img/' . $name . '.jpg') }}" alt="AI Assistant" class="w-full h-full object-cover">
+                                                </div>
+                                            ` : ''}
+                        <div class="mx-3 ${sender === 'bot' ? 'bg-white text-gray-700' : 'gradient-bg text-white'} rounded-2xl p-4 max-w-[80%] shadow-sm">
+                            ${text}
+                            ${hint ? `<hr class="my-2"><p class="text-sm text-gray-500">${hint}</p>` : ''}
+                        </div>
+                        ${sender === 'user' ? `
+                                                <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                                    <i class="fas fa-user text-gray-500 text-sm"></i>
+                                                </div>
+                                            ` : ''}
+                    </div>
+                `;
+
+                const $messages = $('#chat-messages');
+                $messages.append(messageHTML);
+                $messages.scrollTop($messages[0].scrollHeight);
+
+                anime({
+                    targets: '.message:last-child',
+                    opacity: [0, 1],
+                    translateY: [20, 0],
+                    duration: 1200,
+                    easing: 'spring(1, 80, 10, 0)'
+                });
+            }
+        });
+    </script>
+    <script type="module">
         $(document).ready(function() {
             $(document).on('click', '.eye-toggle', function() {
                 $(this).toggleClass('hidden');
@@ -1328,7 +1520,7 @@
             });
         });
     </script>
-    <script>
+    <script type="module">
         // Tambahkan di bagian inisialisasi
         $(document).ready(function() {
             $('.quiz-type-selection').show();
@@ -1441,7 +1633,7 @@
             }
         });
     </script>
-    <script>
+    <script type="module">
         // Tambahkan di bagian script
         let isListMode = false;
 
@@ -1535,7 +1727,7 @@
             if (exampleTime) {
                 var scrollPosition = $(document).scrollTop();
                 console.log(scrollPosition)
-                $('#exampleModal').addClass('show').css('padding-top', (scrollPosition + 100)+'px');
+                $('#exampleModal').addClass('show').css('padding-top', (scrollPosition + 100) + 'px');
                 let germanWord = $(this).parents('tr').find('td').eq(1).html()
                 let exampleText = $(this).parents('tr').find('td').eq(3).html()
                 let example_bahasa = $(this).parents('tr').find('td').eq(4).html()
@@ -1706,7 +1898,7 @@
             $('.indonesian-word').removeClass('revealed');
         }
     </script>
-    <script>
+    <script type="module">
         $(document).ready(function() {
             // Speech synthesis
             const synth = window.speechSynthesis;
@@ -1793,7 +1985,7 @@
         });
     </script>
 
-    <script>
+    <script type="module">
         let currentIndex = 0;
         const totalCards = document.querySelectorAll('.card').length;
         let showFavoritesOnly = false;
@@ -2393,7 +2585,7 @@
         updateProgressBar('normal');
         showCard(0);
     </script>
-    <script>
+    <script type="module">
         // Speech functionality
         $(document).ready(function() {
             const synth = window.speechSynthesis;
@@ -2431,7 +2623,7 @@
             });
         });
     </script>
-    <script>
+    <script type="module">
         window.speechSynthesis.onvoiceschanged = function() {
             const voices = window.speechSynthesis.getVoices();
             // console.log('Daftar Suara Tersedia:')
@@ -2448,7 +2640,7 @@
             // alert(text)
         };
     </script>
-    <script>
+    <script type="module">
         // Script untuk audio functionality
         document.addEventListener('DOMContentLoaded', function() {
             // Add these variables at the top of your script
