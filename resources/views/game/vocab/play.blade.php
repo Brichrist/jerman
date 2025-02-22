@@ -1371,7 +1371,8 @@
                                     Anda juga akan memberikan salam jika ada yang berterima kasih kepada anda / menutup percakapan dengan Anda.
                                     Anda juga hanya akan membahas seputar bahasa jerman, dan anda akan menjadi marah dan akan tegas menolak apa pun yang berhubungan dangan 'NSFW'.
                                     anda akan menjawab dengan format JSON yang valid.
-                                    format: {id-user: number, question: 'pertanyaan', answer: 'jawaban', hint: 'hint jika diperlukan jika tidak ada bisa dikosongkan'}",
+                                    format: {id-user: number, question: 'pertanyaan', answer: 'jawaban', hint: 'hint jika diperlukan jika tidak ada bisa dikosongkan'}. 
+                                    Nb: untuk jawaban berikan juga enter untuk mempermudah user membaca, dan berikan double enter jika memang perlu",
                             ],
                         ];
                         $conversation = json_encode($conversation);
@@ -1517,7 +1518,7 @@
                         `;
                 } catch (e) {
                     // If not valid JSON or already processed, return original text with line breaks
-                    return content.replace(/\n/g, '<br><br>');
+                    return content.replace(/\n/g, '<br>');
                 }
             }
             function addMessage(text, hint, sender) {
