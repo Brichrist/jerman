@@ -1327,7 +1327,9 @@
             <a href="{{ url()->current() }}?kapital={{ request('kapital') }}&use_favorites={{ request('use_favorites') }}&language={{ request('language') }}&same=true">shuffle</a>
         </div>
     </div>
-    <button class="ask-btn">AI</button>
+    @if (auth()->user()->role == 'owner')
+        <button class="ask-btn">AI</button>
+    @endif
     <div id="ask-popup" style="z-index:1; display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); justify-content:center; align-items:center;">
         <div class="flex-1 max-w-2xl mx-auto w-full bg-white rounded-2xl shadow-xl flex flex-col my-4 overflow-hidden">
             <div class="gradient-bg p-6 flex items-center">
@@ -1456,19 +1458,19 @@
                 const messageHTML = `
                     <div class="flex items-start ${sender === 'bot' ? '' : 'justify-end'} message opacity-0">
                         ${sender === 'bot' ? `
-                                                <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
-                                                    <img src="{{ asset('img/' . $name . '.jpg') }}" alt="AI Assistant" class="w-full h-full object-cover">
-                                                </div>
-                                            ` : ''}
+                                                    <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
+                                                        <img src="{{ asset('img/' . $name . '.jpg') }}" alt="AI Assistant" class="w-full h-full object-cover">
+                                                    </div>
+                                                ` : ''}
                         <div class="mx-3 ${sender === 'bot' ? 'bg-white text-gray-700' : 'gradient-bg text-white'} rounded-2xl p-4 max-w-[80%] shadow-sm">
                             ${text}
                             ${hint ? `<hr class="my-2"><p class="text-sm text-gray-500">${hint}</p>` : ''}
                         </div>
                         ${sender === 'user' ? `
-                                                <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                                                    <i class="fas fa-user text-gray-500 text-sm"></i>
-                                                </div>
-                                            ` : ''}
+                                                    <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                                        <i class="fas fa-user text-gray-500 text-sm"></i>
+                                                    </div>
+                                                ` : ''}
                     </div>
                 `;
 
