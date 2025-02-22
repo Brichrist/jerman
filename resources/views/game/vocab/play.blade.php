@@ -1058,7 +1058,7 @@
     <div class="container" data-aos="fade-up">
         <div class="progress-bar"></div>
         <div>
-            <button class="favorite-only" id="toggleFavoriteBtn">Show Favorites Only &#10084;</button>
+            <button class="favorite-only" id="toggleFavoriteBtn">Show Favorites Only ❤</button>
             <div class="score">0/{{ count($vocabularies) }}</div>
         </div>
         <div class="control-buttons">
@@ -1139,7 +1139,7 @@
                 </div>
                 <div class="setting-favorite">
                     <button class="fav-button" id="favoriteAudioBtn">
-                        <span class="favorite-emote">&#10084;</span>
+                        <span class="favorite-emote">❤</span>
                     </button>
                 </div>
 
@@ -1215,7 +1215,7 @@
                     <div class="german-word floating">
                         {{ $text1 }}
                         @if ($vocabulary->linkfavorite->count() > 0)
-                            <span class="favorite-emote  @if (($vocabulary->linkfavorite[0]->level ?? null) == 2) black @endif ">&#10084;</span>
+                            <span class="favorite-emote  @if (($vocabulary->linkfavorite[0]->level ?? null) == 2) black @endif ">❤</span>
                         @endif
                     </div>
                     <div class="indonesian-word">{{ $text2 }}</div>
@@ -1255,7 +1255,7 @@
                             <td style="word-wrap: break-word" class="german-column {{ $vocabulary->linkfavorite->count() > 0 ? 'favorite' : '' }}" data-id="{{ $vocabulary->id }}">
                                 {{ $vocabulary->german_word }}
                                 @if ($vocabulary->linkfavorite->count() > 0)
-                                    <span class="favorite-emote @if (($vocabulary->linkfavorite[0]->level ?? null) == 2) black @endif ">&#10084;</span>
+                                    <span class="favorite-emote @if (($vocabulary->linkfavorite[0]->level ?? null) == 2) black @endif ">❤</span>
                                 @endif
                             </td>
                             <td style="word-wrap: break-word" class="meaning">{{ $vocabulary->meaning }}</td>
@@ -1272,7 +1272,7 @@
                 <span class="button-text">🔊</span>
             </button>
             <button id="favoriteBtn" data-aos-delay="400">
-                <span class="button-text">&#10084;</span>
+                <span class="button-text">❤</span>
             </button>
             <button id="revealBtn" data-aos-delay="200">
                 <span class="button-text">Reveal</span>
@@ -1341,14 +1341,14 @@
 
             if (isIndonesianMode) {
                 // Jika mode indo, text1 adalah bahasa Indonesia, text2 adalah bahasa Jerman
-                currentMeaning = $('.card:visible .german-word').text().replace('&#10084;', '').trim();
+                currentMeaning = $('.card:visible .german-word').text().replace('❤', '').trim();
                 currentWord = $('.card:visible .indonesian-word').text().trim();
                 // Isi form sesuai bahasa
                 $('#editGerman').val(currentMeaning); // text2 jika indo mode
                 $('#editIndonesian').val(currentWord); // text1 jika indo mode
             } else {
                 // Jika mode german, text1 adalah bahasa Jerman, text2 adalah bahasa Indonesia
-                currentWord = $('.card:visible .german-word').text().replace('&#10084;', '').trim();
+                currentWord = $('.card:visible .german-word').text().replace('❤', '').trim();
                 currentMeaning = $('.card:visible .indonesian-word').text().trim();
                 // Isi form sesuai bahasa
                 $('#editGerman').val(currentWord); // text2 jika indo mode
@@ -1392,7 +1392,7 @@
                 success: function(response) {
                     if (response.success) {
                         let targetCard = $('.card:visible');
-                        let isFavorite = targetCard.find('.favorite-emote').length ? (targetCard.find('.favorite-emote.black').length ? '<span class="favorite-emote black">&#10084;</span>' : '<span class="favorite-emote">&#10084;</span>') : '';
+                        let isFavorite = targetCard.find('.favorite-emote').length ? (targetCard.find('.favorite-emote.black').length ? '<span class="favorite-emote black">❤</span>' : '<span class="favorite-emote">❤</span>') : '';
 
                         // Update UI berdasarkan mode bahasa
                         if (isIndonesianMode) {
@@ -1599,7 +1599,7 @@
         });
 
         function sendFavoriteRequestList(data, target, cell) {
-            let germanWord = target.text().replace('&#10084;', '').replace("\n", '').trim();
+            let germanWord = target.text().replace('❤', '').replace("\n", '').trim();
 
             $.ajax({
                 url: '/vocab/favorite',
@@ -1617,7 +1617,7 @@
 
                     if (response.action == 'add') {
                         // Update card mode
-                        target.append(`<span class="favorite-emote">&#10084;</span>`);
+                        target.append(`<span class="favorite-emote">❤</span>`);
 
                         // Jika response level = 2, set color: unset
                         if (response.level === 2) {
@@ -1630,7 +1630,7 @@
                             listCell = listCell.siblings('.german-column');
                         }
                         listCell.addClass('favorite');
-                        listCell.append(`<span class="favorite-emote">&#10084;</span>`);
+                        listCell.append(`<span class="favorite-emote">❤</span>`);
 
                         // Set color: unset juga di list mode
                         if (response.level === 2) {
@@ -2088,7 +2088,7 @@
         });
 
         function sendFavoriteRequestAudio(data, target, button) {
-            let germanWord = target.text().replace('&#10084;', '').replace("\n", '').trim();
+            let germanWord = target.text().replace('❤', '').replace("\n", '').trim();
 
             $.ajax({
                 url: '/vocab/favorite',
@@ -2120,7 +2120,7 @@
 
                     if (response.action == 'add') {
                         // Update card mode
-                        target.append(`<span class="favorite-emote">&#10084;</span>`);
+                        target.append(`<span class="favorite-emote">❤</span>`);
 
                         // Jika response level = 2, set color: unset
                         if (response.level === 2) {
@@ -2133,7 +2133,7 @@
                             listCell = listCell.siblings('.german-column');
                         }
                         listCell.addClass('favorite');
-                        listCell.append(`<span class="favorite-emote">&#10084;</span>`);
+                        listCell.append(`<span class="favorite-emote">❤</span>`);
 
                         // Set color: unset juga di list mode
                         if (response.level === 2) {
@@ -2175,7 +2175,7 @@
         //         _token: '{{ csrf_token() }}'
         //     };
         //     let target = $('.card:visible .german-word');
-        //     let germanWord = target.text().replace('&#10084;', '').replace("\n", '').trim();
+        //     let germanWord = target.text().replace('❤', '').replace("\n", '').trim();
 
 
         //     $.ajax({
@@ -2190,7 +2190,7 @@
         //             }, 1000);
         //             if (response.action == 'add') {
         //                 // Update di card mode
-        //                 target.append(`<span class="favorite-emote">&#10084;</span>`);
+        //                 target.append(`<span class="favorite-emote">❤</span>`);
 
         //                 // Update di list mode
         //                 let listCell = $(`.list-mode td:contains('${germanWord}')`);
@@ -2198,7 +2198,7 @@
         //                     listCell = listCell.siblings('.german-column');
         //                 }
         //                 listCell.addClass('favorite');
-        //                 listCell.append(`<span class="favorite-emote">&#10084;</span>`);
+        //                 listCell.append(`<span class="favorite-emote">❤</span>`);
         //             } else {
         //                 // Update di card mode
         //                 target.find('.favorite-emote').remove();
@@ -2286,7 +2286,7 @@
 
         function sendFavoriteRequest(data) {
             let target = $('.card:visible .german-word');
-            let germanWord = target.text().replace('&#10084;', '').replace("\n", '').trim();
+            let germanWord = target.text().replace('❤', '').replace("\n", '').trim();
 
             $.ajax({
                 url: '/vocab/favorite',
@@ -2306,7 +2306,7 @@
 
                     if (response.action == 'add') {
                         // Update card mode
-                        target.append(`<span class="favorite-emote">&#10084;</span>`);
+                        target.append(`<span class="favorite-emote">❤</span>`);
 
                         // Jika response level = 2, set color: unset
                         if (response.level === 2) {
@@ -2319,7 +2319,7 @@
                             listCell = listCell.siblings('.german-column');
                         }
                         listCell.addClass('favorite');
-                        listCell.append(`<span class="favorite-emote">&#10084;</span>`);
+                        listCell.append(`<span class="favorite-emote">❤</span>`);
 
                         // Set color: unset juga di list mode
                         if (response.level === 2) {
@@ -2373,7 +2373,7 @@
                     holdvoice = true
 
                     // Get the text to speak (remove the heart emoji if present)
-                    let textToSpeak = $('.card:visible .german-vocab').text().replace('&#10084;', '').trim();
+                    let textToSpeak = $('.card:visible .german-vocab').text().replace('❤', '').trim();
 
                     // Create a new speech utterance
                     const utterance = new SpeechSynthesisUtterance(textToSpeak);
@@ -2620,7 +2620,7 @@
                 updateRowState(row, 'reading');
                 currentRow = row;
 
-                const germanText = row.cells[1].textContent.replace('&#10084;', '').trim();
+                const germanText = row.cells[1].textContent.replace('❤', '').trim();
                 const indoText = row.cells[2].textContent.trim();
                 const exampleText = row.cells[3]?.textContent.trim();
                 const example_bahasa = row.cells[4]?.textContent.trim();
