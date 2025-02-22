@@ -1364,6 +1364,7 @@
                         <button type="button" class="gradient-bg btn-submit text-white rounded-xl w-12 h-12 flex items-center justify-center hover:opacity-90 transition-all transform hover:scale-105">
                             <i class="fas fa-paper-plane"></i>
                         </button>
+                        <p class="text-xs whitespace-nowrap">sisa token: <span class="remaining">{{ auth()->user()->token ? auth()->user()->token * 100 : '∞' }}</span></p>
                     </div>
                 </form>
             </div>
