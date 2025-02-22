@@ -1168,8 +1168,8 @@
                     </div>
                 </div>
                 <div class="setting-favorite">
-                    <button class="fav-button" id="favoriteAudioBtn">
-                        <span class="favorite-emote">❤</span>
+                    <button class="fav-button max-w-20" id="favoriteAudioBtn">
+                        <span class="favorite-emote" style="margin: 0">❤</span>
                     </button>
                 </div>
 
