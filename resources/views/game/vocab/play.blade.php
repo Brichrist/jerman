@@ -1768,9 +1768,11 @@
             } else {
                 $(this).addClass('hidden-cell');
             }
-            setTimeout(() => {
-                exampleTime = false
-            }, 200);
+            if (!exampleTime) {
+                setTimeout(() => {
+                    exampleTime = false
+                }, 200);
+            }
         });
         let pressTimerList;
         let isPressingList = false;
