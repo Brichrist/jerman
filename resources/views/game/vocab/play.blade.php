@@ -577,6 +577,8 @@
         .audio-modal-content {
             background: white;
             border-radius: 24px;
+            overflow-y: auto;
+            max-height: 90vh;
             width: 90%;
             max-width: 420px;
             padding: 2rem;
@@ -1363,8 +1365,7 @@
                         $conversation = [
                             [
                                 'role' => 'system',
-                                'content' =>
-                                    "Anda adalah guru bahasa Jerman ' {{ $name }}' berumur 28 tahun yang mengajar murid dari Indonesia. Anda suka mendapat pertanyaan dari anak-anak, 
+                                'content' => "Anda adalah guru bahasa Jerman ' {{ $name }}' berumur 28 tahun yang mengajar murid dari Indonesia. Anda suka mendapat pertanyaan dari anak-anak, 
                                     dan akan menjelaskan secara simpel dan mudah dipahami oleh orang dengan IQ minimal 90. 
                                     Anda akan memberikan jawaban yang benar dan memberikan hint jika diperlukan. bahasa pengantar anda adalah bahasa Indonesia, 
                                     Anda juga akan memberikan salam jika ada yang berterima kasih kepada anda / menutup percakapan dengan Anda.
@@ -1480,19 +1481,19 @@
                 const messageHTML = `
                     <div class="flex items-start ${sender === 'bot' ? '' : 'justify-end'} message opacity-0">
                         ${sender === 'bot' ? `
-                                                        <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
-                                                            <img src="{{ asset('img/' . $name . '.jpg') }}" alt="AI Assistant" class="w-full h-full object-cover">
-                                                        </div>
-                                                    ` : ''}
+                                                            <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
+                                                                <img src="{{ asset('img/' . $name . '.jpg') }}" alt="AI Assistant" class="w-full h-full object-cover">
+                                                            </div>
+                                                        ` : ''}
                         <div class="mx-3 ${sender === 'bot' ? 'bg-white text-gray-700' : 'gradient-bg text-white'} rounded-2xl p-4 max-w-[80%] shadow-sm">
                             ${text}
                             ${hint ? `<hr class="my-2"><p class="text-sm text-gray-500">${hint}</p>` : ''}
                         </div>
                         ${sender === 'user' ? `
-                                                        <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                                                            <i class="fas fa-user text-gray-500 text-sm"></i>
-                                                        </div>
-                                                    ` : ''}
+                                                            <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                                                <i class="fas fa-user text-gray-500 text-sm"></i>
+                                                            </div>
+                                                        ` : ''}
                     </div>
                 `;
 
@@ -1509,8 +1510,7 @@
                 });
             }
         });
-    </script>
-    <script type="module">
+  
         $(document).ready(function() {
             $(document).on('click', '.eye-toggle', function() {
                 $(this).toggleClass('hidden');
@@ -1543,8 +1543,7 @@
                 }, 50);
             });
         });
-    </script>
-    <script type="module">
+  
         // Tambahkan di bagian inisialisasi
         $(document).ready(function() {
             $('.quiz-type-selection').show();
@@ -1656,8 +1655,7 @@
                 $(this).hide();
             }
         });
-    </script>
-    <script type="module">
+   
         // Tambahkan di bagian script
         let isListMode = false;
 
@@ -1915,14 +1913,6 @@
         }
 
         // Modifikasi fungsi showCard
-        function showCard(index) {
-            if (isListMode) return;
-            $('.card').hide();
-            $(`.card[data-index="${index}"]`).show();
-            $('.indonesian-word').removeClass('revealed');
-        }
-    </script>
-    <script type="module">
         $(document).ready(function() {
             // Speech synthesis
             const synth = window.speechSynthesis;
@@ -2007,9 +1997,7 @@
                 e.stopPropagation();
             });
         });
-    </script>
-
-    <script type="module">
+  
         let currentIndex = 0;
         const totalCards = document.querySelectorAll('.card').length;
         let showFavoritesOnly = false;
@@ -2187,6 +2175,7 @@
         }
 
         function showCard(index) {
+            if (isListMode) return;
             $('.card').hide();
             $(`.card[data-index="${index}"]`).show();
             $('.indonesian-word').removeClass('revealed');
@@ -2613,8 +2602,7 @@
         });
         updateProgressBar('normal');
         showCard(0);
-    </script>
-    <script type="module">
+ 
         // Speech functionality
         $(document).ready(function() {
             const synth = window.speechSynthesis;
@@ -2651,8 +2639,7 @@
 
             });
         });
-    </script>
-    <script type="module">
+   
         window.speechSynthesis.onvoiceschanged = function() {
             const voices = window.speechSynthesis.getVoices();
             // console.log('Daftar Suara Tersedia:')
@@ -2668,8 +2655,7 @@
             });
             // alert(text)
         };
-    </script>
-    <script type="module">
+  
         // Script untuk audio functionality
         document.addEventListener('DOMContentLoaded', function() {
             // Add these variables at the top of your script
