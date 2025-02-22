@@ -577,8 +577,6 @@
         .audio-modal-content {
             background: white;
             border-radius: 24px;
-            overflow-y: auto;
-            max-height: 90vh;
             width: 90%;
             max-width: 420px;
             padding: 2rem;
@@ -1092,121 +1090,122 @@
 </head>
 
 <body>
-    <div class="score-modal" id="scoreModal">
-        <div class="score-modal-content">
-            <button class="score-modal-close" id="closeScoreModal">✕</button>
-            <div class="audio-modal-header">
-                <h2 class="audio-modal-title">Go to Number</h2>
-            </div>
-            <input type="number" class="score-input" id="scoreInput" min="1" placeholder="Enter number">
-            <button class="score-btn" id="goToScore">Go</button>
-        </div>
-    </div>
-    <div class="audio-modal" id="audioModal">
-        <div class="audio-modal-content">
-            <button class="audio-modal-close" id="closeAudioModal">✕</button>
-            <div class="audio-modal-header">
-                <h2 class="audio-modal-title">Audio Settings</h2>
-                <p class="audio-modal-subtitle">jika suara yang di hasilkan jelek (khususnya HP). coba lihat petunjuk penggunaan <a href="https://jerman.suralaya.web.id/forum-chat/1" target="_blank">di link ini</a> no 11</p>
-            </div>
-
-            <div class="audio-settings-group">
-                <div class="setting-item">
-                    <label class="setting-label">Speech Rate</label>
-                    <div class="setting-value">
-                        <input type="range" id="rateSlider" class="range-slider" min="0.5" max="1.5" step="0.1" value="1">
-                        <span class="range-value" id="rateValue">1.0x</span>
-                    </div>
-                </div>
-
-                <div class="setting-item">
-                    <label class="setting-label">Pause</label>
-                    <div class="setting-value">
-                        <input type="range" id="pauseSlider" class="range-slider" min="1" max="8" step="0.1" value="2">
-                        <span class="range-value" id="pauseValue">2x</span>
-                    </div>
-                </div>
-                <div class="setting-item">
-                    <label class="setting-label">Conversation Distance</label>
-                    <div class="setting-value">
-                        <input type="range" id="distanceSlider" class="range-slider" min="1" max="4" step="0.1" value="1">
-                        <span class="range-value" id="distanceValue">1x</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="setting-item">
-                <label class="setting-label">What to read?</label>
-                <div class="option-group">
-                    <button class="option-button active" data-option="german">German</button>
-                    <button class="option-button" data-option="indonesia">Bahasa</button>
-                    <button class="option-button" data-option="example">Example</button>
-                    <button class="option-button" data-option="example_bahasa">Example (Bahasa)</button>
-                </div>
-            </div>
-
-            <div class="audio-preview-group">
-                <div class="preview-item">
-                    <span class="number"></span>
-                </div>
-                <div class="preview-item">
-                    <span class="jerman lg"></span>
-                    <hr>
-                    <div class="indo-container">
-                        <span class="eye-toggle">👁️</span>
-                        <span class="indo lg"></span>
-                    </div>
-                    {{-- <span class="indo lg"></span> --}}
-                </div>
-                <br>
-                <div class="preview-item">
-                    <span class="sample"></span>
-                </div>
-                <div class="preview-item">
-                    <span class="sample-indo"></span>
-                </div>
-            </div>
-            <div class="setting-favorite">
-                <button class="fav-button" id="favoriteAudioBtn">
-                    <span class="favorite-emote">❤</span>
-                </button>
-            </div>
-
-            <div class="setting-item">
-                <label class="setting-label">Start from number</label>
-                <div class="setting-value">
-                    <input type="number" id="startNumber" class="start-number-input" min="1" placeholder="Enter start number">
-                </div>
-                <div class="setting-error" id="numberError">Please enter a valid number between 1 and total words</div>
-            </div>
-            <button class="start-button" id="startAudio">
-                Start Reading ▶
-            </button>
-            <div class="control-buttons-container" id="controlButtons">
-                <button class="restart-button" id="restartButton">From 0</button>
-                <button class="restart-from-button" id="restartFromNumber">Start from</button>
-                <button class="resume-button" id="resumeButton">Resume ▶</button>
-            </div>
-        </div>
-    </div>
-    <div class="example-modal" id="exampleModal">
-        <div class="example-modal-content">
-            <button class="example-modal-close" id="closeExampleModal">✕</button>
-            <div class="example-content">
-                <h2>Example</h2>
-                <div class="example-list">
-                    <ul>
-                        <li><strong class="word"></strong></li>
-                        <li class="example"></li>
-                        <li class="example_bahasa"></li>
-                    </ul>
-                </div>
-                <div class="example-speaker">🔊</div>
-            </div>
-        </div>
-    </div>
     <div class="container" data-aos="fade-up">
         <div class="progress-bar"></div>
+
+        <div class="score-modal" id="scoreModal">
+            <div class="score-modal-content">
+                <button class="score-modal-close" id="closeScoreModal">✕</button>
+                <div class="audio-modal-header">
+                    <h2 class="audio-modal-title">Go to Number</h2>
+                </div>
+                <input type="number" class="score-input" id="scoreInput" min="1" placeholder="Enter number">
+                <button class="score-btn" id="goToScore">Go</button>
+            </div>
+        </div>
+        <div class="audio-modal" id="audioModal">
+            <div class="audio-modal-content">
+                <button class="audio-modal-close" id="closeAudioModal">✕</button>
+                <div class="audio-modal-header">
+                    <h2 class="audio-modal-title">Audio Settings</h2>
+                    <p class="audio-modal-subtitle">jika suara yang di hasilkan jelek (khususnya HP). coba lihat petunjuk penggunaan <a href="https://jerman.suralaya.web.id/forum-chat/1" target="_blank">di link ini</a> no 11</p>
+                </div>
+
+                <div class="audio-settings-group">
+                    <div class="setting-item">
+                        <label class="setting-label">Speech Rate</label>
+                        <div class="setting-value">
+                            <input type="range" id="rateSlider" class="range-slider" min="0.5" max="1.5" step="0.1" value="1">
+                            <span class="range-value" id="rateValue">1.0x</span>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <label class="setting-label">Pause</label>
+                        <div class="setting-value">
+                            <input type="range" id="pauseSlider" class="range-slider" min="1" max="8" step="0.1" value="2">
+                            <span class="range-value" id="pauseValue">2x</span>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <label class="setting-label">Conversation Distance</label>
+                        <div class="setting-value">
+                            <input type="range" id="distanceSlider" class="range-slider" min="1" max="4" step="0.1" value="1">
+                            <span class="range-value" id="distanceValue">1x</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <label class="setting-label">What to read?</label>
+                    <div class="option-group">
+                        <button class="option-button active" data-option="german">German</button>
+                        <button class="option-button" data-option="indonesia">Bahasa</button>
+                        <button class="option-button" data-option="example">Example</button>
+                        <button class="option-button" data-option="example_bahasa">Example (Bahasa)</button>
+                    </div>
+                </div>
+
+                <div class="audio-preview-group">
+                    <div class="preview-item">
+                        <span class="number"></span>
+                    </div>
+                    <div class="preview-item">
+                        <span class="jerman lg"></span>
+                        <hr>
+                        <div class="indo-container">
+                            <span class="eye-toggle">👁️</span>
+                            <span class="indo lg"></span>
+                        </div>
+                        {{-- <span class="indo lg"></span> --}}
+                    </div>
+                    <br>
+                    <div class="preview-item">
+                        <span class="sample"></span>
+                    </div>
+                    <div class="preview-item">
+                        <span class="sample-indo"></span>
+                    </div>
+                </div>
+                <div class="setting-favorite">
+                    <button class="fav-button" id="favoriteAudioBtn">
+                        <span class="favorite-emote">❤</span>
+                    </button>
+                </div>
+
+                <div class="setting-item">
+                    <label class="setting-label">Start from number</label>
+                    <div class="setting-value">
+                        <input type="number" id="startNumber" class="start-number-input" min="1" placeholder="Enter start number">
+                    </div>
+                    <div class="setting-error" id="numberError">Please enter a valid number between 1 and total words</div>
+                </div>
+                <button class="start-button" id="startAudio">
+                    Start Reading ▶
+                </button>
+                <div class="control-buttons-container" id="controlButtons">
+                    <button class="restart-button" id="restartButton">From 0</button>
+                    <button class="restart-from-button" id="restartFromNumber">Start from</button>
+                    <button class="resume-button" id="resumeButton">Resume ▶</button>
+                </div>
+            </div>
+        </div>
+        <div class="example-modal" id="exampleModal">
+            <div class="example-modal-content">
+                <button class="example-modal-close" id="closeExampleModal">✕</button>
+                <div class="example-content">
+                    <h2>Example</h2>
+                    <div class="example-list">
+                        <ul>
+                            <li><strong class="word"></strong></li>
+                            <li class="example"></li>
+                            <li class="example_bahasa"></li>
+                        </ul>
+                    </div>
+                    <div class="example-speaker">🔊</div>
+                </div>
+            </div>
+        </div>
         <div>
             <button class="favorite-only" id="toggleFavoriteBtn">Show Favorites Only ❤</button>
             <div class="score">0/{{ count($vocabularies) }}</div>
@@ -1330,9 +1329,6 @@
             <a href="{{ url()->current() }}?kapital={{ request('kapital') }}&use_favorites={{ request('use_favorites') }}&language={{ request('language') }}&same=true">shuffle</a>
         </div>
     </div>
-    @if (auth()->user()->role == 'owner')
-        <button class="ask-btn">AI</button>
-    @endif
     <div id="ask-popup" style="z-index:1; display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); justify-content:center; align-items:center;">
         <div class="modal flex-1 max-w-xs md:max-w-2xl mx-auto w-full bg-white rounded-2xl shadow-xl flex flex-col my-4 overflow-hidden">
             <div class="gradient-bg p-6 flex items-center">
@@ -1388,6 +1384,10 @@
             </div>
         </div>
     </div>
+    @if (auth()->user()->role == 'owner')
+        <button class="ask-btn">AI</button>
+    @endif
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <script type="module">
@@ -1481,19 +1481,19 @@
                 const messageHTML = `
                     <div class="flex items-start ${sender === 'bot' ? '' : 'justify-end'} message opacity-0">
                         ${sender === 'bot' ? `
-                                                            <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
-                                                                <img src="{{ asset('img/' . $name . '.jpg') }}" alt="AI Assistant" class="w-full h-full object-cover">
-                                                            </div>
-                                                        ` : ''}
+                                                                    <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
+                                                                        <img src="{{ asset('img/' . $name . '.jpg') }}" alt="AI Assistant" class="w-full h-full object-cover">
+                                                                    </div>
+                                                                ` : ''}
                         <div class="mx-3 ${sender === 'bot' ? 'bg-white text-gray-700' : 'gradient-bg text-white'} rounded-2xl p-4 max-w-[80%] shadow-sm">
                             ${text}
                             ${hint ? `<hr class="my-2"><p class="text-sm text-gray-500">${hint}</p>` : ''}
                         </div>
                         ${sender === 'user' ? `
-                                                            <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                                                                <i class="fas fa-user text-gray-500 text-sm"></i>
-                                                            </div>
-                                                        ` : ''}
+                                                                    <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                                                        <i class="fas fa-user text-gray-500 text-sm"></i>
+                                                                    </div>
+                                                                ` : ''}
                     </div>
                 `;
 
@@ -1510,7 +1510,7 @@
                 });
             }
         });
-  
+
         $(document).ready(function() {
             $(document).on('click', '.eye-toggle', function() {
                 $(this).toggleClass('hidden');
@@ -1543,7 +1543,7 @@
                 }, 50);
             });
         });
-  
+
         // Tambahkan di bagian inisialisasi
         $(document).ready(function() {
             $('.quiz-type-selection').show();
@@ -1655,7 +1655,7 @@
                 $(this).hide();
             }
         });
-   
+
         // Tambahkan di bagian script
         let isListMode = false;
 
@@ -1997,7 +1997,7 @@
                 e.stopPropagation();
             });
         });
-  
+
         let currentIndex = 0;
         const totalCards = document.querySelectorAll('.card').length;
         let showFavoritesOnly = false;
@@ -2602,7 +2602,7 @@
         });
         updateProgressBar('normal');
         showCard(0);
- 
+
         // Speech functionality
         $(document).ready(function() {
             const synth = window.speechSynthesis;
@@ -2639,7 +2639,7 @@
 
             });
         });
-   
+
         window.speechSynthesis.onvoiceschanged = function() {
             const voices = window.speechSynthesis.getVoices();
             // console.log('Daftar Suara Tersedia:')
@@ -2655,7 +2655,7 @@
             });
             // alert(text)
         };
-  
+
         // Script untuk audio functionality
         document.addEventListener('DOMContentLoaded', function() {
             // Add these variables at the top of your script
