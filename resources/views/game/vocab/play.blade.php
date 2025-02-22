@@ -1480,23 +1480,64 @@
                 });
             });
 
+            function formatJSONContent(content) {
+                try {
+                    // If content is already an object, use it directly
+                    const jsonData = typeof content === 'string' ? JSON.parse(content) : content;
+
+                    // Function to create HTML for nested objects
+                    function createJSONView(obj, level = 0) {
+                        const padding = 20; // pixels of padding per level
+                        let html = '';
+
+                        Object.entries(obj).forEach(([key, value]) => {
+                            const indent = level * padding;
+                            const isObject = value !== null && typeof value === 'object';
+
+                            html += `
+                                    <div class="json-row" style="padding-left: ${indent}px">
+                                        <span class="font-semibold text-blue-600 dark:text-blue-400">${key}</span>
+                                        ${isObject ? ':' : `: <span class="text-gray-800 dark:text-gray-200">${value}</span>`}
+                                    </div>
+                                `;
+
+                            if (isObject) {
+                                html += createJSONView(value, level + 1);
+                            }
+                        });
+
+                        return html;
+                    }
+
+                    return `
+                            <div class="json-viewer bg-gray-50 dark:bg-gray-800 rounded p-3 font-mono text-sm overflow-x-auto">
+                                ${createJSONView(jsonData)}
+                            </div>
+                        `;
+                } catch (e) {
+                    // If not valid JSON or already processed, return original text with line breaks
+                    return content.replace(/\n/g, '<br><br>');
+                }
+            }
             function addMessage(text, hint, sender) {
+
+                const formattedContent = formatJSONContent(text);
                 const messageHTML = `
                     <div class="flex items-start ${sender === 'bot' ? '' : 'justify-end'} message opacity-0">
                         ${sender === 'bot' ? `
-                                                    <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
-                                                        <img src="{{ asset('img/' . $name . '.jpg') }}" alt="AI Assistant" class="w-full h-full object-cover">
-                                                    </div>
-                                                ` : ''}
+                                                        <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
+                                                            <img src="{{ asset('img/' . $name . '.jpg') }}" alt="AI Assistant" class="w-full h-full object-cover">
+                                                        </div>
+                                                    ` : ''}
                         <div class="mx-3 ${sender === 'bot' ? 'bg-white text-gray-700' : 'gradient-bg text-white'} rounded-2xl p-4 max-w-[80%] shadow-sm">
-                            ${text}
+                                ${formattedContent}
                             ${hint ? `<hr class="my-2"><p class="text-sm text-gray-500">${hint}</p>` : ''}
                         </div>
                         ${sender === 'user' ? `
-                                                <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                                                    <i class="fas fa-user text-gray-500 text-sm"></i>
-                                                </div>
-                                            ` : ''}
+                                                    <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                                        <i class="fas fa-user text-gray-500 text-sm"></i>
+                                                    </div>
+                                                ` : ''}
                     </div>
                 `;
 
