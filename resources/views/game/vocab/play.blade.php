@@ -1218,7 +1218,7 @@
             <button id="listModeBtn">List Mode</button>
             <button id="playAudio" style="display: none">Play Audio</button>
         </div>
-      
+
         <div class="edit-form" style="display: none;">
             <div class="edit-overlay">
                 <form id="editForm">
@@ -1349,7 +1349,6 @@
             <div id="chat-messages" class="flex-1 p-6 space-y-6 overflow-y-auto bg-gray-50" style="max-height: 45vh;">
                 <div class="flex items-start bot-message opacity-0">
                     <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
-
                         <img src="{{ asset('img/' . $name . '.jpg') }}" alt="Robot" class="w-full h-full object-cover">
                     </div>
                     <div class="ml-3 bg-white rounded-2xl p-4 max-w-[80%] shadow-sm">
@@ -1360,6 +1359,23 @@
 
             <div class="p-4 bg-gray-50 border-t border-gray-100">
                 <form id="chat-form" action="{{ route('ai.askAi') }}" method="POST" class="flex gap-3">
+                    @php
+                        $conversation = [
+                            [
+                                'role' => 'system',
+                                'content' =>
+                                    "Anda adalah guru bahasa Jerman ' {{ $name }}' berumur 28 tahun yang mengajar murid dari Indonesia. Anda suka mendapat pertanyaan dari anak-anak, 
+                                    dan akan menjelaskan secara simpel dan mudah dipahami oleh orang dengan IQ minimal 90. 
+                                    Anda akan memberikan jawaban yang benar dan memberikan hint jika diperlukan. bahasa pengantar anda adalah bahasa Indonesia, 
+                                    Anda juga akan memberikan salam jika ada yang berterima kasih kepada anda / menutup percakapan dengan Anda.
+                                    Anda juga hanya akan membahas seputar bahasa jerman, dan anda akan menjadi marah dan akan tegas menolak apa pun yang berhubungan dangan 'NSFW'.
+                                    anda akan menjawab dengan format JSON yang valid.
+                                    format: {id-user: number, question: 'pertanyaan', answer: 'jawaban', hint: 'hint jika diperlukan jika tidak ada bisa dikosongkan'}",
+                            ],
+                        ];
+                        $conversation = json_encode($conversation);
+                    @endphp
+                    <input type="hidden" name="conversation" id="conversation" value="{{ $conversation }}">
                     <textarea id="question" name="question" class="flex-1 p-4 rounded-xl border border-purple-200 text-gray-700 focus:outline-none focus:border-purple-400 placeholder-gray-400" placeholder="Type your question..." rows="1"></textarea>
                     <div class="flex flex-col items-center justify-center space-y-2">
                         <button type="button" class="gradient-bg btn-submit text-white rounded-xl w-12 h-12 flex items-center justify-center hover:opacity-90 transition-all transform hover:scale-105">
@@ -1445,6 +1461,10 @@
                                     $('.remaining').text(response.remaining_dollar * 100);
                                 }
                             }
+                            let conversation = JSON.parse(response.conversation);
+                            for (let i = 0; i < conversation.length; i++) {
+                                console.log(conversation[i].role + ' : ' + conversation[i].content);
+                            }
                         } else {
                             alert('Terjadi kesalahan, silakan coba lagi.');
                         }
@@ -1460,19 +1480,19 @@
                 const messageHTML = `
                     <div class="flex items-start ${sender === 'bot' ? '' : 'justify-end'} message opacity-0">
                         ${sender === 'bot' ? `
-                                                    <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
-                                                        <img src="{{ asset('img/' . $name . '.jpg') }}" alt="AI Assistant" class="w-full h-full object-cover">
-                                                    </div>
-                                                ` : ''}
+                                                        <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
+                                                            <img src="{{ asset('img/' . $name . '.jpg') }}" alt="AI Assistant" class="w-full h-full object-cover">
+                                                        </div>
+                                                    ` : ''}
                         <div class="mx-3 ${sender === 'bot' ? 'bg-white text-gray-700' : 'gradient-bg text-white'} rounded-2xl p-4 max-w-[80%] shadow-sm">
                             ${text}
                             ${hint ? `<hr class="my-2"><p class="text-sm text-gray-500">${hint}</p>` : ''}
                         </div>
                         ${sender === 'user' ? `
-                                                    <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                                                        <i class="fas fa-user text-gray-500 text-sm"></i>
-                                                    </div>
-                                                ` : ''}
+                                                        <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                                            <i class="fas fa-user text-gray-500 text-sm"></i>
+                                                        </div>
+                                                    ` : ''}
                     </div>
                 `;
 
