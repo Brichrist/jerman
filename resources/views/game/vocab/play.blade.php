@@ -1104,6 +1104,13 @@
                             <span class="range-value" id="pauseValue">2x</span>
                         </div>
                     </div>
+                    <div class="setting-item">
+                        <label class="setting-label">Conversation Distance</label>
+                        <div class="setting-value">
+                            <input type="range" id="distanceSlider" class="range-slider" min="1" max="4" step="0.1" value="1">
+                            <span class="range-value" id="distanceValue">1x</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="setting-item">
@@ -2502,6 +2509,7 @@
             controlButtons.style.display = 'none';
             document.getElementById('rateValue').textContent = '1.0x';
             document.getElementById('pauseValue').textContent = '2x';
+            document.getElementById('distanceValue').textContent = '1x';
 
             // Update slider values on input
             document.getElementById('rateSlider').addEventListener('input', function() {
@@ -2510,6 +2518,9 @@
 
             document.getElementById('pauseSlider').addEventListener('input', function() {
                 document.getElementById('pauseValue').textContent = this.value + 'x';
+            });
+            document.getElementById('distanceSlider').addEventListener('input', function() {
+                document.getElementById('distanceValue').textContent = this.value + 'x';
             });
 
             // Option buttons dengan multiple selection
@@ -2614,7 +2625,10 @@
                 }
             }
             let interactionCount = 0
-            async function processRow(row, rate, pause) {
+            async function processRow(row) {
+                const rate = parseFloat(document.getElementById('rateSlider').value);
+                const pause = parseFloat(document.getElementById('pauseSlider').value);
+                const distance = parseFloat(document.getElementById('distanceSlider').value);
                 if (!isReading) return;
 
                 updateRowState(row, 'reading');
@@ -2641,7 +2655,7 @@
                         case 'indonesia':
                             if (document.querySelector('[data-option="indonesia"].active')) {
                                 if (ci != 1) {
-                                    await sleep(1000);
+                                    await sleep(distance * 1000);
                                 }
                                 await speakText(indoText, 'id-ID', 1.1);
                             }
@@ -2649,7 +2663,7 @@
                         case 'german':
                             if (document.querySelector('[data-option="german"].active')) {
                                 if (ci != 1) {
-                                    await sleep(1000);
+                                    await sleep(distance * 1000);
                                 }
                                 await speakText(germanText, 'de-DE', rate);
                             }
@@ -2657,7 +2671,7 @@
                         case 'example':
                             if (document.querySelector('[data-option="example"].active') && exampleText) {
                                 if (ci != 1) {
-                                    await sleep(1000);
+                                    await sleep(distance * 1000);
                                 }
                                 await speakText(exampleText, 'de-DE', rate);
                             }
@@ -2665,7 +2679,7 @@
                         case 'example_bahasa':
                             if (document.querySelector('[data-option="example_bahasa"].active') && example_bahasa) {
                                 if (ci != 1) {
-                                    await sleep(1000);
+                                    await sleep(distance * 1000);
                                 }
                                 await speakText(example_bahasa, 'id-ID', 1.1);
                             }
@@ -2684,8 +2698,7 @@
                 // Request wake lock when starting
                 await requestWakeLock();
 
-                const rate = parseFloat(document.getElementById('rateSlider').value);
-                const pause = parseFloat(document.getElementById('pauseSlider').value);
+
                 const startNumber = parseInt(document.getElementById('startNumber').value) || 1;
                 const rows = Array.from(document.querySelectorAll('.list-mode tbody tr'));
 
@@ -2726,7 +2739,7 @@
                         }
 
                         lastPosition = i;
-                        await processRow(rows[i], rate, pause);
+                        await processRow(rows[i]);
 
                         // Reacquire wake lock periodically
                         if (wakeLock === null) {
