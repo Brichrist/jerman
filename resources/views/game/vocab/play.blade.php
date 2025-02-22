@@ -2915,7 +2915,7 @@
                 const pause = parseFloat(document.getElementById('pauseSlider').value);
                 const distance = parseFloat(document.getElementById('distanceSlider').value);
                 if (!isReading) return;
-
+                await checkPauseHold();
                 updateRowState(row, 'reading');
                 currentRow = row;
 
@@ -2935,7 +2935,6 @@
                 for (const option of selectedOrder) {
                     ci++
                     if (!isReading) break;
-                    await checkPauseHold();
 
                     switch (option) {
                         case 'indonesia':
