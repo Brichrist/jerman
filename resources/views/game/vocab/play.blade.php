@@ -643,6 +643,7 @@
             margin-bottom: 0.5rem;
             opacity: 0.7;
             transition: opacity 0.3s ease;
+            display: block!important;
         }
 
         .eye-toggle:hover {
