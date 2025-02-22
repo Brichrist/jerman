@@ -1481,19 +1481,19 @@
                 const messageHTML = `
                     <div class="flex items-start ${sender === 'bot' ? '' : 'justify-end'} message opacity-0">
                         ${sender === 'bot' ? `
-                                                                    <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
-                                                                        <img src="{{ asset('img/' . $name . '.jpg') }}" alt="AI Assistant" class="w-full h-full object-cover">
-                                                                    </div>
-                                                                ` : ''}
+                            <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
+                                <img src="{{ asset('img/' . $name . '.jpg') }}" alt="AI Assistant" class="w-full h-full object-cover">
+                            </div>
+                        ` : ''}
                         <div class="mx-3 ${sender === 'bot' ? 'bg-white text-gray-700' : 'gradient-bg text-white'} rounded-2xl p-4 max-w-[80%] shadow-sm">
                             ${text}
                             ${hint ? `<hr class="my-2"><p class="text-sm text-gray-500">${hint}</p>` : ''}
                         </div>
                         ${sender === 'user' ? `
-                                                                    <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                                                                        <i class="fas fa-user text-gray-500 text-sm"></i>
-                                                                    </div>
-                                                                ` : ''}
+                        <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                            <i class="fas fa-user text-gray-500 text-sm"></i>
+                        </div>
+                    ` : ''}
                     </div>
                 `;
 
@@ -1768,7 +1768,7 @@
             } else {
                 $(this).addClass('hidden-cell');
             }
-            if (!exampleTime) {
+            if (exampleTime) {
                 setTimeout(() => {
                     exampleTime = false
                 }, 200);
