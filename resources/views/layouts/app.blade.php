@@ -40,6 +40,9 @@
             $('.edit-btn, .clone-btn').on('click', function() {
                 window.scrollTo(0, 0);
             });
+            $('.rmf-hidden-form').click(function (e) { 
+                $('.add-form').toggleClass('hidden');
+            });
         });
     </script>
 </body>

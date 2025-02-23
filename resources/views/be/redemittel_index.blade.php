@@ -269,7 +269,7 @@
                                 </div> --}}
 
                                 <header>
-                                    <h2 class="text-lg font-medium title-form text-gray-900 dark:text-gray-100">
+                                    <h2 class="text-lg font-medium title-form text-gray-900 dark:text-gray-100 rmf-hidden-form">
                                         Add Redemittel
                                     </h2>
 
@@ -278,7 +278,7 @@
                                     </p>
                                 </header>
 
-                                <form method="post" action="{{ route('redemittel.store') }}" class="mt-6 space-y-6">
+                                <form method="post" action="{{ route('redemittel.store') }}" class="mt-6 space-y-6 hidden md:block add-form">
                                     @csrf
                                     <input type="text" class="hidden" id="id" name="id">
                                     <div>

@@ -166,7 +166,7 @@
                         <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                             <div class="max-w-xl">
                                 <header>
-                                    <h2 class="text-lg font-medium title-form text-gray-900 dark:text-gray-100">
+                                    <h2 class="text-lg font-medium title-form text-gray-900 dark:text-gray-100 rmf-hidden-form">
                                         Add Gramatik
                                     </h2>
 
@@ -175,7 +175,7 @@
                                     </p>
                                 </header>
 
-                                <form method="post" action="{{ route('gramatik.store') }}" class="mt-6 space-y-6">
+                                <form method="post" action="{{ route('gramatik.store') }}" class="mt-6 space-y-6 hidden md:block add-form">
                                     @csrf
                                     <input type="text" class="hidden" id="id" name="id">
                                     <div>
