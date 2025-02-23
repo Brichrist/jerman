@@ -1436,7 +1436,7 @@
                 duration: 1200,
                 easing: 'spring(1, 80, 10, 0)'
             });
-            $('.fa-repeat').parent().on('click', function() {
+            $('.fa-refresh').parent().on('click', function() {
                 // Reset conversation value to base value
                 let baseConversation = $('#conversation').data('base');
                 baseConversation = JSON.stringify(baseConversation)
