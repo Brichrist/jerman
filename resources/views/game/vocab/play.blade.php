@@ -643,7 +643,7 @@
             margin-bottom: 0.5rem;
             opacity: 0.7;
             transition: opacity 0.3s ease;
-            display: block!important;
+            display: block !important;
         }
 
         .eye-toggle:hover {
@@ -1337,7 +1337,7 @@
         <div class="modal flex-1 max-w-xs md:max-w-2xl mx-auto w-full bg-white rounded-2xl shadow-xl flex flex-col my-4 overflow-hidden">
             <div class="gradient-bg p-6 flex items-center">
                 <div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                    <i class="fas fa-message-smile text-white text-xl"></i>
+                    <i class="fas fa-refresh text-white"></i>
                 </div>
                 @php
                     $name = auth()->user()->gender == 'male' ? 'Silvi' : 'David';
@@ -1378,7 +1378,7 @@
                         ];
                         $conversation = json_encode($conversation);
                     @endphp
-                    <input type="hidden" name="conversation" id="conversation" value="{{ $conversation }}">
+                    <input type="hidden" name="conversation" id="conversation" value="{{ $conversation }}" data-base="{{ $conversation }}">
                     <textarea id="question" name="question" class="flex-1 p-4 rounded-xl border border-purple-200 text-gray-700 focus:outline-none focus:border-purple-400 placeholder-gray-400" placeholder="Type your question..." rows="1"></textarea>
                     <div class="flex flex-col items-center justify-center space-y-2">
                         <button type="button" class="gradient-bg btn-submit text-white rounded-xl w-12 h-12 flex items-center justify-center hover:opacity-90 transition-all transform hover:scale-105">
@@ -1435,7 +1435,19 @@
                 duration: 1200,
                 easing: 'spring(1, 80, 10, 0)'
             });
+            $('.fa-repeat').parent().on('click', function() {
+                // Reset conversation value to base value
+                let baseConversation = $('#conversation').data('base');
+                baseConversation = JSON.stringify(baseConversation)
+                $('#conversation').val(baseConversation);
 
+                // Clear all messages except the first bot message
+                const firstMessage = $('#chat-messages .bot-message').first();
+                $('#chat-messages').empty().append(firstMessage);
+
+                // Clear the question input
+                $('#question').val('');
+            });
             // Form submission
             $('#chat-form .btn-submit').on('click', function(e) {
                 e.preventDefault();
@@ -1529,19 +1541,19 @@
                 const messageHTML = `
                     <div class="flex items-start ${sender === 'bot' ? '' : 'justify-end'} message opacity-0">
                         ${sender === 'bot' ? `
-                                                            <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
-                                                                <img src="{{ asset('img/' . $name . '.jpg') }}" alt="AI Assistant" class="w-full h-full object-cover">
-                                                            </div>
-                                                        ` : ''}
+                            <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center overflow-hidden">
+                                <img src="{{ asset('img/' . $name . '.jpg') }}" alt="AI Assistant" class="w-full h-full object-cover">
+                            </div>
+                        ` : ''}
                         <div class="mx-3 ${sender === 'bot' ? 'bg-white text-gray-700' : 'gradient-bg text-white'} rounded-2xl p-4 max-w-[80%] shadow-sm">
                                 ${formattedContent}
                             ${hint ? `<hr class="my-2"><p class="text-sm text-gray-500">${hint}</p>` : ''}
                         </div>
                         ${sender === 'user' ? `
-                                                        <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                                                            <i class="fas fa-user text-gray-500 text-sm"></i>
-                                                        </div>
-                                                    ` : ''}
+                                <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                    <i class="fas fa-user text-gray-500 text-sm"></i>
+                                </div>
+                            ` : ''}
                     </div>
                 `;
 
