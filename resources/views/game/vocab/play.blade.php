@@ -1827,10 +1827,12 @@
                 }, 50);
             }
             exampleTime = true
-            if ($(this).hasClass('hidden-cell')) {
-                $(this).removeClass('hidden-cell');
-            } else {
-                $(this).addClass('hidden-cell');
+            if (!$(this).hasClass('favorite-list')) {
+                if ($(this).hasClass('hidden-cell')) {
+                    $(this).removeClass('hidden-cell');
+                } else {
+                    $(this).addClass('hidden-cell');
+                }
             }
             if (exampleTime) {
                 setTimeout(() => {
