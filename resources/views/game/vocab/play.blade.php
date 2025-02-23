@@ -1337,7 +1337,7 @@
     <div id="ask-popup" style="z-index:1; display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); justify-content:center; align-items:center;">
         <div class="modal flex-1 max-w-xs md:max-w-2xl mx-auto w-full bg-white rounded-2xl shadow-xl flex flex-col my-4 overflow-hidden">
             <div class="gradient-bg p-6 flex items-center">
-                <div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                <div class="w-12 h-12 rounded-full fa-refresh bg-white/20 backdrop-blur-sm flex items-center justify-center">
                     <i class="fas fa-refresh text-white"></i>
                 </div>
                 @php
@@ -1436,7 +1436,7 @@
                 duration: 1200,
                 easing: 'spring(1, 80, 10, 0)'
             });
-            $('.fa-refresh').parent().on('click', function() {
+            $('.fa-refresh').on('click', function() {
                 // Reset conversation value to base value
                 let baseConversation = $('#conversation').data('base');
                 baseConversation = JSON.stringify(baseConversation)
