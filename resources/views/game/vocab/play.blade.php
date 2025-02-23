@@ -1156,7 +1156,10 @@
                         <span class="number"></span>
                     </div>
                     <div class="preview-item">
-                        <span class="jerman lg"></span>
+                        <div class="jerman-container">
+                            <span class="eye-toggle">👁️</span>
+                            <span class="jerman lg"></span>
+                        </div>
                         <hr>
                         <div class="indo-container">
                             <span class="eye-toggle">👁️</span>
@@ -1575,7 +1578,7 @@
         $(document).ready(function() {
             $(document).on('click', '.eye-toggle', function() {
                 $(this).toggleClass('hidden');
-                $(this).siblings('.indo.lg').toggleClass('hidden');
+                $(this).siblings('.lg').toggleClass('hidden');
             });
             const url = new URL(window.location.href);
             url.searchParams.delete('same');
