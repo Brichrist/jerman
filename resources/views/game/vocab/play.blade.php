@@ -666,6 +666,7 @@
         .preview-item span.lg {
             font-weight: 600;
             font-size: 24px;
+            overflow-wrap: break-word;
         }
 
         .setting-item {
